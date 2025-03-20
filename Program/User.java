@@ -6,15 +6,34 @@ public class User{
     private Scanner sc = new Scanner(System.in);
     private boolean isLoggedIn = false; 
 
+    private boolean flatVisibility = true;
     private String name;
     private String userId;
     private String password = "password";
     private int age;
     private MARITAL_STATUS marital_status;
-    private enum MARITAL_STATUS {
+
+    public boolean getVisibility(){
+        return flatVisibility;
+    }
+    public void toggleVisibility(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Do you want to view flats you have not applied for: (Y/N)");
+        System.out.println("Current: " + (flatVisibility?"Y":"N"));
+        String userInput = null;
+        do { 
+            userInput = sc.nextLine().toUpperCase();
+            if ("Y".equals(userInput) || "N".equals(userInput)){
+                break;
+            }
+            System.out.println("Please enter Y or N only");
+        } while (true);
+        flatVisibility = "Y".equals(userInput);
+    }
+
+    public static enum MARITAL_STATUS {
         Married,
-        Single,
-        Separated,
+        Single
     }
 
     // we want the constructor to trigger for the first time to generate everything for initialisation, then later on never call the constructor ever again 
@@ -25,15 +44,6 @@ public class User{
         this.age = validateAge(age);
         this.marital_status = validateMaritalStatus(marital_status);
         this.password = password; 
-    }
-
-    public void LogIn(){
-        System.out.println("\nPlease Log In:");
-        for (int i=0; i<5; i++){
-            String NRIC = inputNRIC();
-            System.out.println("Please enter User Password: ");
-            String Password = sc.nextLine();
-        }
     }
 
     public String getName(){
@@ -48,8 +58,14 @@ public class User{
         password = newPassword;
     }
 
+    public boolean verifyPassword(String password){
+        if (password.equals(this.password)) return true;
+        else return false;
+    }
 
-    public String inputNRIC(){
+
+    public static String inputNRIC(){
+        Scanner sc = new Scanner (System.in);
         String NRIC = null;
         boolean validNRIC = true;
         do { 
@@ -57,6 +73,7 @@ public class User{
             System.out.println("Please enter User NRIC: ");
             try {
                 NRIC = sc.nextLine();
+                validateNRIC(NRIC);
             } catch (Exception e) {
                 validNRIC = false; 
                 System.out.println(e.getMessage());
@@ -66,7 +83,7 @@ public class User{
         return NRIC;
     }
 
-    public final String validateNRIC(String NRIC) throws Exception{
+    public static final String validateNRIC(String NRIC) throws Exception{
         if (NRIC.charAt(0) != 'S' && NRIC.charAt(0) != 'T'){
             throw new Exception("NRIC starts with S or T\nReceived NRIC: " + NRIC);
         }
@@ -98,10 +115,9 @@ public class User{
                 return MARITAL_STATUS.Married;
             case "SINGLE": 
                 return MARITAL_STATUS.Single;
-            case "SEPARATED": 
-                return MARITAL_STATUS.Separated;
             default:
-                throw new Exception("Marital Status for NRIC No." + this.userId + "should be either Married, Single, or Separated\nReceived marital status: " + marital_status);
+                throw new Exception("Marital Status for NRIC No." + this.userId + "should be either Married or Single\nReceived marital status: " + marital_status);
         }
     }
+    
 }
