@@ -4,6 +4,8 @@ import Program.User.VISIBILITY;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+// Hey guys do learn how to javadoc here:
+// https://www.oracle.com/sg/technical-resources/articles/java/javadoc-tool.html
 
 /*
  * Example Text:
@@ -19,22 +21,19 @@ public class MainActivity {
     // theres gonna be a whole lot of polymorphism up next folks for buckle up 
     public static UserList userList = new UserList();
     public static List <Project> projectList = new ArrayList<>();
-    public static UserList ManagerList = new UserList();
-    public static UserList OfficerList = new UserList();
+    public static UserList managerList = new UserList();
+    public static UserList officerList = new UserList();
     
     public static void main(String[] args) throws Exception{
 
+        // PRODUCTION CODE 
         // initialise();
         // User client = LogIn();
         // client.toggleVisibility();
+
+        // TEST MAIN LOOP
         User client = quickInitialise();
         projectList.forEach(project->project.printVisible(client));
-
-
-        // uncomment out above code if need to test input 
-        // User client = new User("John", "S1234567A", 35, "Single", "password");
-
-        // Scanner sc = new Scanner(System.in);
         
         Scanner sc = new Scanner(System.in);
         int choice = 0;
@@ -194,7 +193,7 @@ public class MainActivity {
                 continue;
             }
             if (fields.length != 5) throw new Exception ("Please enter all 5 fields");
-            OfficerList.add(new Officer(fields[1].trim(), fields[0].trim(), Integer.parseInt(fields[2].trim()), fields[3].trim(), fields[4].trim()));
+            officerList.add(new Officer(fields[1].trim(), fields[0].trim(), Integer.parseInt(fields[2].trim()), fields[3].trim(), fields[4].trim()));
         }
 
         clearConsole();
@@ -217,7 +216,7 @@ public class MainActivity {
                 continue;
             }
             if (fields.length != 5) throw new Exception ("Please enter all 5 fields");
-            ManagerList.add(new Manager(fields[1].trim(), fields[0].trim(), Integer.parseInt(fields[2].trim()), fields[3].trim(), fields[4].trim()));
+            managerList.add(new Manager(fields[1].trim(), fields[0].trim(), Integer.parseInt(fields[2].trim()), fields[3].trim(), fields[4].trim()));
         }
 
         clearConsole();
@@ -265,13 +264,13 @@ public class MainActivity {
         userList.add(new User("S3456789E","Rachel",25,"Single","password"));
 
         // Officers
-        OfficerList.add(new Officer("T2109876H","Daniel",36,"Single","password"));
-        OfficerList.add(new Officer("S6543210I","Emily",28,"Single","password"));
-        OfficerList.add(new Officer("T1234567J","David",29,"Married","password"));
+        officerList.add(new Officer("T2109876H","Daniel",36,"Single","password"));
+        officerList.add(new Officer("S6543210I","Emily",28,"Single","password"));
+        officerList.add(new Officer("T1234567J","David",29,"Married","password"));
 
         // Managers
-        ManagerList.add(new Manager("T8765432F","Michael",36,"Single","password"));
-        ManagerList.add(new Manager("S5678901G","Jessica",26,"Married","password"));
+        managerList.add(new Manager("T8765432F","Michael",36,"Single","password"));
+        managerList.add(new Manager("S5678901G","Jessica",26,"Married","password"));
 
         // Projects
         projectList.add(new Project("Acacia Breeze","Yishun","2","350000","3","450000","15/2/2025","20/3/2025","Jessica","3","Daniel,Emily"));

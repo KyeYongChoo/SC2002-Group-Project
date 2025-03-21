@@ -44,7 +44,7 @@ public class Project {
         this.openDate = LocalDate.parse(openDate, formatter);
         this.closeDate = LocalDate.parse(closeDate, formatter);
         // Holy smokes upcasting Downcasting 101 down here
-        this.manager = (Manager) MainActivity.ManagerList.getByName(manager);
+        this.manager = (Manager) MainActivity.managerList.getByName(manager);
         if(this.manager == null) throw new Exception("Manager not Found. Manager field for reference: "+ manager);
         try {
             this.officerSlots = Integer.parseInt(officerSlots);
@@ -53,7 +53,7 @@ public class Project {
         }
         Officer officer;
         for (String officerStr : OfficerLstStrInput.split(",")){
-            officer = (Officer) MainActivity.OfficerList.getByName(officerStr);
+            officer = (Officer) MainActivity.officerList.getByName(officerStr);
             if (officer == null) throw new Exception("Officer not found. Officer for reference: "+ officer);
             OfficerList.add(officer);
         }
