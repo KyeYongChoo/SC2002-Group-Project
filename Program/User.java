@@ -1,69 +1,39 @@
 package Program;
 
 import Program.User.MARITAL_STATUS;
-import Program.User.VISIBILITY;
 import java.util.Scanner;
 
 public class User{
     private Scanner sc = new Scanner(System.in);
     private boolean isLoggedIn = false; 
-
-    private VISIBILITY flatVisibility;
     private String name;
     private String userId;
     private String password = "password";
     private int age;
     private MARITAL_STATUS maritalStatus;
+    private HousingReqList reqList = new HousingReqList();;
 
-    public static enum VISIBILITY{
-        Room2,
-        RoomAll,
-        RoomNone
+    public boolean see3Rooms(){
+        return age >= 21 && maritalStatus == User.MARITAL_STATUS.Married;
     }
 
-    // DEBUG means should not be in final product
-    public void DEBUG_SetVisibility(VISIBILITY visibility){
-        flatVisibility = visibility;
-        MainActivity.updateTableRef(flatVisibility);
-    }
-
-    public VISIBILITY getVisibility(){
-        return flatVisibility;
-    }
-
-    public void toggleVisibility(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Do you want to view flats you have not applied for: (Y/N)");
-        System.out.println("Current: " + (flatVisibility == VISIBILITY.RoomNone ? "N":"Y"));
-        String userInput = null;
-        do { 
-            userInput = sc.nextLine().toUpperCase();
-            if ("Y".equals(userInput) || "N".equals(userInput)){
-                break;
-            }
-            System.out.println("Please enter Y or N only");
-        } while (true);
-        if ("N".equals(userInput)){
-            flatVisibility = VISIBILITY.RoomNone;
-            MainActivity.updateTableRef(flatVisibility);
-        }
-        else if (age >= 35 && maritalStatus == MARITAL_STATUS.Single){
-            flatVisibility = VISIBILITY.Room2;
-            MainActivity.updateTableRef(flatVisibility);
-        }
-        else if (age >= 21 && maritalStatus == MARITAL_STATUS.Married){
-            flatVisibility= VISIBILITY.RoomAll;
-            MainActivity.updateTableRef(flatVisibility);
-        }
-        else {
-            flatVisibility = VISIBILITY.RoomNone;
-            MainActivity.updateTableRef(flatVisibility);
-        }
+    public boolean see2Rooms(){
+        return age >= 35 && maritalStatus == User.MARITAL_STATUS.Single;
     }
 
     public static enum MARITAL_STATUS {
         Married,
         Single
+    }
+
+    public boolean hasActiveApplication(){
+        for (HousingReq req : MainActivity.reqList){
+            if (req.getStatus() == HousingReq.REQUEST_STATUS.pending
+            || req.getStatus() == HousingReq.REQUEST_STATUS.successful
+            || req.getStatus() == HousingReq.REQUEST_STATUS.booked)
+            return true;
+        }
+        return false;
     }
 
     public User(String NRIC, String name, int age, String maritalStatus, String password) throws Exception{
@@ -72,15 +42,6 @@ public class User{
         this.age = validateAge(age);
         this.maritalStatus = validateMaritalStatus(maritalStatus);
         this.password = password; 
-        if (this.age >= 35 && this.maritalStatus == MARITAL_STATUS.Single){
-            flatVisibility = VISIBILITY.Room2;
-        }
-        else if (this.age >= 21 && this.maritalStatus == MARITAL_STATUS.Married){
-            flatVisibility= VISIBILITY.RoomAll;
-        }
-        else {
-            flatVisibility = VISIBILITY.RoomNone;
-        }
         
     }
 
@@ -164,6 +125,13 @@ public class User{
 
     public String getUserId(){
         return userId;
+    }
+
+    public void setReqList(HousingReqList reqList){
+        this.reqList = reqList;
+    }
+    public HousingReqList getReqList(){
+        return reqList;
     }
 
     @Override

@@ -1,22 +1,33 @@
 package Program;
-import Program.User.VISIBILITY;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Project {
     private String name;
     private String neighbourhood;
-    int units2room;
-    int units2roomPrice;
-    int units3room;
-    int units3roomPrice;
+    private int units2room;
+    private int units2roomPrice;
+    private int units3room;
+    private int units3roomPrice;
     private LocalDate openDate;
     private LocalDate closeDate;
+    private Manager createdBy;
     private Manager manager;
     private int officerSlots;
-    private List<Officer> OfficerList = new ArrayList<>();
+    // Note projOfficerList != MainActivity.projectOfficerList
+    private List<Officer> projOfficerList = new ArrayList<>();
+    private boolean visibility = true;
+    private HousingReqList reqList = new HousingReqList();
+
+    // Currently used by the HousingReq and HousingReqList classes only. May want to refactor the units2room units3 room to be a HashMap<ROOMTYPE, ArrayList<int vacancies, int price>>. 
+    public static enum ROOM_TYPE{
+        room2,
+        room3
+    }
+    
 
     public Project(
         String name, 
@@ -55,22 +66,48 @@ public class Project {
         for (String officerStr : OfficerLstStrInput.split(",")){
             officer = (Officer) MainActivity.officerList.getByName(officerStr);
             if (officer == null) throw new Exception("Officer not found. Officer for reference: "+ officer);
-            OfficerList.add(officer);
+            projOfficerList.add(officer);
+        }   
+    }
+
+    public void setVisibility(Manager manager) throws Exception{
+        if (manager != this.manager){
+            throw new Exception("You are not the manager of this HDB! ");
         }
 
-        
-    }
-    
-    public void printVisible(User client){
-        printVisible(client.getVisibility());
+        String choice;
+        do { 
+            System.out.println("Please toggle visibility of " + name + " (Y/N)" +"\nCurrent Visibility: " + (visibility?"Y":"N"));
+            Scanner sc = new Scanner(System.in);
+            choice = sc.nextLine().toUpperCase();
+        } while (!"Y".equals(choice) && !"N".equals(choice));
+        this.visibility = ("Y".equals(choice));
     }
 
-    public void printVisible(VISIBILITY visibility){
+    public void printVisible(User client){
+        if (client == null) return;
+        // Manager needs separate logic because they see all rooms regardless of visibility
+        if (client instanceof Manager){
+            printVisible((Manager) client);
+            return;
+        }
+
+        if (this.visibility == false) return;
+        // Officer needs separate logic because of table formatting issues if sometimes show 3 room sometimes show 2 rooms only
+        if (client instanceof Officer){
+            printVisible((Officer) client);
+            return;
+        }
+
+        boolean table3RoomFormatting = true;
         boolean firstLoop = true;
-        for (Officer officer : OfficerList){
+        for (Officer officer : projOfficerList){
             if (firstLoop){
                 firstLoop = false;
-                if (visibility == VISIBILITY.Room2){
+                if (client.see2Rooms()){
+                    table3RoomFormatting = false;
+                    MainActivity.updateTableRef(table3RoomFormatting);
+                    System.out.printf(MainActivity.formatTableRef, (Object[])MainActivity.tableHeaders);
                     System.out.printf(
                         MainActivity.formatTableRef,
                         name,
@@ -82,7 +119,10 @@ public class Project {
                         officerSlots,
                         officer);
                 }
-                else if (visibility == VISIBILITY.RoomAll){
+                else if (client.see3Rooms()){
+                    table3RoomFormatting = true;
+                    MainActivity.updateTableRef(table3RoomFormatting);
+                    System.out.printf(MainActivity.formatTableRef, (Object[])MainActivity.tableHeaders);
                     System.out.printf(
                         MainActivity.formatTableRef,
                         name,
@@ -96,24 +136,112 @@ public class Project {
                         officerSlots,
                         officer);
                 }
-                else if (visibility == VISIBILITY.RoomNone){
+                else{
+                    break;
+                }
+            }
+            else{
+                if (table3RoomFormatting) System.out.printf(MainActivity.formatTableRef,"", "", "", "", "", "", "", "", "", officer);
+                else System.out.printf(MainActivity.formatTableRef,"", "", "", "", "", "", "", officer);
+              }
+            }  
+    }
+    
+    public void printVisible(Officer officer){
+        boolean table3RoomFormatting;
+        table3RoomFormatting = true;
+        MainActivity.updateTableRef(table3RoomFormatting);
+        boolean firstLoop = true;
+        for (Officer projOfficer : projOfficerList){
+            if (firstLoop){
+                firstLoop = false;
+                if (projOfficerList.contains(officer) || officer.see3Rooms()){
+                    System.out.printf(MainActivity.formatTableRef, (Object[])MainActivity.tableHeaders);
+                    System.out.printf(
+                        MainActivity.formatTableRef,
+                        name,
+                        neighbourhood,
+                        units2room,
+                        units2roomPrice,
+                        units3room,
+                        units3roomPrice,
+                        openDate,
+                        manager,
+                        officerSlots,
+                        projOfficer);
+                }
+                else if (officer.see2Rooms()){
+                    System.out.printf(MainActivity.formatTableRef, (Object[])MainActivity.tableHeaders);
+                    System.out.printf(
+                        MainActivity.formatTableRef,
+                        name,
+                        neighbourhood,
+                        units2room,
+                        units2roomPrice,
+                        "", // to fill in the 3roomPrice clause
+                        "",
+                        openDate,
+                        manager,
+                        officerSlots,
+                        projOfficer);
+                }
+                else{
                     break;
                 }
             }
             else{
                 System.out.printf(
-                    MainActivity.formatTableRef,"", "", "", "", "", "", "", "", "", officer);
+                    MainActivity.formatTableRef,"", "", "", "", "", "", "", "", "", projOfficer);
               }
-            }
-            
-        }
-
-    public static void printApplied(User client){
-
+            }  
     }
 
+    public void printVisible(Manager manager){
+        boolean table3RoomFormatting;
+        table3RoomFormatting = true;
+        MainActivity.updateTableRef(table3RoomFormatting);
+
+        boolean firstLoop = true;
+        for (Officer officer : projOfficerList){
+            if (firstLoop){
+                firstLoop = false;
+                System.out.printf(MainActivity.formatTableRef, (Object[])MainActivity.tableHeaders);
+                System.out.printf(
+                    MainActivity.formatTableRef,
+                    name,
+                    neighbourhood,
+                    units2room,
+                    units2roomPrice,
+                    units3room,
+                    units3roomPrice,
+                    openDate,
+                    this.manager,
+                    officerSlots,
+                    officer);
+            }
+            else{
+                System.out.printf(
+                    MainActivity.formatTableRef,"", "", "", "", "", "", "", "", "", officer);
+              }
+            }  
+    }
+
+    public void setReqList(HousingReqList reqList){
+        this.reqList = reqList;
+    }
+    public HousingReqList getReqList(){
+        return reqList;
+    }
     public String getNeighbourhood(){
         return neighbourhood;
+    }
+
+    public void setUnits2Room(int units2room){
+        this.units2room = units2room;
+    }
+
+    public void setUnits3Room(int units3room){
+        this.units3room = units3room;
     }
 
     public int getUnits2Room(){
@@ -157,7 +285,7 @@ public class Project {
         return officerSlots;
     }
     public List<Officer> getOfficers(){
-        return OfficerList;
+        return projOfficerList;
     }
 
     @Override
