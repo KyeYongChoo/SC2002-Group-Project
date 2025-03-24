@@ -1,8 +1,6 @@
 package Program;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Project {
@@ -18,9 +16,10 @@ public class Project {
     private Manager manager;
     private int officerSlots;
     // Note projOfficerList != MainActivity.projectOfficerList
-    private List<Officer> projOfficerList = new ArrayList<>();
+    private UserList projOfficerList = new UserList();
     private boolean visibility = true;
     private HousingReqList reqList = new HousingReqList();
+    private EnquiryList enquiryList = new EnquiryList();
 
     // Currently used by the HousingReq and HousingReqList classes only. May want to refactor the units2room units3 room to be a HashMap<ROOMTYPE, ArrayList<int vacancies, int price>>. 
     public static enum ROOM_TYPE{
@@ -70,8 +69,16 @@ public class Project {
         }   
     }
 
+    public boolean isManager(Manager manager){
+        return manager == this.manager;
+    }
+
+    public static boolean isManager(Project project, Manager manager){
+        return project.isManager(manager);
+    }
+
     public void setVisibility(Manager manager) throws Exception{
-        if (manager != this.manager){
+        if (!isManager(manager)){
             throw new Exception("You are not the manager of this HDB! ");
         }
 
@@ -84,6 +91,9 @@ public class Project {
         this.visibility = ("Y".equals(choice));
     }
 
+    public EnquiryList getEnquiryList(){
+        return enquiryList;
+    }
     public void printVisible(User client){
         if (client == null) return;
         // Manager needs separate logic because they see all rooms regardless of visibility
@@ -101,7 +111,8 @@ public class Project {
 
         boolean table3RoomFormatting = true;
         boolean firstLoop = true;
-        for (Officer officer : projOfficerList){
+        for (User officer : projOfficerList){
+            officer = (Officer) officer;
             if (firstLoop){
                 firstLoop = false;
                 if (client.see2Rooms()){
@@ -148,11 +159,13 @@ public class Project {
     }
     
     public void printVisible(Officer officer){
+        if (this.visibility == false && !projOfficerList.contains(officer)) return;
         boolean table3RoomFormatting;
         table3RoomFormatting = true;
         MainActivity.updateTableRef(table3RoomFormatting);
         boolean firstLoop = true;
-        for (Officer projOfficer : projOfficerList){
+        for (User projOfficer : projOfficerList){
+            projOfficer = (Officer) projOfficer;
             if (firstLoop){
                 firstLoop = false;
                 if (projOfficerList.contains(officer) || officer.see3Rooms()){
@@ -202,7 +215,8 @@ public class Project {
         MainActivity.updateTableRef(table3RoomFormatting);
 
         boolean firstLoop = true;
-        for (Officer officer : projOfficerList){
+        for (User officer : projOfficerList){
+            officer = (Officer) officer;
             if (firstLoop){
                 firstLoop = false;
                 System.out.printf(MainActivity.formatTableRef, (Object[])MainActivity.tableHeaders);
@@ -284,7 +298,7 @@ public class Project {
     public int getOfficerSlots(){
         return officerSlots;
     }
-    public List<Officer> getOfficers(){
+    public UserList getOfficers(){
         return projOfficerList;
     }
 

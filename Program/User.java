@@ -11,7 +11,12 @@ public class User{
     private String password = "password";
     private int age;
     private MARITAL_STATUS maritalStatus;
-    private HousingReqList reqList = new HousingReqList();;
+    private HousingReqList reqList = new HousingReqList();
+    private EnquiryList enquiryList = new EnquiryList();
+
+    public EnquiryList getEnquiryList(){
+        return enquiryList;
+    }
 
     public boolean see3Rooms(){
         return age >= 21 && maritalStatus == User.MARITAL_STATUS.Married;
@@ -27,13 +32,7 @@ public class User{
     }
 
     public boolean hasActiveApplication(){
-        for (HousingReq req : MainActivity.reqList){
-            if (req.getStatus() == HousingReq.REQUEST_STATUS.pending
-            || req.getStatus() == HousingReq.REQUEST_STATUS.successful
-            || req.getStatus() == HousingReq.REQUEST_STATUS.booked)
-            return true;
-        }
-        return false;
+        return reqList.activeReq(this) != null;
     }
 
     public User(String NRIC, String name, int age, String maritalStatus, String password) throws Exception{
@@ -110,6 +109,16 @@ public class User{
             throw new NumberFormatException("NRIC should have 7 numbers in between\nReceived NRIC: " + NRIC);
         }
         return NRIC;
+    }
+
+
+    // In case I'm forgetful and forgot which class to call printPastReq on
+    public void printPastReq(){
+        HousingReqList.printPastReq(this);
+    }
+
+    public static void printPastReq(User client){
+        HousingReqList.printPastReq(client);
     }
 
     public int getAge(){

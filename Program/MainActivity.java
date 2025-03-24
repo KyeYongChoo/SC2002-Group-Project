@@ -9,11 +9,12 @@ import java.util.Scanner;
 public class MainActivity {
 
     // theres gonna be a whole lot of polymorphism up next folks for buckle up 
-    public static UserList userList = new UserList();
+    public static UserList applicantList = new UserList();
     public static UserList managerList = new UserList();
     public static UserList officerList = new UserList();
     public static ProjectList projectList = new ProjectList();
     public static HousingReqList reqList = new HousingReqList();
+    public static EnquiryList enquiryList = new EnquiryList();
 
     
     public static void main(String[] args) throws Exception{
@@ -25,8 +26,13 @@ public class MainActivity {
 
         // TEST MAIN LOOP
         User client = quickInitialise();
-        projectList.forEach(project->project.printVisible(client));
-        
+
+        if (client instanceof Applicant){
+            clientChoices((Applicant) client);
+        }
+    }
+
+    public static void clientChoices(Applicant client) throws Exception{
         Scanner sc = new Scanner(System.in);
         int choice = 0;
         do { 
@@ -53,14 +59,14 @@ public class MainActivity {
             Project targetProject;
             switch (choice){
                 case (1): 
-                    printVisible(client);
+                    ProjectList.printVisible(client);
                     break;
                 case (2):
                     if (!client.see2Rooms() && client.see3Rooms()){
                         System.out.println("Sorry, you are not eligible to apply for any kind of HDB");
                         break;
                     }
-                    printVisible(client);
+                    ProjectList.printVisible(client);
                     do { 
                         System.out.println("Please enter name of project: ");
                         userInput = sc.nextLine();
@@ -96,10 +102,44 @@ public class MainActivity {
                     
                     break;
                 case (3): 
+                    client.printPastReq();
                     break;
                 case (4):
+                    reqList.reqWithdrawal(client);
                     break;
                 case (5): 
+                    userInput="";
+                    do { 
+                        System.out.println("Which do you want to do? ");
+                        System.out.println("1. Create enquiry");
+                        System.out.println("2. View enquiry");
+                        System.out.println("3. Delete enquiry");
+                        userInput = sc.nextLine();
+                    } while (!"1".equals(userInput) && !"2".equals(userInput) && !"3".equals(userInput));
+                    clearConsole();
+                    switch (userInput){
+                        case ("1"):
+                            System.out.println("Please choose project to enquire about: ");
+                            ProjectList.printVisible(client);
+                            targetProject = null;
+                            while(targetProject == null){
+                                targetProject = projectList.get(sc.nextLine());
+                            } 
+                            System.out.println("Please enter your enquiry");
+                            Enquiry newEnquiry = new Enquiry(client,sc.nextLine(),targetProject);
+                            enquiryList.add(newEnquiry);
+                            System.out.println("\nEnquiry saved. \nTime: " + newEnquiry.get(0).getTimeStamp() + "\nMessage: " + newEnquiry.get(0).getText());
+                            break;
+                        case ("2"):
+                            EnquiryList.printPastEnq(client);
+                            break;
+                        case ("3"):
+                            Enquiry targetEnquiry = EnquiryList.selectEnquiry(client);
+                            EnquiryList.delete(targetEnquiry);
+                            break;
+                    }
+                    break;
+                case (6): 
                     break;
             }
             System.out.println("Press enter to continue");
@@ -116,9 +156,7 @@ public class MainActivity {
         System.out.flush();        
     }
 
-    public static void printVisible(User client){
-        projectList.forEach(project -> project.printVisible(client));
-    }
+
     
     public static User LogIn(){
         Scanner sc = new Scanner(System.in);
@@ -127,7 +165,7 @@ public class MainActivity {
             String NRIC = User.inputNRIC();
             System.out.println("Please enter User Password: ");
             String password = sc.nextLine();
-            User client = userList.get(NRIC);
+            User client = applicantList.get(NRIC);
             if (client == null) client = officerList.get(NRIC);
             if (client == null) client = managerList.get(NRIC);
             //if client does not exist or client's password incorrect
@@ -193,7 +231,7 @@ public class MainActivity {
                 continue;
             }
             if (fields.length != 5) throw new Exception ("Please enter all 5 fields");
-            userList.add(new User(fields[1].trim(), fields[0].trim(), Integer.parseInt(fields[2].trim()), fields[3].trim(), fields[4].trim()));
+            applicantList.add(new Applicant(fields[1].trim(), fields[0].trim(), Integer.parseInt(fields[2].trim()), fields[3].trim(), fields[4].trim()));
         }
 
         clearConsole();
@@ -280,11 +318,11 @@ public class MainActivity {
 
     public static User quickInitialise() throws Exception{
         // Applicants
-        userList.add(new User("S1234567A","John",35,"Single","password"));
-        userList.add(new User("T7654321B","Sarah",40,"Married","password"));
-        userList.add(new User("S9876543C","Grace",37,"Married","password"));
-        userList.add(new User("T2345678D","James",30,"Married","password"));
-        userList.add(new User("S3456789E","Rachel",25,"Single","password"));
+        applicantList.add(new Applicant("S1234567A","John",35,"Single","password"));
+        applicantList.add(new Applicant("T7654321B","Sarah",40,"Married","password"));
+        applicantList.add(new Applicant("S9876543C","Grace",37,"Married","password"));
+        applicantList.add(new Applicant("T2345678D","James",30,"Married","password"));
+        applicantList.add(new Applicant("S3456789E","Rachel",25,"Single","password"));
 
         // Officers
         officerList.add(new Officer("T2109876H","Daniel",36,"Single","password"));
@@ -297,9 +335,10 @@ public class MainActivity {
 
         // Projects
         projectList.add(new Project("Acacia Breeze","Yishun","2","350000","3","450000","15/2/2025","20/3/2025","Jessica","3","Daniel,Emily"));
+        projectList.add(new Project("Beta Breeze","Sembahwang","2","350000","3","450000","15/2/2025","20/3/2025","Michael","3","Daniel,Emily"));
 
         //Login
-        User client = managerList.get(0);
+        User client = applicantList.get(0);
         return client;
 
         //Initialise Visibilities

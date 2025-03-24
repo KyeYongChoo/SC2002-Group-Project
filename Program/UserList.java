@@ -22,7 +22,7 @@ public class UserList extends ArrayList<User> {
                     return user;
                 }
             }
-            for (User user : MainActivity.userList){
+            for (User user : MainActivity.applicantList){
                 if (user.getUserId().equals(UserId)){
                     return user;
                 }

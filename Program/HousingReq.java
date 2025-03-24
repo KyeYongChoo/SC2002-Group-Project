@@ -1,5 +1,6 @@
 package Program;
 
+import Program.HousingReq.WITHDRAWAL_STATUS;
 import Program.Project.ROOM_TYPE;
 
 /*
@@ -11,6 +12,24 @@ public class HousingReq {
     private Officer approvedBy = null;
     private REQUEST_STATUS requestStatus = REQUEST_STATUS.pending;
     private ROOM_TYPE roomType; 
+    private WITHDRAWAL_STATUS withdrawalStatus = WITHDRAWAL_STATUS.notRequested;
+
+    public WITHDRAWAL_STATUS getWithdrawalStatus(){
+        return withdrawalStatus;
+    }
+    public void setWithdrawalStatus(WITHDRAWAL_STATUS withdrawalStatus){
+        this.withdrawalStatus = withdrawalStatus;
+    }
+
+    public static enum WITHDRAWAL_STATUS{
+        notRequested,
+        requested,
+        approved,
+    }
+
+    public Manager getManager(){
+        return this.project.getManager();
+    }
 
     public static enum REQUEST_STATUS{
         pending,

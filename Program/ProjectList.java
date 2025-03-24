@@ -12,6 +12,8 @@ public class ProjectList extends ArrayList<Project> {
         return null;
     }
 
-    
+    public static void printVisible(User client){
+        MainActivity.projectList.forEach(project -> project.printVisible(client));
+    }
     
 }
