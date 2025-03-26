@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-public class Test {
+public class test {
     public static void main(String[] args) {
         // Define the DateTimeFormatter with a pattern that matches both formats
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
