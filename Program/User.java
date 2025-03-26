@@ -1,6 +1,6 @@
-package Program;
+package program;
 
-import Program.User.MARITAL_STATUS;
+import program.User.MARITAL_STATUS;
 import java.util.Scanner;
 
 public class User{
@@ -114,11 +114,11 @@ public class User{
 
     // In case I'm forgetful and forgot which class to call printPastReq on
     public void printPastReq(){
-        HousingReqList.printPastReq(this);
+        HousingReqList.printPast(this);
     }
 
     public static void printPastReq(User client){
-        HousingReqList.printPastReq(client);
+        HousingReqList.printPast(client);
     }
 
     public int getAge(){

@@ -1,16 +1,16 @@
-package Program;
+package program;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Enquiry extends ArrayList<Message>{
-    private final Applicant applicant;
+    private final User applicant;
     private final int  ticketId;
     static int totalTickets = 1;
     private final Project project;
     private final LocalDateTime dateCreated;
 
-    public Enquiry(Applicant client, String enquiry, Project project) {
+    public Enquiry(User client, String enquiry, Project project) {
         this.applicant = client;
         this.project = project;
         ticketId = totalTickets;

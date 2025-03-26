@@ -1,4 +1,4 @@
-package Program;
+package program;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
@@ -126,6 +126,7 @@ public class Project {
                         units2room,
                         units2roomPrice,
                         openDate,
+                        closeDate,
                         manager,
                         officerSlots,
                         officer);
@@ -143,6 +144,7 @@ public class Project {
                         units3room,
                         units3roomPrice,
                         openDate,
+                        closeDate,
                         manager,
                         officerSlots,
                         officer);
@@ -152,8 +154,8 @@ public class Project {
                 }
             }
             else{
-                if (table3RoomFormatting) System.out.printf(MainActivity.formatTableRef,"", "", "", "", "", "", "", "", "", officer);
-                else System.out.printf(MainActivity.formatTableRef,"", "", "", "", "", "", "", officer);
+                if (table3RoomFormatting) System.out.printf(MainActivity.formatTableRef,"", "", "", "", "", "", "", "", "", "", officer);
+                else System.out.printf(MainActivity.formatTableRef,"", "", "", "", "", "", "", "", officer);
               }
             }  
     }
@@ -179,6 +181,7 @@ public class Project {
                         units3room,
                         units3roomPrice,
                         openDate,
+                        closeDate,
                         manager,
                         officerSlots,
                         projOfficer);
@@ -194,6 +197,7 @@ public class Project {
                         "", // to fill in the 3roomPrice clause
                         "",
                         openDate,
+                        closeDate,
                         manager,
                         officerSlots,
                         projOfficer);
@@ -204,7 +208,7 @@ public class Project {
             }
             else{
                 System.out.printf(
-                    MainActivity.formatTableRef,"", "", "", "", "", "", "", "", "", projOfficer);
+                    MainActivity.formatTableRef,"", "", "", "", "", "", "", "", "", "", projOfficer);
               }
             }  
     }
@@ -229,6 +233,7 @@ public class Project {
                     units3room,
                     units3roomPrice,
                     openDate,
+                    closeDate,
                     this.manager,
                     officerSlots,
                     officer);

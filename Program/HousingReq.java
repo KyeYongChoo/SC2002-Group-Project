@@ -1,7 +1,7 @@
-package Program;
+package program;
 
-import Program.HousingReq.WITHDRAWAL_STATUS;
-import Program.Project.ROOM_TYPE;
+import program.HousingReq.WITHDRAWAL_STATUS;
+import program.Project.ROOM_TYPE;
 
 /*
  * Named HousingRequest because naming it Application would be too confusing like apply for house application or software application lmao

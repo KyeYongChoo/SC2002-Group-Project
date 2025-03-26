@@ -1,6 +1,6 @@
-package Program;
+package program;
 
-import Program.Project.ROOM_TYPE;
+import program.Project.ROOM_TYPE;
 import java.util.Scanner;
 // Hey guys do learn how to javadoc here:
 // https://www.oracle.com/sg/technical-resources/articles/java/javadoc-tool.html
@@ -15,7 +15,7 @@ public class MainActivity {
     public static ProjectList projectList = new ProjectList();
     public static HousingReqList reqList = new HousingReqList();
     public static EnquiryList enquiryList = new EnquiryList();
-
+    public static AssignReqList assignReqList = new AssignReqList();
     
     public static void main(String[] args) throws Exception{
 
@@ -28,11 +28,153 @@ public class MainActivity {
         User client = quickInitialise();
 
         if (client instanceof Applicant){
-            clientChoices((Applicant) client);
+            applicantChoices((Applicant) client);
+        }
+        else if (client instanceof Officer){
+            officerChoices((Officer) client);
+        }
+        else if (client instanceof Manager){
+            managerChoices((Manager) client);
         }
     }
 
-    public static void clientChoices(Applicant client) throws Exception{
+    public static void officerChoices(Officer officer) throws Exception{
+        Scanner sc = new Scanner(System.in);
+        int choice = 0;
+        do { 
+            System.out.println("\nYou are currently handling: " + officer.getProject());
+            System.out.println("\nWhat do you want to do: ");
+            System.out.println("\n1. View list of projects open to your user group");
+            System.out.println("2. Apply for a project");
+            System.out.println("3. View project you have applied for, including application status");
+            System.out.println("4. Request application withdrawal");
+            System.out.println("5. Create, view, delete enquiries");
+            System.out.println("6. Register to join a project");
+            System.out.println("7. Reply to enquiries regarding project " + officer.getProject());
+            System.out.println("8. Log out");
+
+            try {
+                choice = Integer.parseInt(sc.nextLine());
+                clearConsole();
+                if (choice < 1 || choice > 6){
+                    throw new Exception("Choice not in range");
+                }
+            } catch (Exception e) {
+                System.out.println("Please enter a valid integer between 1 and 6 inclusive");
+                continue;
+            }
+
+            String userInput;
+            Project targetProject;
+            switch (choice){
+                case (1): 
+                    ProjectList.printVisible(officer);
+                    break;
+                case (2):
+                    if (!officer.see2Rooms() && officer.see3Rooms()){
+                        System.out.println("Sorry, you are not eligible to apply for any kind of HDB");
+                        break;
+                    }
+                    ProjectList.printVisible(officer);
+                    do { 
+                        System.out.println("Please enter name of project: ");
+                        userInput = sc.nextLine();
+                        targetProject = projectList.get(userInput);
+                    } while (targetProject == null);
+                    
+                    if (officer.getProject().equals(targetProject)) {
+                        System.out.println("Sorry, you are already in charge of this HDB");
+                        
+                    }
+                    if ((officer.see3Rooms() && targetProject.getUnits3Room() == 0 && targetProject.getUnits3Room() == 0)
+                    || (officer.see2Rooms() && targetProject.getUnits2Room() == 0)){
+                        System.out.println("Sorry. No more vacant rooms");
+                        break;
+                    }
+
+                    ROOM_TYPE targetRoomType = null;
+                    if (officer.see3Rooms()){
+                        if (targetProject.getUnits3Room() == 0) targetRoomType = ROOM_TYPE.room2;
+                        else if (targetProject.getUnits2Room() == 0) targetRoomType = ROOM_TYPE.room3;
+                        else {
+                            do { 
+                                System.out.println("Please select room type (Enter 1 or 2):");
+                                System.out.println("1. 2-Room");
+                                System.out.println("2. 3-Room");
+                                userInput = sc.nextLine();
+                            } while (!"1".equals(userInput) && !"2".equals(userInput));
+                            if ("1".equals(userInput)) targetRoomType = ROOM_TYPE.room2;
+                            if ("2".equals(userInput)) targetRoomType = ROOM_TYPE.room3;
+                        }
+                    }
+                    else if (officer.see2Rooms()) targetRoomType = ROOM_TYPE.room2;
+                    else throw new Exception("Check out the input part of MainActivity this case should never be reachable");
+                    if (!reqList.add(officer,targetProject,targetRoomType)){
+                        System.out.println("System did not add application.");
+                    }
+                    
+                    break;
+                case (3): 
+                    officer.printPastReq();
+                    break;
+                case (4):
+                    reqList.reqWithdrawal(officer);
+                    break;
+                case (5): 
+                    userInput="";
+                    do { 
+                        System.out.println("Which do you want to do? ");
+                        System.out.println("1. Create enquiry");
+                        System.out.println("2. View enquiry");
+                        System.out.println("3. Delete enquiry");
+                        userInput = sc.nextLine();
+                    } while (!"1".equals(userInput) && !"2".equals(userInput) && !"3".equals(userInput));
+                    clearConsole();
+                    switch (userInput){
+                        case ("1"):
+                            System.out.println("Please choose project to enquire about: ");
+                            ProjectList.printVisible(officer);
+                            targetProject = null;
+                            while(targetProject == null){
+                                targetProject = projectList.get(sc.nextLine());
+                            } 
+                            System.out.println("Please enter your enquiry");
+                            Enquiry newEnquiry = new Enquiry(officer,sc.nextLine(),targetProject);
+                            enquiryList.add(newEnquiry);
+                            System.out.println("\nEnquiry saved. \nTime: " + newEnquiry.get(0).getTimeStamp() + "\nMessage: " + newEnquiry.get(0).getText());
+                            break;
+                        case ("2"):
+                            EnquiryList.printPastEnq(officer);
+                            break;
+                        case ("3"):
+                            Enquiry targetEnquiry = EnquiryList.selectEnquiry(officer);
+                            EnquiryList.delete(targetEnquiry);
+                            break;
+                    }
+                    break;
+                    
+                case (6):
+                    targetProject = null;
+                    ProjectList.printVisible(officer);
+
+                    do { 
+                        System.out.println("Please enter name of project: ");
+                        userInput = sc.nextLine();
+                        targetProject = projectList.get(userInput);
+                    } while (targetProject == null);
+
+                    assignReqList.add(officer,targetProject);
+                    System.out.println("Added successfully");
+                    break;
+            }
+        }while (choice !=8);
+    }
+
+
+    public static void managerChoices(Manager manager) throws Exception{
+
+    }
+    public static void applicantChoices(Applicant client) throws Exception{
         Scanner sc = new Scanner(System.in);
         int choice = 0;
         do { 
@@ -202,12 +344,12 @@ public class MainActivity {
     public static String[] tableHeaders = null;
     public static void updateTableRef(boolean table3Roomformatting){
         if (table3Roomformatting){
-            formatTableRef = "%-20s %-20s %-12s %-8s %-12s %-8s %-30s %-10s %-15s %-10s\n";
-            tableHeaders = new String[]{"Project Name","Neighbourhood","No. 2 Room","Price","No. 3 Room","Price","Application Opening Date","Manager","Officer Slot","Officer"};
+            formatTableRef = "%-20s %-20s %-12s %-8s %-12s %-8s %-26s %-13s %-10s %-15s %-10s\n";
+            tableHeaders = new String[]{"Project Name","Neighbourhood","No. 2 Room","Price","No. 3 Room","Price","Application Opening Date","Closing Date","Manager","Officer Slot","Officer"};
         }
         else{
-            formatTableRef = "%-20s %-20s %-12s %-8s %-30s %-10s %-15s %-10s\n";
-            tableHeaders = new String[]{"Project Name","Neighbourhood","No. 2-Room","Price","Application Opening Date","Manager","Officer Slot","Officer"};
+            formatTableRef = "%-20s %-20s %-12s %-8s %-26s %-13s %-10s %-15s %-10s\n";
+            tableHeaders = new String[]{"Project Name","Neighbourhood","No. 2-Room","Price","Application Opening Date","Closing Date","Manager","Officer Slot","Officer"};
         }
     }
 
@@ -338,10 +480,8 @@ public class MainActivity {
         projectList.add(new Project("Beta Breeze","Sembahwang","2","350000","3","450000","15/2/2025","20/3/2025","Michael","3","Daniel,Emily"));
 
         //Login
-        User client = applicantList.get(0);
+        User client = officerList.get(0);
         return client;
-
-        //Initialise Visibilities
 
     }
 }

@@ -1,8 +1,8 @@
-package Program;
+package program;
 
-import Program.HousingReq.REQUEST_STATUS;
-import Program.HousingReq.WITHDRAWAL_STATUS;
-import Program.Project.ROOM_TYPE;
+import program.HousingReq.REQUEST_STATUS;
+import program.HousingReq.WITHDRAWAL_STATUS;
+import program.Project.ROOM_TYPE;
 import java.util.ArrayList;
 /* There's gonna be 3 types of request lists: 
 * 1. As every user's attribute: Says which requests they are involved in
@@ -71,7 +71,7 @@ public class HousingReqList extends ArrayList<HousingReq>{
         return super.add(req);
     }
 
-    public static void printPastReq(User client){
+    public static void printPast(User client){
         if (client.getReqList().equals(new HousingReqList())){
             System.out.println("You have not applied for any room yet.");
             return;

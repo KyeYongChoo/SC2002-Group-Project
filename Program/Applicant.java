@@ -1,4 +1,4 @@
-package Program;
+package program;
 
 // My friend chatGPTed it and said it really should have an applicant class so here's a kinda empty class; all the functionality is already in
 public class Applicant extends User{

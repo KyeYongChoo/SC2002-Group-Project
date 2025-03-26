@@ -1,5 +1,5 @@
-// package Program-Group-Project.Program ;
-package Program;
+// package program-Group-Project.program ;
+package program;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
