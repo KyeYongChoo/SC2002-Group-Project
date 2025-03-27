@@ -13,7 +13,7 @@ public class AssignReqList extends ArrayList<AssignReq>{
 
     public static AssignReq get(Officer officer, Project project){
         for (AssignReq assignReq : MainActivity.assignReqList){
-            if (assignReq == null){
+            if (assignReq.getOfficer() == officer && assignReq.getProject() == project){
                 return assignReq;
             }
         }
@@ -24,7 +24,7 @@ public class AssignReqList extends ArrayList<AssignReq>{
     public boolean add(AssignReq req){
         // if a request has been made before for same applicant and same project
         if (req.getOfficer().assigned()){
-            System.out.println("Error: You have an active application");
+            System.out.println("Error: You have an active application at " + req.getOfficer().getProject());
             return false;
         }
         Officer officer = req.getOfficer();
@@ -36,11 +36,12 @@ public class AssignReqList extends ArrayList<AssignReq>{
                 return false;
             }
             else {
-                System.out.println("Eiyo come take a look at AssignReqList's add function there's something spooky happening here this if else case is never supposed to happen");
+                System.out.println("Error: You have already requested to join this project. Manager in charge: " + project.getManager());
                 return false;
             }
         }
         MainActivity.assignReqList.add(0,req);
+        System.out.println("Requested successfully");
         return true;
     }
 

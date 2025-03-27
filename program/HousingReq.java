@@ -1,6 +1,5 @@
 package program;
 
-import program.HousingReq.WITHDRAWAL_STATUS;
 import program.Project.ROOM_TYPE;
 
 /*

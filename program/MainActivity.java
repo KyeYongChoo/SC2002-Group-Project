@@ -42,7 +42,9 @@ public class MainActivity {
         Scanner sc = new Scanner(System.in);
         int choice = 0;
         do { 
-            System.out.println("\nYou are currently handling: " + officer.getProject());
+            if (officer.getProject() != null){
+                System.out.println("\nYou are currently handling: " + officer.getProject());
+            }
             System.out.println("\nWhat do you want to do: ");
             System.out.println("\n1. View list of projects open to your user group");
             System.out.println("2. Apply for a project");
@@ -164,10 +166,10 @@ public class MainActivity {
                     } while (targetProject == null);
 
                     assignReqList.add(officer,targetProject);
-                    System.out.println("Added successfully");
                     break;
             }
         }while (choice !=8);
+        sc.close();
     }
 
 
@@ -301,20 +303,21 @@ public class MainActivity {
 
     
     public static User LogIn(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("\nPlease Log In:");
-        for (int attemptsLeft =  4; attemptsLeft >= 0; attemptsLeft--){
-            String NRIC = User.inputNRIC();
-            System.out.println("Please enter User Password: ");
-            String password = sc.nextLine();
-            User client = applicantList.get(NRIC);
-            if (client == null) client = officerList.get(NRIC);
-            if (client == null) client = managerList.get(NRIC);
-            //if client does not exist or client's password incorrect
-            if (client != null && client.verifyPassword(password)){
-                return client;
+        try (Scanner sc = new Scanner(System.in)) {
+            System.out.println("\nPlease Log In:");
+            for (int attemptsLeft =  4; attemptsLeft >= 0; attemptsLeft--){
+                String NRIC = User.inputNRIC();
+                System.out.println("Please enter User Password: ");
+                String password = sc.nextLine();
+                User client = applicantList.get(NRIC);
+                if (client == null) client = officerList.get(NRIC);
+                if (client == null) client = managerList.get(NRIC);
+                //if client does not exist or client's password incorrect
+                if (client != null && client.verifyPassword(password)){
+                    return client;
+                }
+                System.out.println("Wrong Username or Password. Number of tries left: " + attemptsLeft);
             }
-            System.out.println("Wrong Username or Password. Number of tries left: " + attemptsLeft);
         }
         clearConsole();
         System.out.println("Too many login attempts. \nExiting...");
@@ -353,6 +356,7 @@ public class MainActivity {
         }
     }
 
+    @SuppressWarnings("resource")
     public static void initialise() throws Exception{
         System.out.println("\nInitialization: ");
         System.out.println("Enter user data");
@@ -365,6 +369,7 @@ public class MainActivity {
 
         Scanner sc = new Scanner(System.in).useDelimiter("\\A");
         String allInput = sc.hasNext() ? sc.next() : "";
+        sc.close();
 
         for (String line : allInput.split("\n")) {
             String[] fields = line.split("\t");
@@ -388,6 +393,7 @@ public class MainActivity {
 
         sc = new Scanner(System.in).useDelimiter("\\A");
         allInput = sc.hasNext() ? sc.next() : "";
+        sc.close();
 
         for (String line : allInput.split("\n")) {
             String[] fields = line.split("\t");
@@ -395,7 +401,9 @@ public class MainActivity {
                 // If in the first row full of column names or empty, skip
                 continue;
             }
-            if (fields.length != 5) throw new Exception ("Please enter all 5 fields");
+            if (fields.length != 5) {
+                throw new Exception ("Please enter all 5 fields");
+            }
             officerList.add(new Officer(fields[1].trim(), fields[0].trim(), Integer.parseInt(fields[2].trim()), fields[3].trim(), fields[4].trim()));
         }
 
@@ -411,6 +419,7 @@ public class MainActivity {
 
         sc = new Scanner(System.in).useDelimiter("\\A");
         allInput = sc.hasNext() ? sc.next() : "";
+        sc.close();
 
         for (String line : allInput.split("\n")) {
             String[] fields = line.split("\t");
@@ -431,17 +440,19 @@ public class MainActivity {
         System.out.println("4. Press Ctrl+V");
         System.out.println("5a. (If on Windows) Press Ctrl+Z then Enter");
         System.out.println("5b. (If on Linux/MacOS) Press Ctrl+D");
-
+        
         sc = new Scanner(System.in).useDelimiter("\\A");
         allInput = sc.hasNext() ? sc.next() : "";
-
+        sc.close();
         for (String line : allInput.split("\n")) {
             String[] fields = line.split("\t");
             if (fields[0].equals("Project Name") || fields[0].trim().isEmpty()){ 
                 // If in the first row full of column names or empty, skip
                 continue;
             }
-            if (fields.length != 13) throw new Exception ("Please enter all 5 fields");
+            if (fields.length != 13) {
+                throw new Exception ("Please enter all 5 fields");
+            }
             for (int i = 0; i < fields.length; i++) {
                 fields[i] = fields[i].trim();
             }
@@ -456,7 +467,7 @@ public class MainActivity {
             
         }
         clearConsole();
-        }
+    }
 
     public static User quickInitialise() throws Exception{
         // Applicants
@@ -480,7 +491,7 @@ public class MainActivity {
         projectList.add(new Project("Beta Breeze","Sembahwang","2","350000","3","450000","15/2/2025","20/3/2025","Michael","3","Daniel,Emily"));
 
         //Login
-        User client = officerList.get(0);
+        User client = officerList.get(2);
         return client;
 
     }

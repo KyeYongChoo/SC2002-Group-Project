@@ -32,7 +32,7 @@ public class User{
     }
 
     public boolean hasActiveApplication(){
-        return reqList.activeReq(this) != null;
+        return HousingReqList.activeReq(this) != null;
     }
 
     public User(String NRIC, String name, int age, String maritalStatus, String password) throws Exception{

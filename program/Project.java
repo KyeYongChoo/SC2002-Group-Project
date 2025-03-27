@@ -83,11 +83,12 @@ public class Project {
         }
 
         String choice;
+        Scanner sc = new Scanner(System.in);
         do { 
             System.out.println("Please toggle visibility of " + name + " (Y/N)" +"\nCurrent Visibility: " + (visibility?"Y":"N"));
-            Scanner sc = new Scanner(System.in);
             choice = sc.nextLine().toUpperCase();
         } while (!"Y".equals(choice) && !"N".equals(choice));
+        sc.close();
         this.visibility = ("Y".equals(choice));
     }
 
