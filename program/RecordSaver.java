@@ -52,7 +52,7 @@ public class RecordSaver {
             bw.write("Project Name,Neighborhood,Type 1,Number of units for Type 1,Selling price for Type 1,Type 2,Number of units for Type 2,Selling price for Type 2,Application opening date,Application closing date,Manager,Officer Slot,Officer\n");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
             for (Project p : Main.projectList) {
-                bw.write(String.join(",", new String[] { p.getName(), p.getNeighbourhood(), "2-Room", String.valueOf(p.getUnits2Room()), String.valueOf(p.getUnits2RoomPrice()), "3-Room", String.valueOf(p.getUnits3Room()), String.valueOf(p.getUnits3RoomPrice()), p.getOpenDate().format(formatter).toString(), p.getCloseDate().format(formatter).toString(), p.getManager().toString(), String.valueOf(p.getOfficerSlots()), p.getOfficers().toString() }));
+                bw.write(String.join(",", new String[] { p.getName(), p.getNeighbourhood(), "2-Room", String.valueOf(p.getUnits2Room()), String.valueOf(p.getUnits2RoomPrice()), "3-Room", String.valueOf(p.getUnits3Room()), String.valueOf(p.getUnits3RoomPrice()), p.getOpenDate().format(formatter).toString(), p.getCloseDate().format(formatter).toString(), p.getManager().toString(), String.valueOf(p.getOfficerSlots()),p.getOfficers().toString()}));
                 bw.newLine();
             }
         }
