@@ -3,11 +3,16 @@ package program;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import program.security.Password;
+
 public class Officer extends User {
     public Officer(String NRIC, String name, int age, String marital_status) throws Exception{
         super(NRIC, name, age, marital_status);
     }
     public Officer(String NRIC, String name, int age, String marital_status, String password) throws Exception{
+        super(NRIC, name, age, marital_status, password);
+    }
+    public Officer(String NRIC, String name, int age, String marital_status, Password password) throws Exception{
         super(NRIC, name, age, marital_status, password);
     }
 

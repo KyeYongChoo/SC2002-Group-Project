@@ -2,6 +2,8 @@ package program;
 
 import program.Project.ROOM_TYPE;
 import program.security.LoginHandler;
+import program.security.PasswordResetHandler;
+
 import java.util.Scanner;
 
 public class Main {
@@ -30,6 +32,8 @@ public class Main {
         else if (client instanceof Manager){
             managerChoices((Manager) client);
         }
+
+        RecordSaver.save();
     }
 
     public static void officerChoices(Officer officer) throws Exception{
@@ -46,12 +50,13 @@ public class Main {
             System.out.println("5. Create, view, delete enquiries");
             System.out.println("6. Register to join a project");
             System.out.println("7. Reply to enquiries regarding project " + officer.getProject());
-            System.out.println("8. Log out");
+            System.out.println("8. Change password");
+            System.out.println("9. Log out");
 
             try {
                 choice = Integer.parseInt(sc.nextLine());
                 clearConsole();
-                if (choice < 1 || choice > 6){
+                if (choice < 1 || choice > 9){
                     throw new Exception("Choice not in range");
                 }
             } catch (Exception e) {
@@ -160,8 +165,13 @@ public class Main {
 
                     assignReqList.add(officer,targetProject);
                     break;
+                case (8):
+                    System.out.println("Please enter your new password: ");
+                    userInput = sc.nextLine();
+                    PasswordResetHandler.resetPassword(officer, userInput);
+                    break;
             }
-        }while (choice !=8);
+        }while (choice !=9);
     }
 
 
@@ -177,12 +187,13 @@ public class Main {
             System.out.println("3. View project you have applied for, including application status");
             System.out.println("4. Request application withdrawal");
             System.out.println("5. Create, view, delete enquiries");
-            System.out.println("6. Log out");
+            System.out.println("6. Change password");
+            System.out.println("7. Log out");
 
             try {
                 choice = Integer.parseInt(sc.nextLine());
                 clearConsole();
-                if (choice < 1 || choice > 6){
+                if (choice < 1 || choice > 7){
                     throw new Exception("Choice not in range");
                 }
             } catch (Exception e) {
@@ -274,12 +285,17 @@ public class Main {
                             break;
                     }
                     break;
-                case (6): 
+                case (6):
+                    System.out.println("Please enter your new password: ");
+                    userInput = sc.nextLine();
+                    PasswordResetHandler.resetPassword(client, userInput);
+                    break;
+                case (7): 
                     break;
             }
             System.out.println("Press enter to continue");
             sc.nextLine();
-        } while (choice != 6);
+        } while (choice != 7);
     }
     
     // Open up a new page by clearing Console

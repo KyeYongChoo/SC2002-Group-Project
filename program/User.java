@@ -5,8 +5,6 @@ import java.util.Scanner;
 import program.security.Password;
 
 public class User{
-    private Scanner sc = new Scanner(System.in);
-    private boolean isLoggedIn = false; 
     private String name;
     private String userId;
     private Password password = new Password(); 
@@ -44,9 +42,15 @@ public class User{
         
     }
 
-    public User(String NRIC, String name, int age, String maritalStatus, String password) throws Exception{
+    public User(String NRIC, String name, int age, String maritalStatus, String passwordHash) throws Exception{
         this(NRIC, name, age, maritalStatus);
-        this.password = new Password(password);
+        this.password = new Password(passwordHash);
+        
+    }
+
+    public User(String NRIC, String name, int age, String maritalStatus, Password password) throws Exception{
+        this(NRIC, name, age, maritalStatus);
+        this.password = password;
         
     }
 
@@ -160,4 +164,7 @@ public class User{
         }
     }
     
+    public void setPassword(Password password) {
+        this.password = password;
+    }
 }

@@ -14,7 +14,12 @@ public class Password {
         hash = HashingUtils.hash(defaultPassword + salt + Pepper.getPepper());
     }
 
-    public String getHash(){
+    public Password(String hash, String salt) {
+        this.hash = hash;
+        this.salt = salt;
+    }
+
+    public String getHash() {
         return hash;
     }
 

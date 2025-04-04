@@ -49,9 +49,12 @@ public class UserList extends ArrayList<User> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("\"");
         for (User user : this) {
-            sb.append(user.toString()).append("\n");
+            sb.append(user.toString());
+            if (! user.equals(this.get(this.size() - 1))) sb.append(",");
         }
+        sb.append("\"");
         return sb.toString();
     }
     
