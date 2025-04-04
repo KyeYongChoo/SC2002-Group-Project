@@ -12,17 +12,17 @@ public class UserList extends ArrayList<User> {
     }
     public User get(String UserId, boolean searchAllLists){
         if (searchAllLists){
-            for (User user : MainActivity.managerList){
+            for (User user : Main.managerList){
                 if (user.getUserId().equals(UserId)){
                     return user;
                 }
             }
-            for (User user : MainActivity.officerList){
+            for (User user : Main.officerList){
                 if (user.getUserId().equals(UserId)){
                     return user;
                 }
             }
-            for (User user : MainActivity.applicantList){
+            for (User user : Main.applicantList){
                 if (user.getUserId().equals(UserId)){
                     return user;
                 }
@@ -44,6 +44,15 @@ public class UserList extends ArrayList<User> {
             }
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (User user : this) {
+            sb.append(user.toString()).append("\n");
+        }
+        return sb.toString();
     }
     
 }

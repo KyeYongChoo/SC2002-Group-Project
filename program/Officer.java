@@ -4,13 +4,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Officer extends User {
+    public Officer(String NRIC, String name, int age, String marital_status) throws Exception{
+        super(NRIC, name, age, marital_status);
+    }
     public Officer(String NRIC, String name, int age, String marital_status, String password) throws Exception{
         super(NRIC, name, age, marital_status, password);
     }
 
     public AssignReqList getAssignReqList(){
         AssignReqList reqList = new AssignReqList();
-        for (AssignReq req : MainActivity.assignReqList){
+        for (AssignReq req : Main.assignReqList){
             if (req.getOfficer() == this){
                 reqList.add(req);
             }
@@ -22,7 +25,7 @@ public class Officer extends User {
     }
 
     public Project getProject(){
-        for (Project project : MainActivity.projectList){
+        for (Project project : Main.projectList){
             if (project.getOfficers().contains(this)){
                 return project;
             }

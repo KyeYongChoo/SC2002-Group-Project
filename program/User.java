@@ -1,14 +1,15 @@
 package program;
 
-import program.User.MARITAL_STATUS;
 import java.util.Scanner;
+
+import program.security.Password;
 
 public class User{
     private Scanner sc = new Scanner(System.in);
     private boolean isLoggedIn = false; 
     private String name;
     private String userId;
-    private String password = "password";
+    private Password password = new Password(); 
     private int age;
     private MARITAL_STATUS maritalStatus;
     private HousingReqList reqList = new HousingReqList();
@@ -35,12 +36,17 @@ public class User{
         return HousingReqList.activeReq(this) != null;
     }
 
-    public User(String NRIC, String name, int age, String maritalStatus, String password) throws Exception{
+    public User(String NRIC, String name, int age, String maritalStatus) throws Exception{
         this.userId = validateNRIC(NRIC);
         this.name = name;
         this.age = validateAge(age);
         this.maritalStatus = validateMaritalStatus(maritalStatus);
-        this.password = password; 
+        
+    }
+
+    public User(String NRIC, String name, int age, String maritalStatus, String password) throws Exception{
+        this(NRIC, name, age, maritalStatus);
+        this.password = new Password(password);
         
     }
 
@@ -52,13 +58,8 @@ public class User{
         this.name = name;
     }
 
-    public void setPassword(String newPassword){
-        password = newPassword;
-    }
-
-    public boolean verifyPassword(String password){
-        if (password.equals(this.password)) return true;
-        else return false;
+    public Password getPassword(){
+        return password;
     }
 
     public MARITAL_STATUS getMaritalStatus(){
