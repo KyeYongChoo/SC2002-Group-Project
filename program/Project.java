@@ -246,6 +246,17 @@ public class Project {
             }  
     }
 
+    public boolean isVisibleTo(User user) {
+        LocalDate today = LocalDate.now();
+        boolean inCharge = (user instanceof Manager && user.equals(this.manager)) || this.projOfficerList.contains(user);
+        boolean applicationOpen = visibility && (today.isEqual(openDate) || today.isAfter(openDate)) && (today.isBefore(closeDate) || today.isEqual(closeDate));
+        return applicationOpen || inCharge;
+    }
+
+    public boolean canDeleteEnquiry(Enquiry enquiry) {
+        return enquiry.getReplies().isEmpty();
+    }
+    
     public void setReqList(HousingReqList reqList){
         this.reqList = reqList;
     }
