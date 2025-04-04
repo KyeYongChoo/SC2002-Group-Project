@@ -3,6 +3,7 @@ package program;
 import java.io.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import program.security.Password;
 
 public class DataInitializer {
     public static void initialise() throws Exception {
@@ -30,14 +31,23 @@ public class DataInitializer {
                     continue;
                 }
 
-                if (fields.length != 5) {
+                if (fields.length < 5 || fields.length > 6) { // Expecting 5 or 6 fields
                     throw new Exception("Invalid CSV format in " + fileName);
                 }
 
+                Password password;
+                if (fields.length == 6) {
+                    // If salt is provided
+                    password = new Password(fields[4], fields[5]);
+                } else {
+                    // If salt is missing, generate a new salt
+                    password = new Password(fields[4]);
+                }
+
                 switch (type) {
-                    case "Applicant" -> Main.applicantList.add(new Applicant(fields[1], fields[0], Integer.parseInt(fields[2]), fields[3], fields[4]));
-                    case "Officer" -> Main.officerList.add(new Officer(fields[1], fields[0], Integer.parseInt(fields[2]), fields[3], fields[4]));
-                    case "Manager" -> Main.managerList.add(new Manager(fields[1], fields[0], Integer.parseInt(fields[2]), fields[3], fields[4]));
+                    case "Applicant" -> Main.applicantList.add(new Applicant(fields[1], fields[0], Integer.parseInt(fields[2]), fields[3], password));
+                    case "Officer" -> Main.officerList.add(new Officer(fields[1], fields[0], Integer.parseInt(fields[2]), fields[3], password));
+                    case "Manager" -> Main.managerList.add(new Manager(fields[1], fields[0], Integer.parseInt(fields[2]), fields[3], password));
                 }
             }
         } catch (IOException e) {
@@ -85,48 +95,6 @@ public class DataInitializer {
             }
         } catch (IOException e) {
             throw new Exception("Error reading " + fileName, e);
-        }
-    }
-
-    public static void writeCSV(String fileName, List<?> list) throws IOException {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
-            if (list.isEmpty()) return;
-
-            Object firstItem = list.get(0);
-
-            if (firstItem instanceof Applicant) {
-                bw.write("Name,NRIC,Age,Marital Status,Password\n");
-                for (Object obj : list) {
-                    Applicant a = (Applicant) obj;
-                    bw.write(a.getName() + "," + a.getUserId() + "," + a.getAge() + "," + a.getMaritalStatus() + "," + a.getPassword() + "\n");
-                }
-            } 
-            else if (firstItem instanceof Officer) {
-                bw.write("Name,NRIC,Age,Marital Status,Password\n");
-                for (Object obj : list) {
-                    Officer o = (Officer) obj;
-                    bw.write(o.getName() + "," + o.getUserId() + "," + o.getAge() + "," + o.getMaritalStatus() + "," + o.getPassword() + "\"\n");
-                }
-            } 
-            else if (firstItem instanceof Manager) {
-                bw.write("Name,NRIC,Age,Marital Status,Password\n");
-                for (Object obj : list) {
-                    Manager m = (Manager) obj;
-                    bw.write(m.getName() + "," + m.getUserId() + "," + m.getAge() + "," + m.getMaritalStatus() + "," + m.getPassword() + "\n");
-                }
-            }
-        }
-    }
-    
-
-    public static void writeProjectsCSV(String fileName) throws IOException {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
-            bw.write("Project Name,Neighborhood,Type 1,Number of units for Type 1,Selling price for Type 1,Type 2,Number of units for Type 2,Selling price for Type 2,Application opening date,Application closing date,Manager,Officer Slot,Officer\n");
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-            for (Project p : Main.projectList) {
-                bw.write(String.join(",", new String[] { p.getName(), p.getNeighbourhood(), "2-Room", String.valueOf(p.getUnits2Room()), String.valueOf(p.getUnits2RoomPrice()), "3-Room", String.valueOf(p.getUnits3Room()), String.valueOf(p.getUnits3RoomPrice()), p.getOpenDate().format(formatter).toString(), p.getCloseDate().format(formatter).toString(), p.getManager().toString(), String.valueOf(p.getOfficerSlots()), p.getOfficers().toString() }));
-                bw.newLine();
-            }
         }
     }
 }

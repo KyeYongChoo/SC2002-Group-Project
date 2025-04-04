@@ -1,5 +1,7 @@
 package program;
 
+import program.security.Password;
+
 public class Manager extends Officer {
     public Manager(String NRIC, String name, int age, String marital_status, String password) throws Exception{
         super(NRIC, name, age, marital_status, password);
@@ -7,6 +9,10 @@ public class Manager extends Officer {
     
     public Manager(String NRIC, String name, int age, String marital_status) throws Exception{
         super(NRIC, name, age, marital_status);
+    }
+    
+    public Manager(String NRIC, String name, int age, String marital_status, Password password) throws Exception{
+        super(NRIC, name, age, marital_status, password);
     }
 
     // needs implementation, I put like this for now to stop it from flagging up as an error 
