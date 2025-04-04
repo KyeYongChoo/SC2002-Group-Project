@@ -1,0 +1,15 @@
+{
+    "type": "java",
+    "request": "launch",
+    "mainClass": "program.Main",
+    "cwd": "${workspaceFolder}",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "program.Main",
+            "projectName": "SC2002-Group-Project_7278bf8f"
+        }
+    ]
+}

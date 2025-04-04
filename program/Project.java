@@ -54,7 +54,7 @@ public class Project {
         this.openDate = LocalDate.parse(openDate, formatter);
         this.closeDate = LocalDate.parse(closeDate, formatter);
         // Holy smokes upcasting Downcasting 101 down here
-        this.manager = (Manager) MainActivity.managerList.getByName(manager);
+        this.manager = (Manager) Main.managerList.getByName(manager);
         if(this.manager == null) throw new Exception("Manager not Found. Manager field for reference: "+ manager);
         try {
             this.officerSlots = Integer.parseInt(officerSlots);
@@ -63,7 +63,7 @@ public class Project {
         }
         Officer officer;
         for (String officerStr : OfficerLstStrInput.split(",")){
-            officer = (Officer) MainActivity.officerList.getByName(officerStr);
+            officer = (Officer) Main.officerList.getByName(officerStr);
             if (officer == null) throw new Exception("Officer not found. Officer for reference: "+ officer);
             projOfficerList.add(officer);
         }   
@@ -118,10 +118,10 @@ public class Project {
                 firstLoop = false;
                 if (client.see2Rooms()){
                     table3RoomFormatting = false;
-                    MainActivity.updateTableRef(table3RoomFormatting);
-                    System.out.printf(MainActivity.formatTableRef, (Object[])MainActivity.tableHeaders);
+                    Main.updateTableRef(table3RoomFormatting);
+                    System.out.printf(Main.formatTableRef, (Object[])Main.tableHeaders);
                     System.out.printf(
-                        MainActivity.formatTableRef,
+                        Main.formatTableRef,
                         name,
                         neighbourhood,
                         units2room,
@@ -134,10 +134,10 @@ public class Project {
                 }
                 else if (client.see3Rooms()){
                     table3RoomFormatting = true;
-                    MainActivity.updateTableRef(table3RoomFormatting);
-                    System.out.printf(MainActivity.formatTableRef, (Object[])MainActivity.tableHeaders);
+                    Main.updateTableRef(table3RoomFormatting);
+                    System.out.printf(Main.formatTableRef, (Object[])Main.tableHeaders);
                     System.out.printf(
-                        MainActivity.formatTableRef,
+                        Main.formatTableRef,
                         name,
                         neighbourhood,
                         units2room,
@@ -155,8 +155,8 @@ public class Project {
                 }
             }
             else{
-                if (table3RoomFormatting) System.out.printf(MainActivity.formatTableRef,"", "", "", "", "", "", "", "", "", "", officer);
-                else System.out.printf(MainActivity.formatTableRef,"", "", "", "", "", "", "", "", officer);
+                if (table3RoomFormatting) System.out.printf(Main.formatTableRef,"", "", "", "", "", "", "", "", "", "", officer);
+                else System.out.printf(Main.formatTableRef,"", "", "", "", "", "", "", "", officer);
               }
             }  
     }
@@ -165,16 +165,16 @@ public class Project {
         if (this.visibility == false && !projOfficerList.contains(officer)) return;
         boolean table3RoomFormatting;
         table3RoomFormatting = true;
-        MainActivity.updateTableRef(table3RoomFormatting);
+        Main.updateTableRef(table3RoomFormatting);
         boolean firstLoop = true;
         for (User projOfficer : projOfficerList){
             projOfficer = (Officer) projOfficer;
             if (firstLoop){
                 firstLoop = false;
                 if (projOfficerList.contains(officer) || officer.see3Rooms()){
-                    System.out.printf(MainActivity.formatTableRef, (Object[])MainActivity.tableHeaders);
+                    System.out.printf(Main.formatTableRef, (Object[])Main.tableHeaders);
                     System.out.printf(
-                        MainActivity.formatTableRef,
+                        Main.formatTableRef,
                         name,
                         neighbourhood,
                         units2room,
@@ -188,9 +188,9 @@ public class Project {
                         projOfficer);
                 }
                 else if (officer.see2Rooms()){
-                    System.out.printf(MainActivity.formatTableRef, (Object[])MainActivity.tableHeaders);
+                    System.out.printf(Main.formatTableRef, (Object[])Main.tableHeaders);
                     System.out.printf(
-                        MainActivity.formatTableRef,
+                        Main.formatTableRef,
                         name,
                         neighbourhood,
                         units2room,
@@ -209,7 +209,7 @@ public class Project {
             }
             else{
                 System.out.printf(
-                    MainActivity.formatTableRef,"", "", "", "", "", "", "", "", "", "", projOfficer);
+                    Main.formatTableRef,"", "", "", "", "", "", "", "", "", "", projOfficer);
               }
             }  
     }
@@ -217,16 +217,16 @@ public class Project {
     public void printVisible(Manager manager){
         boolean table3RoomFormatting;
         table3RoomFormatting = true;
-        MainActivity.updateTableRef(table3RoomFormatting);
+        Main.updateTableRef(table3RoomFormatting);
 
         boolean firstLoop = true;
         for (User officer : projOfficerList){
             officer = (Officer) officer;
             if (firstLoop){
                 firstLoop = false;
-                System.out.printf(MainActivity.formatTableRef, (Object[])MainActivity.tableHeaders);
+                System.out.printf(Main.formatTableRef, (Object[])Main.tableHeaders);
                 System.out.printf(
-                    MainActivity.formatTableRef,
+                    Main.formatTableRef,
                     name,
                     neighbourhood,
                     units2room,
@@ -241,7 +241,7 @@ public class Project {
             }
             else{
                 System.out.printf(
-                    MainActivity.formatTableRef,"", "", "", "", "", "", "", "", "", officer);
+                    Main.formatTableRef,"", "", "", "", "", "", "", "", "", officer);
               }
             }  
     }
