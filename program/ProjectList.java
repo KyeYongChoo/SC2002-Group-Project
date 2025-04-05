@@ -13,7 +13,9 @@ public class ProjectList extends ArrayList<Project> {
     }
 
     public static void printVisible(User client){
-        Main.projectList.forEach(project -> project.printVisible(client));
+    Main.projectList.stream()
+        .filter(project -> project.isVisibleTo(client))
+        .forEach(project -> System.out.println(project.getName()));
     }
     
 }
