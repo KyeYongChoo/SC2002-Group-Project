@@ -12,7 +12,7 @@ public class AssignReqList extends ArrayList<AssignReq>{
     public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     public static AssignReq get(Officer officer, Project project){
-        for (AssignReq assignReq : MainActivity.assignReqList){
+        for (AssignReq assignReq : Main.assignReqList){
             if (assignReq.getOfficer() == officer && assignReq.getProject() == project){
                 return assignReq;
             }
@@ -40,7 +40,7 @@ public class AssignReqList extends ArrayList<AssignReq>{
                 return false;
             }
         }
-        MainActivity.assignReqList.add(0,req);
+        Main.assignReqList.add(0,req);
         System.out.println("Requested successfully");
         return true;
     }
@@ -69,7 +69,7 @@ public class AssignReqList extends ArrayList<AssignReq>{
             System.out.println("Error: no Enquiries found");
             return;
         }
-        MainActivity.enquiryList.remove(req);
+        Main.enquiryList.remove(req);
         System.out.println("\nRemoval Successful");
     }
 }

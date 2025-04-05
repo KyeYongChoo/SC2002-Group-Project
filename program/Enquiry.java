@@ -38,6 +38,17 @@ public class Enquiry extends ArrayList<Message>{
     public LocalDateTime getDateCreated(){
         return dateCreated;
     }
+
+    public ArrayList<Message> getReplies() {
+        ArrayList<Message> replies = new ArrayList<>();
+        for (Message m : this) {
+            if (!(m.getSender().equals(applicant))) {
+                replies.add(m);
+            }
+        }
+        return replies;
+    }
+    
     @Override
     public String toString(){
         return Integer.toString(ticketId);

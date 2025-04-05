@@ -15,16 +15,16 @@ public class EnquiryList extends ArrayList<Enquiry>{
         System.out.println("Please choose project to enquire about: ");
         ProjectList.printVisible(client);
         Project targetProject = null;
-        targetProject = MainActivity.projectList.get(sc.nextLine());
+        targetProject = Main.projectList.get(sc.nextLine());
         while(targetProject == null){
             System.out.println("Please input the project name only: ");
-            targetProject = MainActivity.projectList.get(sc.nextLine());
+            targetProject = Main.projectList.get(sc.nextLine());
         }
         return get(client,targetProject);
     }
     public static Enquiry get(User client, Project project){
         Enquiry targetEnquiry = null;
-        for (Enquiry enquiry : MainActivity.enquiryList){
+        for (Enquiry enquiry : Main.enquiryList){
             if (enquiry.getUser() == client && enquiry.getProject() == project){
                 if (targetEnquiry == null){
                     targetEnquiry = enquiry;
@@ -40,7 +40,7 @@ public class EnquiryList extends ArrayList<Enquiry>{
 
     public static Enquiry getDisambiguation(User client, Project project){
         EnquiryList enqList = new EnquiryList();
-        for (Enquiry enquiry : MainActivity.enquiryList){
+        for (Enquiry enquiry : Main.enquiryList){
             if (enquiry.getUser() == client && enquiry.getProject() == project){
                 enqList.superAdd(enquiry);
             }
@@ -73,7 +73,7 @@ public class EnquiryList extends ArrayList<Enquiry>{
         // 2. Newest enquiries at the front
         enquiry.getProject().getEnquiryList().add(0,enquiry);
         enquiry.getUser().getEnquiryList().add(0,enquiry);
-        MainActivity.enquiryList.add(0,enquiry);
+        Main.enquiryList.add(0,enquiry);
         return true;
     }
 
@@ -109,7 +109,7 @@ public class EnquiryList extends ArrayList<Enquiry>{
         }
         enq.getProject().getEnquiryList().remove(enq);
         enq.getUser().getEnquiryList().remove(enq);
-        MainActivity.enquiryList.remove(enq);
+        Main.enquiryList.remove(enq);
         System.out.println("\nRemoval Successful");
     }
 

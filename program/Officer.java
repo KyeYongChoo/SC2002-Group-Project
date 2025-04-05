@@ -6,15 +6,22 @@ import program.Project.ROOM_TYPE;
 import program.HousingReq.REQUEST_STATUS;
 import program.HousingReqList;
 import program.AssignReq.APPLICATION_STATUS;
+import program.security.Password;
 
 public class Officer extends Applicant {
+    public Officer(String NRIC, String name, int age, String marital_status) throws Exception{
+        super(NRIC, name, age, marital_status);
+    }
     public Officer(String NRIC, String name, int age, String marital_status, String password) throws Exception{
+        super(NRIC, name, age, marital_status, password);
+    }
+    public Officer(String NRIC, String name, int age, String marital_status, Password password) throws Exception{
         super(NRIC, name, age, marital_status, password);
     }
 
     public AssignReqList getAssignReqList(){
         AssignReqList reqList = new AssignReqList();
-        for (AssignReq req : MainActivity.assignReqList){
+        for (AssignReq req : Main.assignReqList){
             if (req.getOfficer() == this){
                 reqList.add(req);
             }
@@ -26,7 +33,7 @@ public class Officer extends Applicant {
     }
 
     public Project getProject(){
-        for (Project project : MainActivity.projectList){
+        for (Project project : Main.projectList){
             if (project.getOfficers().contains(this)){
                 return project;
             }
