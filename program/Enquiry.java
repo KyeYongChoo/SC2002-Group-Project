@@ -59,6 +59,10 @@ public class Enquiry extends ArrayList<Message>{
         m.setText(newText);
         return true;
     }
+
+    public boolean isStaffReplyPresent() {
+        return !getReplies().isEmpty();
+    }
     
     @Override
     public String toString(){
