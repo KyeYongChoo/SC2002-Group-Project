@@ -49,6 +49,21 @@ public class Enquiry extends ArrayList<Message>{
         return replies;
     }
     
+    public boolean editMessage(int index, String newText) {
+        if (index < 0 || index >= this.size()) return false;
+        if (isStaffReplyPresent()) return false;
+
+        Message m = this.get(index);
+        if (!m.getSender().equals(applicant)) return false;
+
+        m.setText(newText);
+        return true;
+    }
+
+    public boolean isStaffReplyPresent() {
+        return !getReplies().isEmpty();
+    }
+    
     @Override
     public String toString(){
         return Integer.toString(ticketId);
