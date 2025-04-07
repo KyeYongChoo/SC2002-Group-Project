@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class Message {
     private final User client;
-    private final String text;
+    private String text;
     private final LocalDateTime timeStamp;
 
     public Message(User client, String text){
@@ -22,5 +22,9 @@ public class Message {
     }
     public LocalDateTime getTimeStamp(){
         return timeStamp;
+    }
+
+    public void setText(String newText) {
+        this.text = newText;
     }
 }
