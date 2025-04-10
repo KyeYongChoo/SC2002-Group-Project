@@ -166,8 +166,8 @@ public class Officer extends Applicant {
             System.out.println("You do not handle this project, cannot reply to inquiries.");
             return;
         }
-        enquiry.addReply("Officer " + this.getName() + " replies: " + reply);
-        System.out.println("Reply added to Enquiry ID: " + enquiry.getEnquiryID());
+        enquiry.add(this, reply);
+        System.out.println("Reply added to Enquiry ID: " + enquiry.getId());
     }
 
      /**
