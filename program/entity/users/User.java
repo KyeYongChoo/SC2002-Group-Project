@@ -1,8 +1,10 @@
-package program;
+package program.entity.users;
 
 import java.util.Scanner;
 
-import program.security.Password;
+import program.control.interclass.EnquiryList;
+import program.control.interclass.HousingReqList;
+import program.control.security.Password;
 
 public class User{
     private String name;

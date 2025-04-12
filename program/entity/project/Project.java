@@ -1,7 +1,17 @@
-package program;
+package program.entity.project;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
+
+import program.boundary.AppScanner;
+import program.control.Main;
+import program.control.interclass.Enquiry;
+import program.control.interclass.EnquiryList;
+import program.control.interclass.HousingReqList;
+import program.entity.users.Manager;
+import program.entity.users.Officer;
+import program.entity.users.User;
+import program.entity.users.UserList;
 
 public class Project {
     private String name;
@@ -83,7 +93,7 @@ public class Project {
         }
 
         String choice;
-        Scanner sc = new Scanner(System.in);
+        Scanner sc = AppScanner.getInstance();
         do { 
             System.out.println("Please toggle visibility of " + name + " (Y/N)" +"\nCurrent Visibility: " + (visibility?"Y":"N"));
             choice = sc.nextLine().toUpperCase();

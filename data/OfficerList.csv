@@ -1,4 +1,4 @@
-﻿Name,NRIC,Age,Marital Status,Password
-Daniel,T2109876H,36,Single,password
-Emily,S6543210I,28,Single,password
-David,T1234567J,29,Married,password
+Name,NRIC,Age,Marital Status,Password,Salt
+Daniel,T2109876H,36,Single,2f148d83284002812af8d60273de9b962db1ddcc286f3e7c4de6fbccef0f9ec8,1002
+Emily,S6543210I,28,Single,d9b40912a23d83e773059b0b1a911c3e853260fecbc715cbf5a1349d0fe9d238,943
+David,T1234567J,29,Married,4ae74dd8cfd75fa024692b3a77304d8d8f217da2f24bef67c9b18428c9925e53,529

@@ -1,8 +1,12 @@
-package program;
+package program.control.interclass;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+
+import program.entity.project.Project;
+import program.entity.users.Manager;
+import program.entity.users.Officer;
 
 public class AssignReq {
     private LocalDate startDate;

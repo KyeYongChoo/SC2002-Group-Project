@@ -1,12 +1,19 @@
-package program;
+package program.entity.users;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import program.Project.ROOM_TYPE;
-import program.HousingReq.REQUEST_STATUS;
-import program.HousingReqList;
-import program.AssignReq.APPLICATION_STATUS;
-import program.security.Password;
+
+import program.control.Main;
+import program.control.interclass.AssignReq;
+import program.control.interclass.AssignReqList;
+import program.control.interclass.Enquiry;
+import program.control.interclass.HousingReq;
+import program.control.interclass.HousingReqList;
+import program.control.interclass.AssignReq.APPLICATION_STATUS;
+import program.control.interclass.HousingReq.REQUEST_STATUS;
+import program.control.security.Password;
+import program.entity.project.Project;
+import program.entity.project.Project.ROOM_TYPE;
 
 public class Officer extends Applicant {
     public Officer(String NRIC, String name, int age, String marital_status) throws Exception{

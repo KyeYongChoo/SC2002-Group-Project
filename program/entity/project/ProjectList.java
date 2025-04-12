@@ -1,6 +1,9 @@
-package program;
+package program.entity.project;
 
 import java.util.ArrayList;
+
+import program.control.Main;
+import program.entity.users.User;
 
 public class ProjectList extends ArrayList<Project> {
     public Project get(String name){
@@ -13,9 +16,9 @@ public class ProjectList extends ArrayList<Project> {
     }
 
     public static void printVisible(User client){
-    Main.projectList.stream()
-        .filter(project -> project.isVisibleTo(client))
-        .forEach(project -> System.out.println(project.getName()));
+        Main.projectList.stream()
+            .filter(project -> project.isVisibleTo(client))
+            .forEach(project -> project.printVisible(client));
     }
     
 }

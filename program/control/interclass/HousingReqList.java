@@ -1,8 +1,13 @@
-package program;
+package program.control.interclass;
 
-import program.HousingReq.REQUEST_STATUS;
-import program.HousingReq.WITHDRAWAL_STATUS;
-import program.Project.ROOM_TYPE;
+import program.control.Main;
+import program.control.interclass.HousingReq.REQUEST_STATUS;
+import program.control.interclass.HousingReq.WITHDRAWAL_STATUS;
+import program.entity.project.Project;
+import program.entity.project.Project.ROOM_TYPE;
+import program.entity.users.Manager;
+import program.entity.users.User;
+
 import java.util.ArrayList;
 /* There's gonna be 3 types of request lists: 
 * 1. As every user's attribute: Says which requests they are involved in

@@ -1,4 +1,4 @@
-package program;
+package program.entity.caching;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -6,17 +6,26 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import program.control.Main;
+import program.control.interclass.Enquiry;
+import program.control.interclass.Message;
+import program.entity.project.Project;
+import program.entity.users.Applicant;
+import program.entity.users.Manager;
+import program.entity.users.Officer;
+
 public class RecordSaver {
     public static void save() throws Exception {
-        writeCSV("ApplicantList.csv", Main.applicantList);
-        writeCSV("OfficerList.csv", Main.officerList);
-        writeCSV("ManagerList.csv", Main.managerList);
+        writeUserCSV("ApplicantList.csv", Main.applicantList);
+        writeUserCSV("OfficerList.csv", Main.officerList);
+        writeUserCSV("ManagerList.csv", Main.managerList);
         writeProjectsCSV("ProjectList.csv");
+        writeEnquiryCSV();
 
         System.out.println("All data successfully saved to CSV files.");
     }
 
-    public static void writeCSV(String fileName, List<?> list) throws IOException {
+    public static void writeUserCSV(String fileName, List<?> list) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("data/" + fileName))) {
             if (list.isEmpty()) return;
 
@@ -54,6 +63,31 @@ public class RecordSaver {
             for (Project p : Main.projectList) {
                 bw.write(String.join(",", new String[] { p.getName(), p.getNeighbourhood(), "2-Room", String.valueOf(p.getUnits2Room()), String.valueOf(p.getUnits2RoomPrice()), "3-Room", String.valueOf(p.getUnits3Room()), String.valueOf(p.getUnits3RoomPrice()), p.getOpenDate().format(formatter).toString(), p.getCloseDate().format(formatter).toString(), p.getManager().toString(), String.valueOf(p.getOfficerSlots()),p.getOfficers().toString()}));
                 bw.newLine();
+            }
+        }
+    }
+
+    public static void writeEnquiryCSV() throws IOException {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("data/EnquiryList.csv"))) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy HH:mm:ss");
+            bw.write("Enquiry ID|User ID|Project ID|Date Created\n"); 
+            for (Enquiry e : Main.enquiryList) {
+                bw.write(String.join("|", new String[] { 
+                    String.valueOf(e.getId()), 
+                    e.getUser().getUserId(), 
+                    e.getProject().getName(), 
+                    e.getDateCreated().format(formatter).toString() 
+                }));
+                bw.newLine();
+                for (Message m : e) {
+                    bw.write(String.join("|", new String[] { 
+                        "MESSAGE",
+                        m.getUser().getUserId(), 
+                        m.getTimeStamp().format(formatter).toString(), 
+                        m.getText() 
+                    }));
+                    bw.newLine();
+                }
             }
         }
     }

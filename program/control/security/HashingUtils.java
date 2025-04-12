@@ -1,4 +1,4 @@
-package program.security;
+package program.control.security;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

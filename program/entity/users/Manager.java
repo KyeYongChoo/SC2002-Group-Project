@@ -1,6 +1,6 @@
-package program;
+package program.entity.users;
 
-import program.security.Password;
+import program.control.security.Password;
 
 public class Manager extends Officer {
     public Manager(String NRIC, String name, int age, String marital_status, String password) throws Exception{

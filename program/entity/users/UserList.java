@@ -1,6 +1,8 @@
-package program;
+package program.entity.users;
 
 import java.util.ArrayList;
+
+import program.control.Main;
 
 public class UserList extends ArrayList<User> {
     /*

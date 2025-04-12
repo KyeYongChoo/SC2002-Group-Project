@@ -1,10 +1,13 @@
-package program.security;
+package program.control.security;
 
 import java.util.Scanner;
-import program.User;
+
+import program.boundary.AppScanner;
+import program.control.UserFetcher;
+import program.entity.users.User;
 
 public class LoginHandler {
-    private static Scanner sc = new Scanner(System.in);
+    private static Scanner sc = AppScanner.getInstance();
 
     public static User loginUser(){
         System.out.println("\nPlease Log In:");

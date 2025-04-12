@@ -1,13 +1,27 @@
-package program;
+package program.control;
 
-import program.Project.ROOM_TYPE;
-import program.security.LoginHandler;
-import program.security.PasswordResetHandler;
+import program.boundary.AppScanner;
+import program.boundary.security.PasswordResetHandler;
+import program.control.interclass.AssignReqList;
+import program.control.interclass.Enquiry;
+import program.control.interclass.EnquiryList;
+import program.control.interclass.HousingReqList;
+import program.control.security.LoginHandler;
+import program.entity.caching.DataInitializer;
+import program.entity.caching.RecordSaver;
+import program.entity.project.Project;
+import program.entity.project.ProjectList;
+import program.entity.project.Project.ROOM_TYPE;
+import program.entity.users.Applicant;
+import program.entity.users.Manager;
+import program.entity.users.Officer;
+import program.entity.users.User;
+import program.entity.users.UserList;
 
 import java.util.Scanner;
 
 public class Main {
-    private static Scanner sc = new Scanner(System.in);
+    private static Scanner sc = AppScanner.getInstance();
 
     // theres gonna be a whole lot of polymorphism up next folks for buckle up 
     public static UserList applicantList = new UserList();
@@ -23,14 +37,15 @@ public class Main {
         User client = LoginHandler.loginUser();
         // Remember to allow user to log out and log in many times
 
-        if (client instanceof Applicant){
-            applicantChoices((Applicant) client);
+        
+        if (client instanceof Manager){
+            managerChoices((Manager) client);
         }
         else if (client instanceof Officer){
             officerChoices((Officer) client);
         }
-        else if (client instanceof Manager){
-            managerChoices((Manager) client);
+        else if (client instanceof Applicant){
+            applicantChoices((Applicant) client);
         }
 
         RecordSaver.save();
@@ -71,7 +86,7 @@ public class Main {
                     ProjectList.printVisible(officer);
                     break;
                 case (2):
-                    if (!officer.see2Rooms() && officer.see3Rooms()){
+                    if (!officer.see2Rooms() && !officer.see3Rooms()){
                         System.out.println("Sorry, you are not eligible to apply for any kind of HDB");
                         break;
                     }
@@ -127,8 +142,9 @@ public class Main {
                         System.out.println("1. Create enquiry");
                         System.out.println("2. View enquiry");
                         System.out.println("3. Delete enquiry");
+                        System.out.println("4. Reply to enquiry");
                         userInput = sc.nextLine();
-                    } while (!"1".equals(userInput) && !"2".equals(userInput) && !"3".equals(userInput));
+                    } while (!"1".equals(userInput) && !"2".equals(userInput) && !"3".equals(userInput) && !"4".equals(userInput));
                     clearConsole();
                     switch (userInput){
                         case ("1"):
@@ -149,6 +165,13 @@ public class Main {
                         case ("3"):
                             Enquiry targetEnquiry = EnquiryList.selectEnquiry(officer);
                             EnquiryList.delete(targetEnquiry);
+                            break;
+                        case ("4"):
+                            targetEnquiry = EnquiryList.selectEnquiry(officer.getProject());
+                            System.out.println("Please enter your reply: ");
+                            userInput = sc.nextLine();
+                            targetEnquiry.add(officer, userInput);
+                            System.out.println("Reply saved. \nTime: " + targetEnquiry.getLast().getTimeStamp() + "\nMessage: " + targetEnquiry.getLast().getText());
                             break;
                     }
                     break;
@@ -208,7 +231,7 @@ public class Main {
                     ProjectList.printVisible(client);
                     break;
                 case (2):
-                    if (!client.see2Rooms() && client.see3Rooms()){
+                    if (!client.see2Rooms() && !client.see3Rooms()){
                         System.out.println("Sorry, you are not eligible to apply for any kind of HDB");
                         break;
                     }

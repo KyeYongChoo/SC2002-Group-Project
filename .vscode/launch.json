@@ -8,6 +8,13 @@
             "type": "java",
             "name": "Main",
             "request": "launch",
+            "mainClass": "program.control.Main",
+            "projectName": "SC2002-Group-Project_7278bf8f"
+        },
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
             "mainClass": "program.Main",
             "projectName": "SC2002-Group-Project_7278bf8f"
         }

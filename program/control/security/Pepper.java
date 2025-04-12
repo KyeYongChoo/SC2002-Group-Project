@@ -1,4 +1,4 @@
-package program.security;
+package program.control.security;
 
 public class Pepper {
     public static String getPepper(){

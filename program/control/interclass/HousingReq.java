@@ -1,6 +1,10 @@
-package program;
+package program.control.interclass;
 
-import program.Project.ROOM_TYPE;
+import program.entity.project.Project;
+import program.entity.project.Project.ROOM_TYPE;
+import program.entity.users.Manager;
+import program.entity.users.Officer;
+import program.entity.users.User;
 
 /*
  * Named HousingRequest because naming it Application would be too confusing like apply for house application or software application lmao

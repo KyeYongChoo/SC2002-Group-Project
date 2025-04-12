@@ -1,6 +1,6 @@
-package program.security;
-
-import program.User;
+package program.boundary.security;
+import program.control.security.Password;
+import program.entity.users.User;
 
 public class PasswordResetHandler {
 

@@ -1,4 +1,4 @@
-package program.security;
+package program.control.security;
 
 public class Password {
     private String hash; 

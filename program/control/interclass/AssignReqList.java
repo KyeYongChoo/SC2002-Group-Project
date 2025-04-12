@@ -1,11 +1,15 @@
-package program;
+package program.control.interclass;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import program.Project.ROOM_TYPE;
+import program.control.Main;
+import program.entity.project.Project;
+import program.entity.project.Project.ROOM_TYPE;
+import program.entity.users.Officer;
+
 import com.sun.net.httpserver.Request;
 
 public class AssignReqList extends ArrayList<AssignReq>{
