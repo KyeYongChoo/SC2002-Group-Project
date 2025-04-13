@@ -19,4 +19,9 @@ public class Manager extends Officer {
     public Manager promoteOfficer(Officer officer){
         return this;
     }
+
+    @Override
+    public String getGreeting(){
+        return "\nYou are currently handling project:\n" + this.getCurProject() + "\nFrom " + this.getCurProject().getOpenDate() + " until " + this.getCurProject().getCloseDate();
+    }
 }

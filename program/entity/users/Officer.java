@@ -9,7 +9,6 @@ import program.control.interclass.AssignReqList;
 import program.control.interclass.Enquiry;
 import program.control.interclass.HousingReq;
 import program.control.interclass.HousingReqList;
-import program.control.interclass.AssignReq.APPLICATION_STATUS;
 import program.control.interclass.HousingReq.REQUEST_STATUS;
 import program.control.security.Password;
 import program.entity.project.Project;
@@ -35,13 +34,10 @@ public class Officer extends Applicant {
         }
         return reqList;
     }
-    public boolean assigned(){
-        return this.getProject() != null;
-    }
 
-    public Project getProject(){
+    public Project getCurProject(){
         for (Project project : Main.projectList){
-            if (project.getOfficers().contains(this)){
+            if (project.getOfficers().contains(this) && project.nowOpen()){
                 return project;
             }
         }
@@ -54,7 +50,7 @@ public class Officer extends Applicant {
      */
     public void updateFlat(Project project, ROOM_TYPE flatType, int newCount) 
     {
-        if (this.getProject()!=project) {
+        if (this.getCurProject()!=project) {
             System.out.println("You are not assigned to this project, cannot update flats.");
             return;
         }
@@ -63,7 +59,7 @@ public class Officer extends Applicant {
         } else {
             project.setUnits3Room(newCount);
         }
-        System.out.println("Updated " + flatType + " availability to " + newCount + " for project: " + this.getProject().getName());
+        System.out.println("Updated " + flatType + " availability to " + newCount + " for project: " + this.getCurProject().getName());
     }
 
     /**
@@ -71,7 +67,7 @@ public class Officer extends Applicant {
      * E.g., from PENDING to SUCCESSFUL, or SUCCESSFUL to BOOKED, etc.
      */
     public void updateApplicantStatus(HousingReq application, REQUEST_STATUS newStatus) {
-        if (this.getProject()!=application.getProject()) {
+        if (this.getCurProject()!=application.getProject()) {
             System.out.println("You are not authorized to update applications for this project.");
         }
         else{
@@ -83,15 +79,15 @@ public class Officer extends Applicant {
 
     /**
      * Retrieves a BTOApplication for an applicant based on NRIC, within the project(s) this Officer handles.
-     * Adjust as needed if you keep track of multiple projects or application repositories.
+     * There probably another menu etc nvm 
      */
     public HousingReq retrieveApplication(String nric) {
         // If an Officer is assigned to a single project:
-        if (this.assigned() == false) {
+        if (this.getCurProject() == null) {
             System.out.println("Officer is not assigned to any project.");
             return null;
         }
-        HousingReqList reqList = this.getProject().getReqList();
+        HousingReqList reqList = this.getCurProject().getReqList();
         // Iterate through all HousingReq in that list, searching for the matching NRIC
         for (HousingReq req : reqList) {
             User reqUser = req.getUser();
@@ -99,7 +95,7 @@ public class Officer extends Applicant {
                 return req;  // Found the matching application
             }
         }
-        System.out.println("No application found for NRIC: " + nric + " in project " + this.getProject().getName());
+        System.out.println("No application found for NRIC: " + nric + " in project " + this.getCurProject().getName());
         return null;
     }
 
@@ -115,17 +111,12 @@ public class Officer extends Applicant {
         // Add any additional fields or methods as needed
     }
 
-    public void updateApplicantProfile(HousingReq application, ROOM_TYPE flatType) {
-
-        // i have no idea why the officer is supposed to update the applicant's profile with the type of flat chosen under the project
-    }
-
     /**
      * Generates a receipt for a booked application. 
      * Typically done after the applicant's status is set to BOOKED.
      */
     public void generateReceipt(HousingReq application) {
-        if (this.getProject()!=application.getProject()) {
+        if (this.getCurProject()!=application.getProject()) {
             System.out.println("You are not assigned to this project, cannot generate a receipt.");
         }
         else{
@@ -146,12 +137,12 @@ public class Officer extends Applicant {
     }
 
     /**
-     * View (or list) inquiries for the Officer’s assigned project(s). 
+     * View (or list) enquiries for the Officer’s assigned project(s). 
      * If you store Enquiries in a collection in BTOProject or a separate manager class, 
      * adapt the retrieval accordingly.
      */
-    public void viewInquiries(Project project) {
-        if (this.getProject()!=project) {
+    public void viewEnquiries(Project project) {
+        if (this.getCurProject()!=project) {
             System.out.println("You do not handle this project, cannot view inquiries.");
         }
         else{
@@ -164,12 +155,12 @@ public class Officer extends Applicant {
     }
 
     /**
-     * Replies to an inquiry with a given string. Typically you’d store the reply in the Enquiry or 
+     * Replies to an enquiry with a given string. Typically you’d store the reply in the Enquiry or 
      * log it somewhere.
      */
-    public void replyInquiries(Enquiry enquiry, String reply) {
+    public void replyEnquiries(Enquiry enquiry, String reply) {
         Project project = enquiry.getProject();
-        if (this.getProject()!=project) {
+        if (this.getCurProject()!=project) {
             System.out.println("You do not handle this project, cannot reply to inquiries.");
             return;
         }
@@ -181,7 +172,7 @@ public class Officer extends Applicant {
      * Views the project details of the assigned project or any project the system allows an officer to see.
      */
     public void viewProject(Project project) {
-        if (this.getProject()!=project) {
+        if (this.getCurProject()!=project) {
             System.out.println("You are not authorized to view the full details of this project.");
             return;
         }
@@ -194,9 +185,10 @@ public class Officer extends Applicant {
     }
 
 
-
     public boolean overlapTime (Project targetProject){
-        return overlapTime(targetProject,this.getProject());
+        return Main.projectList.stream()
+            .filter(project -> project.getOfficers().contains(this))
+            .anyMatch(project -> overlapTime(project, targetProject));
     }
     public boolean overlapTime (Project proj1, Project proj2){
         if (proj1 == null || proj2 == null) return false;
@@ -211,10 +203,15 @@ public class Officer extends Applicant {
         return overlapTime(dateTime.toLocalDate());
     }
     public boolean overlapTime (LocalDate date){
-        LocalDate openDate = this.getProject().getOpenDate();
-        LocalDate closeDate = this.getProject().getCloseDate();
-        if (openDate.isBefore(date) && closeDate.isAfter(date)){
+        LocalDate openDate = this.getCurProject().getOpenDate();
+        LocalDate closeDate = this.getCurProject().getCloseDate();
+        if ((openDate.isBefore(date) || openDate.equals(date)) && (closeDate.isAfter(date) || closeDate.equals(date))){
             return true;
         }else return false;
+    }
+    
+    @Override
+    public String getGreeting(){
+        return super.getGreeting() + "\nYou are currently handling project:\n" + this.getCurProject() + "\nFrom " + this.getCurProject().getOpenDate() + " until " + this.getCurProject().getCloseDate();
     }
 }

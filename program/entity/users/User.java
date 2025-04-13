@@ -2,11 +2,13 @@ package program.entity.users;
 
 import java.util.Scanner;
 
+import program.boundary.console.AppScanner;
 import program.control.interclass.EnquiryList;
 import program.control.interclass.HousingReqList;
 import program.control.security.Password;
 
 public class User{
+    private static Scanner sc = AppScanner.getInstance();
     private String name;
     private String userId;
     private Password password = new Password(); 
@@ -14,6 +16,22 @@ public class User{
     private MARITAL_STATUS maritalStatus;
     private HousingReqList reqList = new HousingReqList();
     private EnquiryList enquiryList = new EnquiryList();
+    private FILTER_SETTING filterSetting = FILTER_SETTING.ALPHABETICAL;
+
+    public enum FILTER_SETTING{
+        LOCATION,
+        FLAT_TYPE_2_ROOM,
+        FLAT_TYPE_3_ROOM,
+        ALPHABETICAL
+    }
+
+    public FILTER_SETTING getFilterSetting(){
+        return filterSetting;
+    }
+
+    public void setFilterSetting(FILTER_SETTING filterSetting){
+        this.filterSetting = filterSetting;
+    }
 
     public EnquiryList getEnquiryList(){
         return enquiryList;
@@ -81,7 +99,6 @@ public class User{
     }
 
     public static String inputNRIC(){
-        Scanner sc = new Scanner (System.in);
         String NRIC = null;
         boolean validNRIC = true;
         do { 
@@ -169,4 +186,9 @@ public class User{
     public void setPassword(Password password) {
         this.password = password;
     }
+
+    public String getGreeting() {
+        return ("Welcome " + name + "\nYou are currently " + (this.see3Rooms() ? "eligible" : "ineligible") + " to see 3-Room and may see 2-Rooms");
+    }
+
 }

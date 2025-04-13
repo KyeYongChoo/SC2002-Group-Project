@@ -3,7 +3,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
-import program.boundary.AppScanner;
+import program.boundary.console.AppScanner;
 import program.control.Main;
 import program.control.interclass.Enquiry;
 import program.control.interclass.EnquiryList;
@@ -63,8 +63,7 @@ public class Project {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
         this.openDate = LocalDate.parse(openDate, formatter);
         this.closeDate = LocalDate.parse(closeDate, formatter);
-        // Holy smokes upcasting Downcasting 101 down here
-        this.manager = (Manager) Main.managerList.getByName(manager);
+        this.createdBy = this.manager = (Manager) Main.managerList.getByName(manager);
         if(this.manager == null) throw new Exception("Manager not Found. Manager field for reference: "+ manager);
         try {
             this.officerSlots = Integer.parseInt(officerSlots);
@@ -105,162 +104,24 @@ public class Project {
     public EnquiryList getEnquiryList(){
         return enquiryList;
     }
-    public void printVisible(User client){
-        if (client == null) return;
-        // Manager needs separate logic because they see all rooms regardless of visibility
-        if (client instanceof Manager){
-            printVisible((Manager) client);
-            return;
-        }
-
-        if (this.visibility == false) return;
-        // Officer needs separate logic because of table formatting issues if sometimes show 3 room sometimes show 2 rooms only
-        if (client instanceof Officer){
-            printVisible((Officer) client);
-            return;
-        }
-
-        boolean table3RoomFormatting = true;
-        boolean firstLoop = true;
-        for (User officer : projOfficerList){
-            officer = (Officer) officer;
-            if (firstLoop){
-                firstLoop = false;
-                if (client.see2Rooms()){
-                    table3RoomFormatting = false;
-                    Main.updateTableRef(table3RoomFormatting);
-                    System.out.printf(Main.formatTableRef, (Object[])Main.tableHeaders);
-                    System.out.printf(
-                        Main.formatTableRef,
-                        name,
-                        neighbourhood,
-                        units2room,
-                        units2roomPrice,
-                        openDate,
-                        closeDate,
-                        manager,
-                        officerSlots,
-                        officer);
-                }
-                else if (client.see3Rooms()){
-                    table3RoomFormatting = true;
-                    Main.updateTableRef(table3RoomFormatting);
-                    System.out.printf(Main.formatTableRef, (Object[])Main.tableHeaders);
-                    System.out.printf(
-                        Main.formatTableRef,
-                        name,
-                        neighbourhood,
-                        units2room,
-                        units2roomPrice,
-                        units3room,
-                        units3roomPrice,
-                        openDate,
-                        closeDate,
-                        manager,
-                        officerSlots,
-                        officer);
-                }
-                else{
-                    break;
-                }
-            }
-            else{
-                if (table3RoomFormatting) System.out.printf(Main.formatTableRef,"", "", "", "", "", "", "", "", "", "", officer);
-                else System.out.printf(Main.formatTableRef,"", "", "", "", "", "", "", "", officer);
-              }
-            }  
-    }
-    
-    public void printVisible(Officer officer){
-        if (this.visibility == false && !projOfficerList.contains(officer)) return;
-        boolean table3RoomFormatting;
-        table3RoomFormatting = true;
-        Main.updateTableRef(table3RoomFormatting);
-        boolean firstLoop = true;
-        for (User projOfficer : projOfficerList){
-            projOfficer = (Officer) projOfficer;
-            if (firstLoop){
-                firstLoop = false;
-                if (projOfficerList.contains(officer) || officer.see3Rooms()){
-                    System.out.printf(Main.formatTableRef, (Object[])Main.tableHeaders);
-                    System.out.printf(
-                        Main.formatTableRef,
-                        name,
-                        neighbourhood,
-                        units2room,
-                        units2roomPrice,
-                        units3room,
-                        units3roomPrice,
-                        openDate,
-                        closeDate,
-                        manager,
-                        officerSlots,
-                        projOfficer);
-                }
-                else if (officer.see2Rooms()){
-                    System.out.printf(Main.formatTableRef, (Object[])Main.tableHeaders);
-                    System.out.printf(
-                        Main.formatTableRef,
-                        name,
-                        neighbourhood,
-                        units2room,
-                        units2roomPrice,
-                        "", // to fill in the 3roomPrice clause
-                        "",
-                        openDate,
-                        closeDate,
-                        manager,
-                        officerSlots,
-                        projOfficer);
-                }
-                else{
-                    break;
-                }
-            }
-            else{
-                System.out.printf(
-                    Main.formatTableRef,"", "", "", "", "", "", "", "", "", "", projOfficer);
-              }
-            }  
-    }
-
-    public void printVisible(Manager manager){
-        boolean table3RoomFormatting;
-        table3RoomFormatting = true;
-        Main.updateTableRef(table3RoomFormatting);
-
-        boolean firstLoop = true;
-        for (User officer : projOfficerList){
-            officer = (Officer) officer;
-            if (firstLoop){
-                firstLoop = false;
-                System.out.printf(Main.formatTableRef, (Object[])Main.tableHeaders);
-                System.out.printf(
-                    Main.formatTableRef,
-                    name,
-                    neighbourhood,
-                    units2room,
-                    units2roomPrice,
-                    units3room,
-                    units3roomPrice,
-                    openDate,
-                    closeDate,
-                    this.manager,
-                    officerSlots,
-                    officer);
-            }
-            else{
-                System.out.printf(
-                    Main.formatTableRef,"", "", "", "", "", "", "", "", "", officer);
-              }
-            }  
-    }
 
     public boolean isVisibleTo(User user) {
-        LocalDate today = LocalDate.now();
         boolean inCharge = (user instanceof Manager && user.equals(this.manager)) || this.projOfficerList.contains(user);
-        boolean applicationOpen = visibility && (today.isEqual(openDate) || today.isAfter(openDate)) && (today.isBefore(closeDate) || today.isEqual(closeDate));
+        boolean applicationOpen = visibility  
+                                && nowOpen()
+                                && (user.see2Rooms() && units2room > 0 || user.see3Rooms() && units3room > 0);
         return applicationOpen || inCharge;
+    }
+
+    public boolean nowOpen(){
+        LocalDate today = LocalDate.now();
+        return (today.isEqual(openDate) || today.isAfter(openDate)) && (today.isBefore(closeDate) || today.isEqual(closeDate));
+    }
+
+    public boolean conflictInterest(User user) {
+        return (user instanceof Manager // User is a manager
+                || this.projOfficerList.contains(user) // User is/was an officer of this project
+                || (user instanceof Officer && ((Officer) user).overlapTime(this))); // User is an officer with overlapping time with this project
     }
 
     public boolean canDeleteEnquiry(Enquiry enquiry) {
@@ -332,5 +193,13 @@ public class Project {
     @Override
     public String toString(){
         return name;
+    }
+
+    public Manager getCreatedBy(){
+        return createdBy;
+    }
+
+    public boolean getVisibility() {
+        return visibility;
     }
 }

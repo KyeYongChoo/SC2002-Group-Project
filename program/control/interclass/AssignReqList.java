@@ -1,16 +1,10 @@
 package program.control.interclass;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Scanner;
-
 import program.control.Main;
 import program.entity.project.Project;
-import program.entity.project.Project.ROOM_TYPE;
 import program.entity.users.Officer;
-
-import com.sun.net.httpserver.Request;
 
 public class AssignReqList extends ArrayList<AssignReq>{
     public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -27,8 +21,8 @@ public class AssignReqList extends ArrayList<AssignReq>{
     @Override
     public boolean add(AssignReq req){
         // if a request has been made before for same applicant and same project
-        if (req.getOfficer().assigned()){
-            System.out.println("Error: You have an active application at " + req.getOfficer().getProject());
+        if (req.getOfficer().overlapTime(req.getProject())){
+            System.out.println("Error: You have an active application at " + req.getOfficer().getCurProject());
             return false;
         }
         Officer officer = req.getOfficer();
@@ -73,7 +67,7 @@ public class AssignReqList extends ArrayList<AssignReq>{
             System.out.println("Error: no Enquiries found");
             return;
         }
-        Main.enquiryList.remove(req);
+        Main.assignReqList.remove(req);
         System.out.println("\nRemoval Successful");
     }
 }
