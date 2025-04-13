@@ -1,12 +1,16 @@
 package program.boundary.menuTemplate;
 
+import java.util.Scanner;
 import java.util.function.Predicate;
+
+import program.boundary.console.AppScanner;
 
 /*
  * MenuItem.java
  * This class represents a menu item in the application. It implements the MenuAction interface and provides a description for the menu item.
  */
 public class MenuItem{
+    protected static final Scanner sc = AppScanner.getInstance();
     /*
      * description: A string that describes the menu item.
      */
@@ -52,5 +56,9 @@ public class MenuItem{
 
     public void setAction(MenuAction action) {
         this.action = action;
+    }
+
+    public void addAction(MenuAction action) {
+        this.action = this.action.andThen(action);
     }
 }

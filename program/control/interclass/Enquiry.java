@@ -42,12 +42,7 @@ public class Enquiry extends ArrayList<Message>{
     // closeTicket functionality maybe for later 
     // public boolean closeTicket(Officer officer){}
 
-    public void print(){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        System.out.println("Created on " + getDateCreated().format(formatter));
-        System.out.println("For project " + getProject());
-        System.out.println("First Message: " + get(0).getText());
-    }
+    
 
     // alternative shorthand syntax 
     public void add(User client, String enquiry){

@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
-import program.boundary.AppScanner;
-import program.boundary.ConsoleCommands;
+import program.boundary.console.AppScanner;
+import program.boundary.console.ConsoleCommands;
 import program.entity.users.User;
 
 /*

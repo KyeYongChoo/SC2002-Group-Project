@@ -2,7 +2,7 @@ package program.boundary.security;
 
 import java.util.Scanner;
 
-import program.boundary.AppScanner;
+import program.boundary.console.AppScanner;
 import program.control.UserFetcher;
 import program.entity.users.User;
 

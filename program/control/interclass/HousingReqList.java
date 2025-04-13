@@ -1,5 +1,6 @@
 package program.control.interclass;
 
+import program.boundary.projectIO.ProjectSelect;
 import program.control.Main;
 import program.control.interclass.HousingReq.REQUEST_STATUS;
 import program.control.interclass.HousingReq.WITHDRAWAL_STATUS;
@@ -100,7 +101,7 @@ public class HousingReqList extends ArrayList<HousingReq>{
                 System.out.println("\nUnsuccessful Applications\n");
             }
                 
-            project.printVisible(client);
+            ProjectSelect.printVisible(client, project);
         }
     }
 

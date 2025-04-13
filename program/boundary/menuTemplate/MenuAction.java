@@ -20,4 +20,12 @@ public interface MenuAction {
      * It does not take any parameters and does not return any value.
      */
     public void execute();
+
+    
+    default MenuAction andThen(MenuAction after){
+        return () -> {
+            this.execute();
+            if (after != null) after.execute();
+        };
+    }
 }

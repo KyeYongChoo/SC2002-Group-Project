@@ -1,4 +1,4 @@
-package program.boundary;
+package program.boundary.console;
 import java.util.Scanner;
 
 public class AppScanner {

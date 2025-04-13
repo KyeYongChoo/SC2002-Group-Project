@@ -2,8 +2,6 @@ package program.entity.users;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import program.control.Main;
 import program.control.interclass.AssignReq;
@@ -11,7 +9,6 @@ import program.control.interclass.AssignReqList;
 import program.control.interclass.Enquiry;
 import program.control.interclass.HousingReq;
 import program.control.interclass.HousingReqList;
-import program.control.interclass.AssignReq.APPLICATION_STATUS;
 import program.control.interclass.HousingReq.REQUEST_STATUS;
 import program.control.security.Password;
 import program.entity.project.Project;
@@ -143,11 +140,11 @@ public class Officer extends Applicant {
     }
 
     /**
-     * View (or list) inquiries for the Officer’s assigned project(s). 
+     * View (or list) enquiries for the Officer’s assigned project(s). 
      * If you store Enquiries in a collection in BTOProject or a separate manager class, 
      * adapt the retrieval accordingly.
      */
-    public void viewInquiries(Project project) {
+    public void viewEnquiries(Project project) {
         if (this.getProject()!=project) {
             System.out.println("You do not handle this project, cannot view inquiries.");
         }
@@ -161,10 +158,10 @@ public class Officer extends Applicant {
     }
 
     /**
-     * Replies to an inquiry with a given string. Typically you’d store the reply in the Enquiry or 
+     * Replies to an enquiry with a given string. Typically you’d store the reply in the Enquiry or 
      * log it somewhere.
      */
-    public void replyInquiries(Enquiry enquiry, String reply) {
+    public void replyEnquiries(Enquiry enquiry, String reply) {
         Project project = enquiry.getProject();
         if (this.getProject()!=project) {
             System.out.println("You do not handle this project, cannot reply to inquiries.");

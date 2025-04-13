@@ -1,8 +1,9 @@
 package program.boundary.mainMenu;
 
 import java.util.Scanner;
-import program.boundary.AppScanner;
-import program.boundary.menuOptions.PrintVisible;
+
+import program.boundary.console.AppScanner;
+import program.boundary.menu.PrintVisible;
 import program.boundary.menuTemplate.MenuGroup;
 import program.control.Main;
 import program.entity.project.Project;
