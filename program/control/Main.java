@@ -1,12 +1,18 @@
 package program.control;
 
 import program.boundary.AppScanner;
+import program.boundary.ConsoleCommands;
+import program.boundary.mainMenu.ApplicantMenu;
+import program.boundary.mainMenu.ManagerMenu;
+import program.boundary.mainMenu.OfficerMenu;
+import program.boundary.menu.*;
+import program.boundary.menuTemplate.MenuNavigator;
+import program.boundary.security.LoginHandler;
 import program.boundary.security.PasswordResetHandler;
 import program.control.interclass.AssignReqList;
 import program.control.interclass.Enquiry;
 import program.control.interclass.EnquiryList;
 import program.control.interclass.HousingReqList;
-import program.control.security.LoginHandler;
 import program.entity.caching.DataInitializer;
 import program.entity.caching.RecordSaver;
 import program.entity.project.Project;
@@ -35,18 +41,20 @@ public class Main {
     public static void main(String[] args) throws Exception{
         DataInitializer.initialise();
         User client = LoginHandler.loginUser();
-        // Remember to allow user to log out and log in many times
-
         
         if (client instanceof Manager){
-            managerChoices((Manager) client);
+            MenuNavigator.getInstance().pushMenu(new ManagerMenu((Manager) client));
+            // managerChoices((Manager) client);
         }
         else if (client instanceof Officer){
-            officerChoices((Officer) client);
+            MenuNavigator.getInstance().pushMenu(new OfficerMenu((Officer) client));
+            // officerChoices((Officer) client);
         }
         else if (client instanceof Applicant){
-            applicantChoices((Applicant) client);
+            MenuNavigator.getInstance().pushMenu(new ApplicantMenu((Applicant) client));
+            // applicantChoices((Applicant) client);
         }
+        MenuNavigator.getInstance().start(client);
 
         RecordSaver.save();
     }
@@ -70,7 +78,7 @@ public class Main {
 
             try {
                 choice = Integer.parseInt(sc.nextLine());
-                clearConsole();
+                ConsoleCommands.clearConsole();
                 if (choice < 1 || choice > 9){
                     throw new Exception("Choice not in range");
                 }
@@ -145,7 +153,7 @@ public class Main {
                         System.out.println("4. Reply to enquiry");
                         userInput = sc.nextLine();
                     } while (!"1".equals(userInput) && !"2".equals(userInput) && !"3".equals(userInput) && !"4".equals(userInput));
-                    clearConsole();
+                    ConsoleCommands.clearConsole();
                     switch (userInput){
                         case ("1"):
                             System.out.println("Please choose project to enquire about: ");
@@ -215,7 +223,7 @@ public class Main {
 
             try {
                 choice = Integer.parseInt(sc.nextLine());
-                clearConsole();
+                ConsoleCommands.clearConsole();
                 if (choice < 1 || choice > 7){
                     throw new Exception("Choice not in range");
                 }
@@ -285,7 +293,7 @@ public class Main {
                         System.out.println("3. Delete enquiry");
                         userInput = sc.nextLine();
                     } while (!"1".equals(userInput) && !"2".equals(userInput) && !"3".equals(userInput));
-                    clearConsole();
+                    ConsoleCommands.clearConsole();
                     switch (userInput){
                         case ("1"):
                             System.out.println("Please choose project to enquire about: ");
@@ -320,14 +328,6 @@ public class Main {
             sc.nextLine();
         } while (choice != 7);
     }
-    
-    // Open up a new page by clearing Console
-    public static void clearConsole() {
-        System.out.print("\033[H\033[2J\033[3J");
-        System.out.flush();        
-    }
-    
-
     /**
      * Format string for table alignment.
      * Columns:

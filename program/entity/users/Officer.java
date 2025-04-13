@@ -2,6 +2,8 @@ package program.entity.users;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import program.control.Main;
 import program.control.interclass.AssignReq;
@@ -115,11 +117,6 @@ public class Officer extends Applicant {
         // Add any additional fields or methods as needed
     }
 
-    public void updateApplicantProfile(HousingReq application, ROOM_TYPE flatType) {
-
-        // i have no idea why the officer is supposed to update the applicant's profile with the type of flat chosen under the project
-    }
-
     /**
      * Generates a receipt for a booked application. 
      * Typically done after the applicant's status is set to BOOKED.
@@ -192,7 +189,6 @@ public class Officer extends Applicant {
         System.out.println("Available 3-Room : " + project.getUnits3Room());
         // Print any other relevant info your BTOProject class may hold
     }
-
 
 
     public boolean overlapTime (Project targetProject){

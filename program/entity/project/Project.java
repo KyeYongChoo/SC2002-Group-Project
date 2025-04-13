@@ -259,8 +259,16 @@ public class Project {
     public boolean isVisibleTo(User user) {
         LocalDate today = LocalDate.now();
         boolean inCharge = (user instanceof Manager && user.equals(this.manager)) || this.projOfficerList.contains(user);
-        boolean applicationOpen = visibility && (today.isEqual(openDate) || today.isAfter(openDate)) && (today.isBefore(closeDate) || today.isEqual(closeDate));
+        boolean applicationOpen = visibility  
+                                &&(today.isEqual(openDate) || today.isAfter(openDate)) && (today.isBefore(closeDate) || today.isEqual(closeDate))
+                                && (user.see2Rooms() && units2room > 0 || user.see3Rooms() && units3room > 0);
         return applicationOpen || inCharge;
+    }
+
+    public boolean conflictInterest(User user) {
+        return (user instanceof Manager // User is a manager
+                || this.projOfficerList.contains(user) // User is/was an officer of this project
+                || (user instanceof Officer && ((Officer) user).overlapTime(this))); // User is an officer with overlapping time with this project
     }
 
     public boolean canDeleteEnquiry(Enquiry enquiry) {

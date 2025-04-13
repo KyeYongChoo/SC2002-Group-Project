@@ -5,6 +5,7 @@ import java.util.Scanner;
 import program.control.interclass.EnquiryList;
 import program.control.interclass.HousingReqList;
 import program.control.security.Password;
+import program.entity.project.Project;
 
 public class User{
     private String name;
@@ -169,4 +170,5 @@ public class User{
     public void setPassword(Password password) {
         this.password = password;
     }
+
 }

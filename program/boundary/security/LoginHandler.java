@@ -1,4 +1,4 @@
-package program.control.security;
+package program.boundary.security;
 
 import java.util.Scanner;
 
