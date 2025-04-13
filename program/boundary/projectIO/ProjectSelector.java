@@ -1,6 +1,7 @@
 package program.boundary.projectIO;
 
 import program.entity.project.Project;
+import program.entity.users.Officer;
 import program.entity.users.User;
 
 import java.util.List;
@@ -33,6 +34,17 @@ public class ProjectSelector {
             .collect(Collectors.toList());
 
         return chooseFromList(client, visibleProjects, "Choose a project visible to you without conflict of interest:");
+    }
+
+    public static Project chooseProjectForOfficer(Officer officer, List<Project> projectList) {
+        List<Project> officerProjects = projectList.stream()
+            .filter(project -> ProjectFilter.filterByFlatType(project, officer.getFilterSetting())) // Additional filtering for flat types
+            .sorted((p1, p2) -> ProjectFilter.compareProjects(p1, p2, officer.getFilterSetting())) // Sort based on filter setting
+            .filter(project -> !project.getOfficers().contains(officer))
+            .filter(project -> !officer.overlapTime(project))
+            .collect(Collectors.toList());
+
+        return chooseFromList(officer, officerProjects, "Choose a project:");
     }
 
     private static Project chooseFromList(User client, List<Project> projects, String prompt) {

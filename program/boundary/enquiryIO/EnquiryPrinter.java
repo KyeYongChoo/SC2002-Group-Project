@@ -32,7 +32,7 @@ public class EnquiryPrinter {
             return true; // Managers can view all enquiries
         }
         if (user instanceof Officer officer) {
-            return enquiry.getUser().equals(user) || enquiry.getProject().equals(officer.getProject());
+            return enquiry.getUser().equals(user) || enquiry.getProject().equals(officer.getCurProject());
         }
         // Applicants can only view enquiries they created
         return enquiry.getUser().equals(user);

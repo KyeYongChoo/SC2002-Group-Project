@@ -106,12 +106,16 @@ public class Project {
     }
 
     public boolean isVisibleTo(User user) {
-        LocalDate today = LocalDate.now();
         boolean inCharge = (user instanceof Manager && user.equals(this.manager)) || this.projOfficerList.contains(user);
         boolean applicationOpen = visibility  
-                                &&(today.isEqual(openDate) || today.isAfter(openDate)) && (today.isBefore(closeDate) || today.isEqual(closeDate))
+                                && nowOpen()
                                 && (user.see2Rooms() && units2room > 0 || user.see3Rooms() && units3room > 0);
         return applicationOpen || inCharge;
+    }
+
+    public boolean nowOpen(){
+        LocalDate today = LocalDate.now();
+        return (today.isEqual(openDate) || today.isAfter(openDate)) && (today.isBefore(closeDate) || today.isEqual(closeDate));
     }
 
     public boolean conflictInterest(User user) {

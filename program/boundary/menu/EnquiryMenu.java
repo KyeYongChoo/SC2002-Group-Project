@@ -30,7 +30,7 @@ public class EnquiryMenu extends MenuGroup {
         }, user_ -> !(user_ instanceof Manager));
 
         this.addMenuItem("View Enquiry", () -> {
-            Enquiry selectedEnquiry = EnquirySelector.selectEnquiry(user, Main.enquiryList);
+            Enquiry selectedEnquiry = EnquirySelector.selectEnquiry(user, Main.enquiryList, enquiry -> ((Enquiry) enquiry).getUser().equals(user));
             if (selectedEnquiry != null) {
                 EnquiryPrinter.print(selectedEnquiry);
             }

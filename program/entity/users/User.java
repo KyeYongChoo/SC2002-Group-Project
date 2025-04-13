@@ -187,4 +187,8 @@ public class User{
         this.password = password;
     }
 
+    public String getGreeting() {
+        return ("Welcome " + name + "\nYou are currently " + (this.see3Rooms() ? "eligible" : "ineligible") + " to see 3-Room and may see 2-Rooms");
+    }
+
 }

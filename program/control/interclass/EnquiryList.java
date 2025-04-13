@@ -9,8 +9,6 @@ import program.boundary.enquiryIO.EnquirySelector;
 import program.boundary.projectIO.ProjectSelect;
 import program.control.Main;
 import program.entity.project.Project;
-import program.entity.project.ProjectList;
-import program.entity.users.Applicant;
 import program.entity.users.User;
 
 /*
@@ -88,7 +86,8 @@ public class EnquiryList extends ArrayList<Enquiry> {
                 enqList.superAdd(enquiry);
             }
         }
-        return EnquirySelector.selectEnquiryFromProject(project);
+        return EnquirySelector.selectEnquiry(client, Main.enquiryList, enquiry -> 
+        ((Enquiry) enquiry).getUser() == client && ((Enquiry) enquiry).getProject() == project);
     }
 
     @Override

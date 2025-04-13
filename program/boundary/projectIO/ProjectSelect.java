@@ -2,6 +2,7 @@ package program.boundary.projectIO;
 
 import program.control.Main;
 import program.entity.project.Project;
+import program.entity.users.Officer;
 import program.entity.users.User;
 
 public class ProjectSelect {
@@ -20,5 +21,14 @@ public class ProjectSelect {
 
     public static Project chooseVisibleProjectWithoutConflict(User client) {
         return ProjectSelector.chooseVisibleProjectWithoutConflict(client, Main.projectList);
+    }
+
+    /**
+     * Allows an officer to choose a project based on specific filtering rules.
+     * @param officer The officer selecting the project.
+     * @return The selected project, or null if no valid selection is made.
+     */
+    public static Project chooseProjectForOfficer(Officer officer) {
+        return ProjectSelector.chooseProjectForOfficer(officer, Main.projectList);
     }
 }

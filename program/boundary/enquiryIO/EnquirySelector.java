@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import program.boundary.console.AppScanner;
 import program.control.interclass.Enquiry;
 import program.control.interclass.EnquiryList;
-import program.entity.project.Project;
 import program.entity.users.Manager;
 import program.entity.users.Officer;
 import program.entity.users.User;
@@ -14,6 +13,8 @@ import program.entity.users.User;
 public class EnquirySelector {
     private static final Scanner sc = AppScanner.getInstance();
 
+
+    // Should not be used by anyone but manager, who looks though everything
     public static Enquiry selectEnquiry(User user, EnquiryList enqList) {
         return selectEnquiry(user, enqList, dummy -> true);
     }
@@ -44,10 +45,6 @@ public class EnquirySelector {
         }
 
         return selectedEnquiry;
-    }
-
-    public static Project selectEnquiryFromProject(Project project){
-        
     }
 
     public static boolean canEditOrDeleteEnquiry(User user, Enquiry enquiry) {
