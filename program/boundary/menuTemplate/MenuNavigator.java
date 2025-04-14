@@ -9,25 +9,52 @@ import program.boundary.console.ConsoleCommands;
 import program.entity.users.User;
 
 /*
- * Handles view stacks, to perform "go back to previous menu" behaviour
- * Actually runned, do not make a menu out of this. If in doubt, please make a menu out of menuItem if its just 1 action, make it out of MenuGroup if it leads to more menus
+ * MenuNavigator.java
+ * This class is responsible for managing the navigation between different menus in the application.
+ * Singleton pattern is used to ensure that only one instance of MenuNavigator exists throughout the application.
+ * It maintains a stack of MenuGroup objects, allowing users to navigate back to previous menus.
  */
 public class MenuNavigator {
+
+    /*
+     * menuStack: A stack that holds the menu groups. It allows for navigating back to previous menus.
+     */
     private final Stack<MenuGroup>menuStack = new Stack<>();
     private static final Scanner sc = AppScanner.getInstance(); 
+
+    /*
+     * context: An object that represents the context in which the menu is displayed.
+     *          It can be used to determine the visibility of menu items based on the current state of the application.
+     */
     private Object context;
 
-    // Singleton: i.e. ensure only one instance is created in the app
     private static MenuNavigator instance = null;
     private MenuNavigator(){}
+
+    /*
+     * getInstance: A static method that returns the singleton instance of MenuNavigator.
+     *              If the instance is null, it creates a new instance.
+     * @return: The singleton instance of MenuNavigator.
+     */
     public static MenuNavigator getInstance(){
         if (instance == null) instance = new MenuNavigator();
         return instance;
     }
     
+    /*
+     * pushMenu: A method that pushes a new menu group onto the stack.
+     *           This allows the user to navigate to a new menu while keeping track of the previous menus.
+     * @param menu: The menu group to be pushed onto the stack.
+     */
     public void pushMenu(MenuGroup menu){
         menuStack.push(menu);
     }
+    /*
+     * start: A method that starts the menu navigation process.
+     *        It displays the current menu and allows the user to select an option.
+     *       The user can navigate through the menu items and execute the corresponding actions.
+     * @param user: The user object representing the current user of the application.
+     */
     public void start(User user) {
         while (!menuStack.isEmpty()){
             ConsoleCommands.clearConsole();
@@ -62,10 +89,20 @@ public class MenuNavigator {
         }
     }
 
+    /*
+     * setContext: A method that sets the context for the menu navigator.
+     *             This context can be used to determine the visibility of menu items based on the current state of the application.
+     * @param ctx: An object representing the context in which the menu is displayed.
+     */
     public void setContext(Object ctx) {
         this.context = ctx;
     }
 
+    /*
+     * getContext: A method that returns the current context of the menu navigator.
+     *             This context can be used to determine the visibility of menu items based on the current state of the application.
+     * @return: The current context of the menu navigator.
+     */
     public Object getContext() {
         return context;
     }

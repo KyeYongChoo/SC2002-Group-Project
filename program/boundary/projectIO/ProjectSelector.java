@@ -1,8 +1,6 @@
 package program.boundary.projectIO;
 
-import program.control.officerApply.TimeCompare;
 import program.entity.project.Project;
-import program.entity.users.Officer;
 import program.entity.users.User;
 
 import java.util.List;
@@ -31,15 +29,6 @@ public class ProjectSelector {
             .collect(Collectors.toList());
 
         return chooseFromList(client, visibleProjects, "Choose a project visible to you without conflict of interest:");
-    }
-
-    public static Project chooseProjectForOfficer(Officer officer, List<Project> projectList) {
-        List<Project> officerProjects = UserPrefSorting.userFilterStream(officer,projectList)
-            .filter(project -> !project.getOfficers().contains(officer))
-            .filter(project -> TimeCompare.officerUnassigned(officer, project))
-            .collect(Collectors.toList());
-
-        return chooseFromList(officer, officerProjects, "Choose a project:");
     }
 
     private static Project chooseFromList(User client, List<Project> projects, String prompt) {

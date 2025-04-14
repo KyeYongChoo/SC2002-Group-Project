@@ -55,4 +55,18 @@ public class HousingReqPrinter {
                 i + 1, req.getProject().getName(), req.getUser().getName(), req.getWithdrawalStatus());
         }
     }
+    /**
+     * Generates a receipt for a booked application. 
+     * Typically done after the applicant's status is set to BOOKED.
+     */
+    public static void printReceipt(HousingReq application) {
+        System.out.println("=== Receipt ===");
+        System.out.println("Name         : " + application.getUser().getName());
+        System.out.println("NRIC         : " + application.getUser().getUserId());
+        System.out.println("Age          : " + application.getUser().getAge());
+        System.out.println("Marital Status: " + application.getUser().getMaritalStatus());
+        System.out.println("Flat Type Booked: " + application.getRoomType());
+        System.out.println("Project Name: " + application.getProject().getName());
+        System.out.println("Project Location: " + application.getProject().getNeighbourhood());
+    }
 }

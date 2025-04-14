@@ -121,8 +121,9 @@ public class Project {
 
     public boolean conflictInterest(User user) {
         return (user instanceof Manager // User is a manager
-                || this.projOfficerList.contains(user) // User is/was an officer of this project
-                || (user instanceof Officer && TimeCompare.officerUnassigned(((Officer) user), this))); // User is an officer with overlapping time with this project
+                || this.projOfficerList.contains(user) // User is/was an officer working on this project
+                || (user instanceof Officer && TimeCompare.officerUnassigned(((Officer) user), this))) // User is an officer with overlapping time with this project
+                || Main.reqList.stream().anyMatch(HousingReq -> HousingReq.getUser().equals(user));
     }
 
     public boolean canDeleteEnquiry(Enquiry enquiry) {

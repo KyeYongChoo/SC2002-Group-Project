@@ -30,6 +30,14 @@ public class HousingReq {
         approved,
     }
 
+    public Officer getApprovedBy(){
+        return approvedBy;
+    }
+
+    public void setApprovedBy(Officer officer){
+        approvedBy = officer;
+    }
+
     public Manager getManager(){
         return this.project.getManager();
     }

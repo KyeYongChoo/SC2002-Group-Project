@@ -1,13 +1,10 @@
 package program.entity.users;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.function.Predicate;
 
 import program.control.Main;
 import program.control.enquiry.Enquiry;
 import program.control.housingApply.HousingReq;
-import program.control.housingApply.HousingReqList;
 import program.control.housingApply.HousingReq.REQUEST_STATUS;
 import program.control.officerApply.AssignReq;
 import program.control.officerApply.AssignReqList;

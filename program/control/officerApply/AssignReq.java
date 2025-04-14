@@ -15,6 +15,10 @@ public class AssignReq {
         accepted;
     }
 
+    public void setApplicationStatus(APPLICATION_STATUS applicationStatus) {
+        this.applicationStatus = applicationStatus;
+    }
+
     public AssignReq(Officer officer, Project project){
         this.officer = officer;
         this.project = project;

@@ -1,80 +1,61 @@
 package program.boundary.officerAssignIO;
 
-import program.control.housingApply.HousingReq;
-import program.control.housingApply.HousingReqList;
-import program.entity.project.Project;
+import program.control.officerApply.AssignReq;
+import program.control.officerApply.AssignReqList;
 import program.entity.users.Officer;
-import program.entity.users.User;
 
 public class OfficerAssignPrinter {
 
     /**
-     * Displays the Officer's own profile details (NRIC, Name, Age, etc.).
+     * Prints all assignment requests for a specific officer.
+     * @param officer The officer whose assignment requests are to be printed.
      */
-    public static void printOfficerProfile(Officer officer) {
-        System.out.println("=== Officer Profile ===");
-        System.out.println("Name         : " + officer.getName());
-        System.out.println("NRIC         : " + officer.getUserId());
-        System.out.println("Age          : " + officer.getAge());
-        System.out.println("Marital Status: " + officer.getMaritalStatus());
-    }
-
-    /**
-     * Generates a receipt for a booked application. 
-     * Typically done after the applicant's status is set to BOOKED.
-     */
-    public static void printReceipt(HousingReq application) {
-        System.out.println("=== Receipt ===");
-        System.out.println("Name         : " + application.getUser().getName());
-        System.out.println("NRIC         : " + application.getUser().getUserId());
-        System.out.println("Age          : " + application.getUser().getAge());
-        System.out.println("Marital Status: " + application.getUser().getMaritalStatus());
-        System.out.println("Flat Type Booked: " + application.getRoomType());
-        System.out.println("Project Name: " + application.getProject().getName());
-        System.out.println("Project Location: " + application.getProject().getNeighbourhood());
-    }
-
-    public static void printEnquiries(Project project) {
-        System.out.println("=== Enquiries for Project: " + project.getName() + " ===");
-        project.getEnquiryList().forEach(enquiry -> {
-            System.out.println("Enquiry ID: " + enquiry.getId() + " | Author: " + enquiry.getUser().getName() + " | Content: " + enquiry.get(0).getText());
-        });
-    }
-/**
-     * Views the project details of the assigned project or any project the system allows an officer to see.
-     */
-    public static void printProjectDetails(Project project) {
-        System.out.println("=== Project Details ===");
-        System.out.println("Project Name     : " + project.getName());
-        System.out.println("Neighborhood     : " + project.getNeighbourhood());
-        System.out.println("Available 2-Room : " + project.getUnits2Room());
-        System.out.println("Available 3-Room : " + project.getUnits3Room());
-        // Print any other relevant info your BTOProject class may hold
-    }
-
-    public static void printPastApplications(User client, HousingReqList reqList) {
+    public static void printAssignReq(Officer officer) {
+        AssignReqList reqList = officer.getAssignReqList();
         if (reqList.isEmpty()) {
-            System.out.println("You have not applied for any room yet.");
+            System.out.println("No assignment requests found.");
             return;
         }
 
+        System.out.println("=== Assignment Requests ===");
         for (int i = 0; i < reqList.size(); i++) {
-            HousingReq req = reqList.get(i);
-            Project project = req.getProject();
-            if (i == 0 && !client.hasActiveApplication()) {
-                System.out.println("\nUnsuccessful Applications\n");
-            }
-            if (i == 0 && client.hasActiveApplication()) {
-                if (req.getWithdrawalStatus() == HousingReq.WITHDRAWAL_STATUS.requested) {
-                    System.out.println("\n(Processing Withdrawal Request)");
-                }
-                System.out.println("Active Application\n");
-            }
-            if (i == 1 && !client.hasActiveApplication()) {
-                System.out.println("\nUnsuccessful Applications\n");
-            }
-
-            System.out.println("Project: " + project.getName() + " | Flat Type: " + req.getRoomType() + " | Status: " + req.getStatus());
+            AssignReq req = reqList.get(i);
+            System.out.printf("%d. Project: %s | Status: %s\n",
+                i + 1, req.getProject().getName(), req.getApplicationStatus());
         }
+    }
+
+    /**
+     * Prints details of a specific assignment request.
+     * @param req The assignment request to print.
+     */
+    public static void printAssignReq(AssignReq req) {
+        System.out.println("=== Assignment Request Details ===");
+        System.out.println("Officer: " + req.getOfficer().getName());
+        System.out.println("Project: " + req.getProject().getName());
+        System.out.println("Manager: " + req.getManager().getName());
+        System.out.println("Status: " + req.getApplicationStatus());
+    }
+
+    /**
+     * Prints assignment request details, omitting the manager's information.
+     * @param req The assignment request to print.
+     */
+    public static void printAssignReqOmitManager(AssignReq req) {
+        System.out.println("=== Assignment Request Details ===");
+        System.out.println("Officer: " + req.getOfficer().getName());
+        System.out.println("Project: " + req.getProject().getName());
+        System.out.println("Status: " + req.getApplicationStatus());
+    }
+
+    /**
+     * Prints assignment request details, omitting the officer's information.
+     * @param req The assignment request to print.
+     */
+    public static void printAssignReqOmitOfficer(AssignReq req) {
+        System.out.println("=== Assignment Request Details ===");
+        System.out.println("Project: " + req.getProject().getName());
+        System.out.println("Manager: " + req.getManager().getName());
+        System.out.println("Status: " + req.getApplicationStatus());
     }
 }

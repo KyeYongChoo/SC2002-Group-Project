@@ -136,4 +136,18 @@ public class ProjectPrinter {
             tableHeaders = new String[]{"Project Name","Neighbourhood","No. 2-Room","Price","Application Opening Date","Closing Date","Manager","Officer Slot","Officer"};
         }
     }
+
+    
+    /**
+     * NOT USED CURRENTLY
+     * May be used to correcty the formatting later on
+     */
+    public static void printProjectDetails(Project project) {
+        System.out.println("=== Project Details ===");
+        System.out.println("Project Name     : " + project.getName());
+        System.out.println("Neighborhood     : " + project.getNeighbourhood());
+        System.out.println("Available 2-Room : " + project.getUnits2Room());
+        System.out.println("Available 3-Room : " + project.getUnits3Room());
+        // Print any other relevant info your BTOProject class may hold
+    }
 }

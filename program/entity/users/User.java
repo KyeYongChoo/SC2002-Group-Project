@@ -2,12 +2,14 @@ package program.entity.users;
 
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import program.boundary.projectIO.UserPrefSorting;
 import program.boundary.security.UserValidator;
 import program.control.enquiry.Enquiry;
 import program.control.enquiry.EnquiryList;
+import program.control.housingApply.HousingReq;
 import program.control.housingApply.HousingReqList;
 import program.control.security.Password;
 import program.entity.project.Project;
@@ -27,6 +29,15 @@ public class User{
         FLAT_TYPE_2_ROOM,
         FLAT_TYPE_3_ROOM,
         ALPHABETICAL
+    }
+
+    public Project getApprovedProject(){
+        return reqList.stream().filter(req -> req.getStatus().equals(HousingReq.REQUEST_STATUS.successful))
+            .findAny().map(HousingReq::getProject).orElse(null);
+    }
+    public List<Project> getProjectStatus(HousingReq.REQUEST_STATUS status){
+        return reqList.stream().filter(req -> req.getStatus().equals(status))
+            .map(HousingReq::getProject).collect(Collectors.toList());
     }
 
     public FILTER_SETTING getFilterSetting(){
