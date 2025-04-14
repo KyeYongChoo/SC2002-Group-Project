@@ -8,6 +8,7 @@ import program.control.Main;
 import program.control.enquiry.Enquiry;
 import program.control.enquiry.EnquiryList;
 import program.control.housingApply.HousingReqList;
+import program.control.officerApply.TimeCompare;
 import program.entity.users.Manager;
 import program.entity.users.Officer;
 import program.entity.users.User;
@@ -121,7 +122,7 @@ public class Project {
     public boolean conflictInterest(User user) {
         return (user instanceof Manager // User is a manager
                 || this.projOfficerList.contains(user) // User is/was an officer of this project
-                || (user instanceof Officer && ((Officer) user).overlapTime(this))); // User is an officer with overlapping time with this project
+                || (user instanceof Officer && TimeCompare.officerUnassigned(((Officer) user), this))); // User is an officer with overlapping time with this project
     }
 
     public boolean canDeleteEnquiry(Enquiry enquiry) {

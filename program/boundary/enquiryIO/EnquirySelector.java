@@ -6,21 +6,14 @@ import java.util.function.Predicate;
 import program.boundary.console.AppScanner;
 import program.control.enquiry.Enquiry;
 import program.control.enquiry.EnquiryList;
-import program.entity.users.Manager;
-import program.entity.users.Officer;
 import program.entity.users.User;
 
 public class EnquirySelector {
     private static final Scanner sc = AppScanner.getInstance();
 
-
-    // Should not be used by anyone but manager, who looks though everything
-    public static Enquiry selectEnquiry(User user, EnquiryList enqList) {
-        return selectEnquiry(user, enqList, dummy -> true);
-    }
-    public static Enquiry selectEnquiry(User user, EnquiryList enqList, Predicate<Object> filter) {
+    public static Enquiry selectEnquiry(User user, EnquiryList enqList, Predicate<Object> enquiryFilter) {
         EnquiryList enqListCpy = new EnquiryList();
-        enqList.stream().filter(filter).forEach(enquiry -> enqListCpy.superAdd(enquiry));
+        enqList.stream().filter(enquiryFilter).forEach(enquiry -> enqListCpy.superAdd(enquiry));
         if (enqListCpy.isEmpty()) {
             System.out.println("No enquiries available.");
             return null;
@@ -45,19 +38,5 @@ public class EnquirySelector {
         }
 
         return selectedEnquiry;
-    }
-
-    public static boolean canEditOrDeleteEnquiry(User user, Enquiry enquiry) {
-        return enquiry.getUser().equals(user) && !enquiry.isStaffReplyPresent();
-    }
-
-    public static boolean canReplyToEnquiry(User user, Enquiry enquiry) {
-        if (user instanceof Manager){
-            return enquiry.getProject().getManager().equals(user);
-        }
-        if (user instanceof Officer) {
-            return enquiry.getProject().getOfficers().contains(user);
-        }
-        return false; // Applicants cannot reply
     }
 }

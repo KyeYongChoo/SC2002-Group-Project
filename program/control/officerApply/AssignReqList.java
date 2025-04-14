@@ -21,7 +21,7 @@ public class AssignReqList extends ArrayList<AssignReq>{
     @Override
     public boolean add(AssignReq req){
         // if a request has been made before for same applicant and same project
-        if (req.getOfficer().overlapTime(req.getProject())){
+        if (TimeCompare.officerUnassigned(req.getOfficer(), req.getProject())){
             System.out.println("Error: You have an active application at " + req.getOfficer().getCurProject());
             return false;
         }
@@ -41,15 +41,6 @@ public class AssignReqList extends ArrayList<AssignReq>{
         Main.assignReqList.add(0,req);
         System.out.println("Requested successfully");
         return true;
-    }
-
-    public static void printPastReq(Officer officer){
-        for (AssignReq req : officer.getAssignReqList()){
-            System.out.println("Project: " + req.getProject());
-            System.out.println("Application Status: " + req.getApplicationStatus());
-            System.out.println("Manager in charge: " + req.getManager());
-
-        }
     }
 
     public boolean add(Officer officer, Project project){

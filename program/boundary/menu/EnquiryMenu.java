@@ -27,10 +27,13 @@ public class EnquiryMenu extends MenuGroup {
             Enquiry newEnquiry = new Enquiry(user, enquiryText, targetProject);
             Main.enquiryList.add(newEnquiry);
             System.out.println("\nEnquiry saved. \nTime: " + newEnquiry.get(0).getTimeStamp() + "\nMessage: " + newEnquiry.get(0).getText());
-        }, user_ -> !(user_ instanceof Manager));
+        }, dummyVar -> !(user instanceof Manager));
 
         this.addMenuItem("View Enquiry", () -> {
-            Enquiry selectedEnquiry = EnquirySelector.selectEnquiry(user, Main.enquiryList, enquiry -> ((Enquiry) enquiry).getUser().equals(user));
+            Enquiry selectedEnquiry = EnquirySelector.selectEnquiry(
+                user, 
+                Main.enquiryList, 
+                user.getEnquiryViewFilter());
             if (selectedEnquiry != null) {
                 EnquiryPrinter.print(selectedEnquiry);
             }
@@ -41,7 +44,7 @@ public class EnquiryMenu extends MenuGroup {
             Enquiry selectedEnquiry = EnquirySelector.selectEnquiry(
                 user,
                 Main.enquiryList,
-                enquiry -> EnquirySelector.canEditOrDeleteEnquiry(user, (Enquiry) enquiry)
+                user.getEnquiryEditDeleteFilter()
             );
 
             if (selectedEnquiry == null) {
@@ -56,14 +59,14 @@ public class EnquiryMenu extends MenuGroup {
             } else {
                 System.out.println("Failed to update enquiry.");
             }
-        }, user_ -> !(user_ instanceof Manager));
+        }, dummyVar -> !(user instanceof Manager));
 
         this.addMenuItem("Delete Enquiry", () -> {
             // Use a predicate to filter only deletable enquiries
             Enquiry selectedEnquiry = EnquirySelector.selectEnquiry(
                 user,
                 Main.enquiryList,
-                enquiry -> EnquirySelector.canEditOrDeleteEnquiry(user, (Enquiry) enquiry)
+                user.getEnquiryEditDeleteFilter()
             );
 
             if (selectedEnquiry == null) {
@@ -72,24 +75,21 @@ public class EnquiryMenu extends MenuGroup {
             }
 
             EnquiryList.delete(selectedEnquiry);
-        }, user_ -> !(user_ instanceof Manager));
+        }, dummyVar -> !(user instanceof Manager));
 
         this.addMenuItem("Reply to Enquiry", () -> {
             Enquiry selectedEnquiry = EnquirySelector.selectEnquiry(
                 user,
                 Main.enquiryList,
-                enquiry -> EnquirySelector.canReplyToEnquiry(user, (Enquiry) enquiry)
+                user.getEnquiryReplyFilter()
             );
 
-            if (selectedEnquiry == null) {
-                System.out.println("No enquiries available for replying.");
-                return;
-            }
+            if (selectedEnquiry == null) return;
 
             System.out.println("Enter your reply:");
             String replyText = sc.nextLine();
             selectedEnquiry.add(user, replyText);
             System.out.println("Reply saved successfully.");
-        }, user_ -> !(user_ instanceof Officer));// officer and Manager can reply to Enquiries but not Applicants
+        }, dummyVar -> user instanceof Officer);// officer and Manager can reply to Enquiries but not Applicants
     }
 }

@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter;
 
 import program.control.enquiry.Enquiry;
 import program.control.enquiry.EnquiryList;
+import program.control.enquiry.Message;
 import program.entity.users.Manager;
 import program.entity.users.Officer;
 import program.entity.users.User;
@@ -14,7 +15,12 @@ public class EnquiryPrinter {
     public static void print(Enquiry enquiry) {
         System.out.println("Created on " + enquiry.getDateCreated().format(formatter));
         System.out.println("For project " + enquiry.getProject());
-        System.out.println("First Message: " + enquiry.get(0).getText());
+        for (Message m : enquiry){
+            System.out.println("\nTime: " + m.getTimeStamp().format(formatter) + 
+                "\n(" + (m.getUser().getClass().getSimpleName())  + ") " + m.getUser() + ": " +
+                "\n" + m.getText());
+
+        }
     }
 
     public static void printEnquiryList(User user, EnquiryList enqList) {

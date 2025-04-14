@@ -1,10 +1,12 @@
 package program.entity.users;
 
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import program.boundary.projectIO.UserPrefSorting;
 import program.boundary.security.UserValidator;
+import program.control.enquiry.Enquiry;
 import program.control.enquiry.EnquiryList;
 import program.control.housingApply.HousingReqList;
 import program.control.security.Password;
@@ -158,6 +160,18 @@ public class User{
     // Currently Unused. Could be used for shorthand later on
     public Stream<Project> userFilterStream(List<Project> projects) {
         return UserPrefSorting.userFilterStream(this, projects);
+    }
+
+    public Predicate<Object> getEnquiryViewFilter(){
+        return enquiry -> ((Enquiry) enquiry).getUser().equals(this);
+    }
+
+    public Predicate<Object> getEnquiryEditDeleteFilter(){
+        return enquiry -> ((Enquiry) enquiry).getUser().equals(this) && !((Enquiry) enquiry).isStaffReplyPresent();
+    }
+
+    public Predicate<Object> getEnquiryReplyFilter(){
+        return enquiry -> false; // Applicants cannot reply
     }
 
 }

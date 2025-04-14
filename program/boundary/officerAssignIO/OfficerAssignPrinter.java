@@ -8,6 +8,9 @@ import program.entity.users.User;
 
 public class OfficerAssignPrinter {
 
+    /**
+     * Displays the Officer's own profile details (NRIC, Name, Age, etc.).
+     */
     public static void printOfficerProfile(Officer officer) {
         System.out.println("=== Officer Profile ===");
         System.out.println("Name         : " + officer.getName());
@@ -16,6 +19,10 @@ public class OfficerAssignPrinter {
         System.out.println("Marital Status: " + officer.getMaritalStatus());
     }
 
+    /**
+     * Generates a receipt for a booked application. 
+     * Typically done after the applicant's status is set to BOOKED.
+     */
     public static void printReceipt(HousingReq application) {
         System.out.println("=== Receipt ===");
         System.out.println("Name         : " + application.getUser().getName());
@@ -33,13 +40,16 @@ public class OfficerAssignPrinter {
             System.out.println("Enquiry ID: " + enquiry.getId() + " | Author: " + enquiry.getUser().getName() + " | Content: " + enquiry.get(0).getText());
         });
     }
-
+/**
+     * Views the project details of the assigned project or any project the system allows an officer to see.
+     */
     public static void printProjectDetails(Project project) {
         System.out.println("=== Project Details ===");
         System.out.println("Project Name     : " + project.getName());
         System.out.println("Neighborhood     : " + project.getNeighbourhood());
         System.out.println("Available 2-Room : " + project.getUnits2Room());
         System.out.println("Available 3-Room : " + project.getUnits3Room());
+        // Print any other relevant info your BTOProject class may hold
     }
 
     public static void printPastApplications(User client, HousingReqList reqList) {

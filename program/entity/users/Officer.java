@@ -2,6 +2,7 @@ package program.entity.users;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.function.Predicate;
 
 import program.control.Main;
 import program.control.enquiry.Enquiry;
@@ -35,6 +36,11 @@ public class Officer extends Applicant {
         return reqList;
     }
 
+    /*
+     * returns current project the officer is in charge of
+     * Take note officer may be approved for more objects in the future
+     * If not sure, use Project's conflictInterest or manually filter through Project
+     */
     public Project getCurProject(){
         for (Project project : Main.projectList){
             if (project.getOfficers().contains(this) && project.nowOpen()){
@@ -76,142 +82,30 @@ public class Officer extends Applicant {
         }
         
     }
-
-    /**
-     * Retrieves a BTOApplication for an applicant based on NRIC, within the project(s) this Officer handles.
-     * There probably another menu etc nvm 
-     */
-    public HousingReq retrieveApplication(String nric) {
-        // If an Officer is assigned to a single project:
-        if (this.getCurProject() == null) {
-            System.out.println("Officer is not assigned to any project.");
-            return null;
-        }
-        HousingReqList reqList = this.getCurProject().getReqList();
-        // Iterate through all HousingReq in that list, searching for the matching NRIC
-        for (HousingReq req : reqList) {
-            User reqUser = req.getUser();
-            if (reqUser != null && reqUser.getUserId().equalsIgnoreCase(nric)) {
-                return req;  // Found the matching application
-            }
-        }
-        System.out.println("No application found for NRIC: " + nric + " in project " + this.getCurProject().getName());
-        return null;
-    }
-
-    /**
-     * Displays the Officer's own profile details (NRIC, Name, Age, etc.).
-     */
-    public void viewOfficerProfile() {
-        System.out.println("=== Officer Profile ===");
-        System.out.println("Name         : " + this.getName());
-        System.out.println("NRIC         : " + this.getUserId());
-        System.out.println("Age          : " + this.getAge());
-        System.out.println("Marital Status: " + this.getMaritalStatus());
-        // Add any additional fields or methods as needed
-    }
-
-    /**
-     * Generates a receipt for a booked application. 
-     * Typically done after the applicant's status is set to BOOKED.
-     */
-    public void generateReceipt(HousingReq application) {
-        if (this.getCurProject()!=application.getProject()) {
-            System.out.println("You are not assigned to this project, cannot generate a receipt.");
-        }
-        else{
-            if (application.getStatus() != REQUEST_STATUS.booked) {
-                System.out.println("Cannot generate a receipt because the application is not BOOKED yet.");
-            }
-            else{
-                System.out.println("=== Receipt ===");
-                System.out.println("Name         : " + application.getUser().getName());
-                System.out.println("NRIC         : " + application.getUser().getUserId());
-                System.out.println("Age          : " + application.getUser().getAge());
-                System.out.println("Marital Status: " + application.getUser().getMaritalStatus());
-                System.out.println("Flat Type Booked: " + application.getRoomType());
-                System.out.println("Project Name: " + application.getProject().getName());
-                System.out.println("Project Location: " + application.getProject().getNeighbourhood());
-            }
-        }
-    }
-
-    /**
-     * View (or list) enquiries for the Officer’s assigned project(s). 
-     * If you store Enquiries in a collection in BTOProject or a separate manager class, 
-     * adapt the retrieval accordingly.
-     */
-    public void viewEnquiries(Project project) {
-        if (this.getCurProject()!=project) {
-            System.out.println("You do not handle this project, cannot view inquiries.");
-        }
-        else{
-            System.out.println("=== Inquiries for Project: " + project.getName() + " ===");
-            for (Enquiry e : project.getEnquiryList()) {
-                System.out.println("Enquiry ID: " + e.getId() + " | Author: " + e.getUser().getName() + " | Content: " + e.get(0).getText());
-            }
-        
-        }
-    }
-
-    /**
-     * Replies to an enquiry with a given string. Typically you’d store the reply in the Enquiry or 
-     * log it somewhere.
-     */
-    public void replyEnquiries(Enquiry enquiry, String reply) {
-        Project project = enquiry.getProject();
-        if (this.getCurProject()!=project) {
-            System.out.println("You do not handle this project, cannot reply to inquiries.");
-            return;
-        }
-        enquiry.add(this, reply);
-        System.out.println("Reply added to Enquiry ID: " + enquiry.getId());
-    }
-
-     /**
-     * Views the project details of the assigned project or any project the system allows an officer to see.
-     */
-    public void viewProject(Project project) {
-        if (this.getCurProject()!=project) {
-            System.out.println("You are not authorized to view the full details of this project.");
-            return;
-        }
-        System.out.println("=== Project Details ===");
-        System.out.println("Project Name     : " + project.getName());
-        System.out.println("Neighborhood     : " + project.getNeighbourhood());
-        System.out.println("Available 2-Room : " + project.getUnits2Room());
-        System.out.println("Available 3-Room : " + project.getUnits3Room());
-        // Print any other relevant info your BTOProject class may hold
-    }
-
-
-    public boolean overlapTime (Project targetProject){
-        return Main.projectList.stream()
-            .filter(project -> project.getOfficers().contains(this))
-            .anyMatch(project -> overlapTime(project, targetProject));
-    }
-    public boolean overlapTime (Project proj1, Project proj2){
-        if (proj1 == null || proj2 == null) return false;
-        LocalDate openDate1 = proj1.getOpenDate();
-        LocalDate openDate2 = proj2.getOpenDate();
-        LocalDate closeDate1 = proj1.getCloseDate();
-        LocalDate closeDate2 = proj2.getCloseDate();
-        if (openDate1.isAfter(closeDate2) || closeDate1.isBefore(openDate2)) return false;
-        else return true;
-    }
-    public boolean overlapTime (LocalDateTime dateTime){
-        return overlapTime(dateTime.toLocalDate());
-    }
-    public boolean overlapTime (LocalDate date){
-        LocalDate openDate = this.getCurProject().getOpenDate();
-        LocalDate closeDate = this.getCurProject().getCloseDate();
-        if ((openDate.isBefore(date) || openDate.equals(date)) && (closeDate.isAfter(date) || closeDate.equals(date))){
-            return true;
-        }else return false;
-    }
     
     @Override
     public String getGreeting(){
-        return super.getGreeting() + "\nYou are currently handling project:\n" + this.getCurProject() + "\nFrom " + this.getCurProject().getOpenDate() + " until " + this.getCurProject().getCloseDate();
+        Project curProject = getCurProject();
+        if (curProject == null){
+            return super.getGreeting() + 
+            "\nYou are currently not handling a project";
+        }
+        return super.getGreeting() + 
+            "\nYou are currently handling project:\n" + 
+            this.getCurProject() + 
+            "\nFrom " + 
+            this.getCurProject().getOpenDate() + 
+            " until " + 
+            this.getCurProject().getCloseDate();
+    }
+
+    @Override
+    public Predicate<Object> getEnquiryViewFilter(){
+        return enquiry -> ((Enquiry) enquiry).getUser().equals(this) || ((Enquiry) enquiry).getProject().getOfficers().contains(this);
+    }
+
+    @Override
+    public Predicate<Object> getEnquiryReplyFilter(){
+        return enquiry -> ((Enquiry) enquiry).getProject().getOfficers().contains(this);
     }
 }

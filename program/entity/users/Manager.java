@@ -1,6 +1,11 @@
 package program.entity.users;
 
+import java.util.function.Predicate;
+
+import program.control.Main;
+import program.control.enquiry.Enquiry;
 import program.control.security.Password;
+import program.entity.project.Project;
 
 public class Manager extends Officer {
     public Manager(String NRIC, String name, int age, String marital_status, String password) throws Exception{
@@ -20,8 +25,23 @@ public class Manager extends Officer {
         return this;
     }
 
+    @Override 
+    public Project getCurProject() {
+        return Main.projectList.stream().filter(project -> project.getManager().equals(this)).findAny().orElse(null);
+    }
+
     @Override
     public String getGreeting(){
         return "\nYou are currently handling project:\n" + this.getCurProject() + "\nFrom " + this.getCurProject().getOpenDate() + " until " + this.getCurProject().getCloseDate();
+    }
+
+    @Override
+    public Predicate<Object> getEnquiryViewFilter(){
+        return enquiry -> true;
+    }
+
+    @Override
+    public Predicate<Object> getEnquiryReplyFilter(){
+        return enquiry -> ((Enquiry) enquiry).getProject().getManager().equals(this);
     }
 }

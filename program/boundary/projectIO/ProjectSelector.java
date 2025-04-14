@@ -1,5 +1,6 @@
 package program.boundary.projectIO;
 
+import program.control.officerApply.TimeCompare;
 import program.entity.project.Project;
 import program.entity.users.Officer;
 import program.entity.users.User;
@@ -35,7 +36,7 @@ public class ProjectSelector {
     public static Project chooseProjectForOfficer(Officer officer, List<Project> projectList) {
         List<Project> officerProjects = UserPrefSorting.userFilterStream(officer,projectList)
             .filter(project -> !project.getOfficers().contains(officer))
-            .filter(project -> !officer.overlapTime(project))
+            .filter(project -> TimeCompare.officerUnassigned(officer, project))
             .collect(Collectors.toList());
 
         return chooseFromList(officer, officerProjects, "Choose a project:");

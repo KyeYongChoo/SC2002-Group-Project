@@ -50,8 +50,10 @@ public class MenuNavigator {
                 else {
                     MenuItem selected = items.get(choice);
                     selected.execute();
-                    System.out.println("Press enter to continue...");
-                    sc.nextLine();
+                    if (!(selected instanceof MenuGroup)){
+                        System.out.println("Press enter to continue...");
+                        sc.nextLine();
+                    }
                 }
 
             } catch (Exception e){

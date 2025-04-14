@@ -11,7 +11,6 @@ public class MainMenu extends MenuGroup{
         this.addMenuItem(new EnquiryMenu(user));
         this.addMenuItem(new ProjectApplicationMenu(user));
         this.addMenuItem(new ProjectManageMenu(user));
-        this.addMenuItem(new EnquiryMenu(user));
 
         this.addMenuItem("Reset Password",
             () -> {
