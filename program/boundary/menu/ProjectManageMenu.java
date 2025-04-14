@@ -16,6 +16,7 @@ public class ProjectManageMenu extends MenuGroup {
         this.addMenuItem("Approve incoming Officer requests", () -> {
             Manager manager = (Manager) user;
             AssignReq req = OfficerAssignSelector.selectByProject(manager.getCurProject());
+            if (req == null) return;
             OfficerAssignSelector.selectAcceptOrReject(req);
             // Manager and above
         }, dummyVar -> user instanceof Manager);
@@ -27,7 +28,7 @@ public class ProjectManageMenu extends MenuGroup {
         this.addMenuItem("Approve HDB Applications", () -> {
 
         });
-        // // template
+        // template
         // this.addMenuItem("", () -> {
         // });
 

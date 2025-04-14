@@ -5,6 +5,7 @@ import program.boundary.projectIO.ProjectSelect;
 import program.boundary.projectIO.ProjectSelector;
 import program.boundary.projectIO.RoomTypeSelector;
 import program.control.Main;
+import program.control.housingApply.HousingReqList;
 import program.entity.project.Project;
 import program.entity.project.Project.ROOM_TYPE;
 import program.entity.users.Manager;
@@ -23,6 +24,7 @@ public class ProjectApplicationMenu extends MenuGroup {
         this.addMenuItem("Apply to a project", 
             () -> {
                 Project project = ProjectSelector.chooseVisibleProjectWithoutConflict(user, Main.projectList);
+                if (project == null) return;
                 ROOM_TYPE targetRoomType = RoomTypeSelector.selectRoomType(user, project);
 
                 // Add the application to the request list
@@ -34,7 +36,7 @@ public class ProjectApplicationMenu extends MenuGroup {
         );
 
         this.addMenuItem("View your applications",
-            () -> user.printPastReq()
+            () -> HousingReqList.printPast(user)
         );
 
         this.addMenuItem("Request application withdrawal",

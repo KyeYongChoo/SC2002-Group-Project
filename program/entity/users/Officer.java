@@ -103,6 +103,7 @@ public class Officer extends Applicant {
 
     @Override
     public Predicate<Object> getEnquiryReplyFilter(){
-        return enquiry -> ((Enquiry) enquiry).getProject().getOfficers().contains(this);
+        return enquiry -> ((Enquiry) enquiry).getProject().getOfficers().contains(this) ||
+            super.getEnquiryReplyFilter().test(enquiry);
     }
 }

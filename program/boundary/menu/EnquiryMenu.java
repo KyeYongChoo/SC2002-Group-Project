@@ -17,7 +17,7 @@ public class EnquiryMenu extends MenuGroup {
         super("Manage Enquiries");
 
         this.addMenuItem("Create Enquiry", () -> {
-            Project targetProject = ProjectSelect.chooseVisibleProjectWithoutConflict(user);
+            Project targetProject = ProjectSelect.chooseVisibleProject(user);
             if (targetProject == null) {
                 System.out.println("No valid project selected.");
                 return;

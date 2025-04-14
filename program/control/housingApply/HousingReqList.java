@@ -79,7 +79,7 @@ public class HousingReqList extends ArrayList<HousingReq>{
 
     public static void printPast(User client){
         if (client.getReqList().equals(new HousingReqList())){
-            System.out.println("You have not applied for any room yet.");
+            System.out.println("You have not applied for any HDB yet.");
             return;
         }
 

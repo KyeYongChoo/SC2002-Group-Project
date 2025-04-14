@@ -51,7 +51,7 @@ public class Main {
     public static User SkipLogin(USER choice){
         return switch (choice) {
             case Applicant -> applicantList.get(0);
-            case Officer -> officerList.get(0);
+            case Officer -> officerList.get(2);// David : 2 is not assigned to any project
             case Manager -> managerList.get(0);
         };
     }

@@ -30,6 +30,7 @@ public class EnquiryPrinter {
                 System.out.println("\n" + (i + 1) + ".\nCreated on " + enquiry.getDateCreated().format(formatter));
                 System.out.println("For project " + enquiry.getProject());
                 System.out.println("First Message: " + enquiry.get(0).getText());
+                System.out.println("Created By: " + enquiry.getUser() + " (" + enquiry.getUser().getClass().getSimpleName() + ") ");
             }
         }
     }

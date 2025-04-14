@@ -71,6 +71,7 @@ public class Project {
         } catch (NumberFormatException e) {
             throw new Exception("Officer Slot isn't an Integer. Officer Slot field for reference: "+ officerSlots);
         }
+        if (OfficerLstStrInput.isEmpty()) return;
         Officer officer;
         for (String officerStr : OfficerLstStrInput.split(",")){
             officer = (Officer) Main.officerList.getByName(officerStr);
@@ -120,10 +121,15 @@ public class Project {
     }
 
     public boolean conflictInterest(User user) {
-        return (user instanceof Manager // User is a manager
+        // For debug
+        // System.out.println("Manager: " + (user instanceof Manager)); // User is a manager
+        // System.out.println("Involved in this proj: " + this.projOfficerList.contains(user)); // User is/was an officer working on this project
+        // System.out.println("user busy: " + (user instanceof Officer && !TimeCompare.officerUnassigned(((Officer) user), this))); // User is an officer with overlapping time with this project
+        // System.out.println("alreadyHave House: " + user.hasActiveApplication());
+        return (user instanceof Manager) // User is a manager
                 || this.projOfficerList.contains(user) // User is/was an officer working on this project
-                || (user instanceof Officer && TimeCompare.officerUnassigned(((Officer) user), this))) // User is an officer with overlapping time with this project
-                || Main.reqList.stream().anyMatch(HousingReq -> HousingReq.getUser().equals(user));
+                || (user instanceof Officer && !TimeCompare.officerUnassigned(((Officer) user), this)) // User is an officer with overlapping time with this project
+                || user.hasActiveApplication();
     }
 
     public boolean canDeleteEnquiry(Enquiry enquiry) {

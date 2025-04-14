@@ -62,19 +62,66 @@ public class OfficerAssignSelector {
         System.out.println("=== Process Assignment Request ===");
         OfficerAssignPrinter.printAssignReq(req);
 
+        // Validate officer slots
+        if (!validateOfficerSlots(req)) {
+            return;
+        }
+
+        // Prompt manager to accept or reject the request
         String choice;
         do {
             System.out.print("Accept or Reject this request? (A/R): ");
             choice = sc.nextLine().trim().toUpperCase();
         } while (!choice.equals("A") && !choice.equals("R"));
 
+        // Process the manager's decision
         if (choice.equals("A")) {
-            req.setApplicationStatus(AssignReq.APPLICATION_STATUS.accepted);
-            req.getProject().setOfficerSlots(req.getProject().getOfficerSlots() -1);
-            System.out.println("Request accepted.");
+            acceptRequest(req);
         } else {
-            req.setApplicationStatus(AssignReq.APPLICATION_STATUS.rejected);
-            System.out.println("Request rejected.");
+            rejectRequest(req);
         }
+    }
+
+    /**
+     * Validates if the project has available officer slots.
+     * @param req The assignment request to validate.
+     * @return True if slots are available, false otherwise.
+     */
+    private static boolean validateOfficerSlots(AssignReq req) {
+        if (req.getProject().getOfficerSlots() == 0) {
+            System.out.println("Sorry. No remaining officer slots.");
+            String choice;
+            do {
+                System.out.print("Reject this request? (Y/N): ");
+                choice = sc.nextLine().trim().toUpperCase();
+            } while (!choice.equals("Y") && !choice.equals("N"));
+
+            if (choice.equals("Y")) {
+                rejectRequest(req);
+            } else {
+                System.out.println("Request remains pending.");
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Accepts the assignment request and updates the project officer slots.
+     * @param req The assignment request to accept.
+     */
+    private static void acceptRequest(AssignReq req) {
+        req.setApplicationStatus(AssignReq.APPLICATION_STATUS.accepted);
+        req.getProject().setOfficerSlots(req.getProject().getOfficerSlots() - 1);
+        System.out.println("Request accepted.");
+    }
+
+    /**
+     * Rejects the assignment request.
+     * @param req The assignment request to reject.
+     */
+    private static void rejectRequest(AssignReq req) {
+        req.setApplicationStatus(AssignReq.APPLICATION_STATUS.rejected);
+        System.out.println("Request rejected.");
     }
 }

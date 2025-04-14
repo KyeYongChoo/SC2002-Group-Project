@@ -1,23 +1,47 @@
 package program.boundary.menu;
 
+import java.util.stream.Collectors;
+
 import program.boundary.menuTemplate.MenuGroup;
 import program.boundary.officerAssignIO.OfficerAssignPrinter;
 import program.boundary.projectIO.ProjectSelector;
 import program.control.Main;
+import program.entity.project.Project;
 import program.entity.users.Manager;
 import program.entity.users.Officer;
 import program.entity.users.User;
 
 public class OfficerApplyMenu extends MenuGroup {
     public OfficerApplyMenu(User user) {
-        super("Check your HDB Officer registration: ", 
+        // Menu title and condition: Only accessible to Officers who are not Managers
+        super("Manage your HDB Officer applications ", 
             dummyVar -> user instanceof Officer && !(user instanceof Manager));
 
+        // Option 1: Check the officer's profile
         this.addMenuItem("Check your Profile", () -> 
-            System.out.println(user.getGreeting()));
-        this.addMenuItem("Check status of registration: ", () -> 
-            OfficerAssignPrinter.printAssignReq((Officer) user));
-        this.addMenuItem("Join project as HDB Officer",() -> 
-            Main.assignReqList.add((Officer) user, ProjectSelector.chooseVisibleProjectWithoutConflict((Officer) user, Main.projectList)));
+            System.out.println(user.getGreeting())); // Prints a greeting or profile information for the user
+
+        // Option 2: Check the status of the officer's registration
+        this.addMenuItem("Check status of registration ", () -> 
+            OfficerAssignPrinter.printAssignReq((Officer) user)); // Prints all assignment requests for the officer
+
+        // Option 3: Join a project as an HDB Officer
+        this.addMenuItem("Join project as HDB Officer", () -> {
+            Project targetProject = ProjectSelector.chooseVisibleProjectWithoutConflict(
+                    (Officer) user, // The officer selecting the project
+                    Main.projectList.stream()
+                        // Filter projects with available officer slots
+                        .filter(project -> project.getOfficerSlots() > 0 &&
+                            // Exclude projects where the officer already has an assignment request
+                            Main.assignReqList.stream().noneMatch(assignReq -> 
+                                assignReq.getOfficer().equals(user) 
+                                && assignReq.getProject().equals(project)
+                            )
+                        )
+                        .collect(Collectors.toList()) // Collect the filtered projects into a list
+                );
+            if (targetProject == null) return;
+            Main.assignReqList.add((Officer) user, targetProject);
+        });
     }
 }
