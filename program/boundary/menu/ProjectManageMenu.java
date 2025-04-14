@@ -20,7 +20,11 @@ public class ProjectManageMenu extends MenuGroup {
             dummyVar -> !(user instanceof Manager) // managers may not join HDB Projects
         );
 
-        
+        this.addMenuItem(
+            new MenuGroup("Check your HDB Officer registration: ", dummyVar -> !(user instanceof Manager)) // Managers are not HDB Officers
+            .addMenuItem("Check your Profile", () -> System.out.println(user.getGreeting()))
+            //.addMenuItem("Check status of registration: ", ()-> )
+        );
     }
     
 }
