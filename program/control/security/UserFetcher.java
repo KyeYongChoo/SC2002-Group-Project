@@ -1,6 +1,7 @@
-package program.control;
+package program.control.security;
 
 import program.boundary.security.PasswordVerifier;
+import program.control.Main;
 import program.entity.users.User;
 
 public class UserFetcher {

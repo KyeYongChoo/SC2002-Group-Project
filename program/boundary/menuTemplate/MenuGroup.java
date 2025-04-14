@@ -18,16 +18,20 @@ public class MenuGroup extends MenuItem {
         this(description, dummy -> true); 
     }
 
-    public void addMenuItem(MenuItem menuItem) {
+    // return line supports method chaining 
+    public MenuItem addMenuItem(MenuItem menuItem) {
         menuItems.add(menuItem);
+        return this;
     }
 
-    public void addMenuItem(String description, MenuAction action){
-        menuItems.add(new MenuItem (description, action));
+    // Centralise all the addMenuItem logic
+    public MenuItem addMenuItem(String description, MenuAction action){
+        return this.addMenuItem(new MenuItem (description, action));
     }
 
-    public void addMenuItem(String description, MenuAction action, Predicate<Object> visibleIf){
-        menuItems.add(new MenuItem (description, action, visibleIf));
+    // Centralise all the addMenuItem logic
+    public MenuItem addMenuItem(String description, MenuAction action, Predicate<Object> visibleIf){
+        return this.addMenuItem(new MenuItem (description, action, visibleIf));
     }
 
     public List<MenuItem> getItems() {

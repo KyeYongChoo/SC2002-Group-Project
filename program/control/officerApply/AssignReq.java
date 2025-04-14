@@ -1,4 +1,4 @@
-package program.control.interclass;
+package program.control.officerApply;
 
 import program.entity.project.Project;
 import program.entity.users.Manager;

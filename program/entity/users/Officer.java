@@ -4,12 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import program.control.Main;
-import program.control.interclass.AssignReq;
-import program.control.interclass.AssignReqList;
-import program.control.interclass.Enquiry;
-import program.control.interclass.HousingReq;
-import program.control.interclass.HousingReqList;
-import program.control.interclass.HousingReq.REQUEST_STATUS;
+import program.control.enquiry.Enquiry;
+import program.control.housingApply.HousingReq;
+import program.control.housingApply.HousingReqList;
+import program.control.housingApply.HousingReq.REQUEST_STATUS;
+import program.control.officerApply.AssignReq;
+import program.control.officerApply.AssignReqList;
 import program.control.security.Password;
 import program.entity.project.Project;
 import program.entity.project.Project.ROOM_TYPE;

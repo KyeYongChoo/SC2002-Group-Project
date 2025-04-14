@@ -6,10 +6,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import program.control.Main;
-import program.control.UserFetcher;
-import program.control.interclass.Enquiry;
-import program.control.interclass.Message;
+import program.control.enquiry.Enquiry;
+import program.control.enquiry.Message;
 import program.control.security.Password;
+import program.control.security.UserFetcher;
 import program.entity.project.Project;
 import program.entity.users.Applicant;
 import program.entity.users.Manager;

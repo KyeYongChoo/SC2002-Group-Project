@@ -1,9 +1,9 @@
-package program.control.interclass;
+package program.control.housingApply;
 
 import program.boundary.projectIO.ProjectSelect;
 import program.control.Main;
-import program.control.interclass.HousingReq.REQUEST_STATUS;
-import program.control.interclass.HousingReq.WITHDRAWAL_STATUS;
+import program.control.housingApply.HousingReq.REQUEST_STATUS;
+import program.control.housingApply.HousingReq.WITHDRAWAL_STATUS;
 import program.entity.project.Project;
 import program.entity.project.Project.ROOM_TYPE;
 import program.entity.users.Manager;

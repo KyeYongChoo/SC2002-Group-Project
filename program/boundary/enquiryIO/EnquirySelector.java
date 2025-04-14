@@ -4,8 +4,8 @@ import java.util.Scanner;
 import java.util.function.Predicate;
 
 import program.boundary.console.AppScanner;
-import program.control.interclass.Enquiry;
-import program.control.interclass.EnquiryList;
+import program.control.enquiry.Enquiry;
+import program.control.enquiry.EnquiryList;
 import program.entity.users.Manager;
 import program.entity.users.Officer;
 import program.entity.users.User;

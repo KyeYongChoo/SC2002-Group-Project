@@ -1,4 +1,4 @@
-package program.control.interclass;
+package program.control.enquiry;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

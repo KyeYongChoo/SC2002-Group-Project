@@ -7,8 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import program.control.Main;
-import program.control.interclass.Enquiry;
-import program.control.interclass.Message;
+import program.control.enquiry.Enquiry;
+import program.control.enquiry.Message;
 import program.entity.project.Project;
 import program.entity.users.Applicant;
 import program.entity.users.Manager;

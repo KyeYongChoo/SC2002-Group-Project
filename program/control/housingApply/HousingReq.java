@@ -1,4 +1,4 @@
-package program.control.interclass;
+package program.control.housingApply;
 
 import program.entity.project.Project;
 import program.entity.project.Project.ROOM_TYPE;

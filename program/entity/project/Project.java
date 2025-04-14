@@ -5,9 +5,9 @@ import java.util.Scanner;
 
 import program.boundary.console.AppScanner;
 import program.control.Main;
-import program.control.interclass.Enquiry;
-import program.control.interclass.EnquiryList;
-import program.control.interclass.HousingReqList;
+import program.control.enquiry.Enquiry;
+import program.control.enquiry.EnquiryList;
+import program.control.housingApply.HousingReqList;
 import program.entity.users.Manager;
 import program.entity.users.Officer;
 import program.entity.users.User;

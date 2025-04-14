@@ -3,7 +3,7 @@ package program.boundary.security;
 import java.util.Scanner;
 
 import program.boundary.console.AppScanner;
-import program.control.UserFetcher;
+import program.control.security.UserFetcher;
 import program.entity.users.User;
 
 public class LoginHandler {
@@ -12,7 +12,7 @@ public class LoginHandler {
     public static User loginUser(){
         System.out.println("\nPlease Log In:");
         for (int attemptsLeft =  4; attemptsLeft >= 0; attemptsLeft--){
-            String NRIC = User.inputNRIC();
+            String NRIC = UserValidator.inputNRIC();
             System.out.println("Please enter User Password: ");
             String userInput = sc.nextLine();
             

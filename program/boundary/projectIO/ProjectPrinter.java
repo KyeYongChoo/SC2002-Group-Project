@@ -9,10 +9,8 @@ import program.entity.users.User;
 public class ProjectPrinter {
     // Overloaded method: Print all visible projects for a client
     public static void printVisible(User client) {
-        Main.projectList.stream()
+        UserPrefSorting.userFilterStream(client,Main.projectList)
             .filter(project -> project.isVisibleTo(client)) // Use Project's isVisibleTo method
-            .filter(project -> ProjectFilter.filterByFlatType(project, client.getFilterSetting())) // Additional filtering for flat types
-            .sorted((p1, p2) -> ProjectFilter.compareProjects(p1, p2, client.getFilterSetting())) // Sort based on filter setting
             .forEach(project -> printVisible(client, project)); // Delegate to the overloaded method
     }
 
