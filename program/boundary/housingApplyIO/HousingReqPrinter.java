@@ -69,4 +69,23 @@ public class HousingReqPrinter {
         System.out.println("Project Name: " + application.getProject().getName());
         System.out.println("Project Location: " + application.getProject().getNeighbourhood());
     }
+
+    /**
+     * Prints the details of a given HousingReq.
+     */
+    public static void printHousingRequest(HousingReq request) {
+        System.out.println("=== Housing Request Details ===");
+        System.out.println("Applicant Name   : " + request.getUser().getName());
+        System.out.println("Applicant NRIC   : " + request.getUser().getUserId());
+        System.out.println("Project Name     : " + request.getProject().getName());
+        System.out.println("Project Location : " + request.getProject().getNeighbourhood());
+        System.out.println("Flat Type        : " + request.getRoomType());
+        System.out.println("Request Status   : " + request.getStatus());
+        System.out.println("Withdrawal Status: " + request.getWithdrawalStatus());
+        if (request.getApprovedBy() != null) {
+            System.out.println("Approved By      : " + request.getApprovedBy().getName());
+        } else {
+            System.out.println("Approved By      : Not yet approved");
+        }
+    }
 }

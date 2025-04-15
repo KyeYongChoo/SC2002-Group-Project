@@ -12,16 +12,17 @@ import program.entity.users.User;
 public class HousingReq {
     private User user;
     private Project project;
-    private Officer approvedBy = null;
+    private Manager approvedBy = null;
+    private Officer bookedBy = null;
     private REQUEST_STATUS requestStatus = REQUEST_STATUS.pending;
     private ROOM_TYPE roomType; 
     private WITHDRAWAL_STATUS withdrawalStatus = WITHDRAWAL_STATUS.notRequested;
 
-    public WITHDRAWAL_STATUS getWithdrawalStatus(){
-        return withdrawalStatus;
-    }
-    public void setWithdrawalStatus(WITHDRAWAL_STATUS withdrawalStatus){
-        this.withdrawalStatus = withdrawalStatus;
+    public static enum REQUEST_STATUS{
+        pending,
+        successful,
+        unsuccessful,
+        booked
     }
 
     public static enum WITHDRAWAL_STATUS{
@@ -30,23 +31,31 @@ public class HousingReq {
         approved,
     }
 
-    public Officer getApprovedBy(){
+    public WITHDRAWAL_STATUS getWithdrawalStatus(){
+        return withdrawalStatus;
+    }
+    public void setWithdrawalStatus(WITHDRAWAL_STATUS withdrawalStatus){
+        this.withdrawalStatus = withdrawalStatus;
+    }
+
+    public Manager getApprovedBy(){
         return approvedBy;
     }
 
-    public void setApprovedBy(Officer officer){
-        approvedBy = officer;
+    public void setApprovedBy(Manager manager){
+        approvedBy = manager;
+    }
+
+    public Officer getBookedBy(){
+        return bookedBy;
+    }
+
+    public void setBookedBy(Officer officer){
+        bookedBy = officer;
     }
 
     public Manager getManager(){
         return this.project.getManager();
-    }
-
-    public static enum REQUEST_STATUS{
-        pending,
-        successful,
-        unsuccessful,
-        booked
     }
     
     public HousingReq(User client, Project project, ROOM_TYPE roomType){
@@ -95,5 +104,29 @@ public class HousingReq {
 
     public Project getProject(){
         return project;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== Housing Request Details ===\n");
+        sb.append("Applicant Name   : ").append(user.getName()).append("\n");
+        sb.append("Applicant NRIC   : ").append(user.getUserId()).append("\n");
+        sb.append("Project Name     : ").append(project.getName()).append("\n");
+        sb.append("Project Location : ").append(project.getNeighbourhood()).append("\n");
+        sb.append("Flat Type        : ").append(roomType).append("\n");
+        sb.append("Request Status   : ").append(requestStatus).append("\n");
+        sb.append("Withdrawal Status: ").append(withdrawalStatus).append("\n");
+        if (approvedBy != null) {
+            sb.append("Approved By      : ").append(approvedBy.getName()).append("\n");
+        } else {
+            sb.append("Approved By      : Not yet approved\n");
+        }
+        if (bookedBy != null) {
+            sb.append("Booked By      : ").append(bookedBy.getName()).append("\n");
+        } else {
+            sb.append("Booked By      : Not yet booked\n");
+        }
+        return sb.toString();
     }
 }

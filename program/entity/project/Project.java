@@ -210,4 +210,25 @@ public class Project {
     public boolean getVisibility() {
         return visibility;
     }
+
+    public int getVacancy (ROOM_TYPE roomType){
+        return switch(roomType){
+            case room2 -> units2room;
+            case room3 -> units3room;
+        };
+    }
+
+    public void decrementRoomType (ROOM_TYPE roomType){
+        switch(roomType){
+            case room2 -> units2room--;
+            case room3 -> units3room--;
+        };
+    }
+
+    public void incrementRoomType (ROOM_TYPE roomType){
+        switch(roomType){
+            case room2 -> units2room++;
+            case room3 -> units3room--;
+        };
+    }
 }
