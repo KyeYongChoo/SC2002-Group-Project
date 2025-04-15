@@ -121,7 +121,7 @@ public class Project {
     }
 
     public boolean conflictInterest(User user) {
-        // For debug
+        // // For debug
         // System.out.println("Manager: " + (user instanceof Manager)); // User is a manager
         // System.out.println("Involved in this proj: " + this.projOfficerList.contains(user)); // User is/was an officer working on this project
         // System.out.println("user busy: " + (user instanceof Officer && !TimeCompare.officerUnassigned(((Officer) user), this))); // User is an officer with overlapping time with this project

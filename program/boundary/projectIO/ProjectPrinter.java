@@ -2,8 +2,6 @@ package program.boundary.projectIO;
 
 import program.control.Main;
 import program.entity.project.Project;
-import program.entity.users.Manager;
-import program.entity.users.Officer;
 import program.entity.users.User;
 
 public class ProjectPrinter {
@@ -17,8 +15,16 @@ public class ProjectPrinter {
 
     // Overloaded method: Print a specific project for a client
     public static void printVisible(User client, Project project) {
-        if (client == null || project == null || !project.isVisibleTo(client)) {
-            System.out.println("The project is not visible to the user or invalid input.");
+        if (client == null){
+            System.out.println("ProjectPrinter.printVisible: Client null");
+            return;
+        }
+        if (project == null){
+            System.out.println("ProjectPrinter.printVisible: Project null");
+            return;
+        }
+        if (!project.isVisibleTo(client)) {
+            System.out.println("ProjectPrinter.printVisible: client cant see project. Refer Project.isVisible()");
             return;
         }
 

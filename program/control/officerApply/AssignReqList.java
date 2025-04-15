@@ -21,7 +21,7 @@ public class AssignReqList extends ArrayList<AssignReq>{
     @Override
     public boolean add(AssignReq req){
         // if a request has been made before for same applicant and same project
-        if (TimeCompare.officerUnassigned(req.getOfficer(), req.getProject())){
+        if (!TimeCompare.officerUnassigned(req.getOfficer(), req.getProject())){
             System.out.println("Error: You have an active application at " + req.getOfficer().getCurProject());
             return false;
         }

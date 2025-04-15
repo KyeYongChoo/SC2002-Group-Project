@@ -27,7 +27,7 @@ public class Officer extends Applicant {
         AssignReqList reqList = new AssignReqList();
         for (AssignReq req : Main.assignReqList){
             if (req.getOfficer() == this){
-                reqList.add(req);
+                reqList.superAdd(req);
             }
         }
         return reqList;

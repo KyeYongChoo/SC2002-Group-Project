@@ -1,7 +1,5 @@
 package program.boundary.menu;
 
-import java.util.stream.Collectors;
-
 import program.boundary.menuTemplate.MenuGroup;
 import program.boundary.officerAssignIO.OfficerAssignPrinter;
 import program.boundary.projectIO.ProjectSelector;
@@ -27,19 +25,7 @@ public class OfficerApplyMenu extends MenuGroup {
 
         // Option 3: Join a project as an HDB Officer
         this.addMenuItem("Join project as HDB Officer", () -> {
-            Project targetProject = ProjectSelector.chooseVisibleProjectWithoutConflict(
-                    (Officer) user, // The officer selecting the project
-                    Main.projectList.stream()
-                        // Filter projects with available officer slots
-                        .filter(project -> project.getOfficerSlots() > 0 &&
-                            // Exclude projects where the officer already has an assignment request
-                            Main.assignReqList.stream().noneMatch(assignReq -> 
-                                assignReq.getOfficer().equals(user) 
-                                && assignReq.getProject().equals(project)
-                            )
-                        )
-                        .collect(Collectors.toList()) // Collect the filtered projects into a list
-                );
+            Project targetProject = ProjectSelector.chooseProjectsApplyAsOfficer((Officer) user,Main.projectList);
             if (targetProject == null) return;
             Main.assignReqList.add((Officer) user, targetProject);
         });

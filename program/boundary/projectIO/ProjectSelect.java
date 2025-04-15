@@ -11,7 +11,7 @@ public class ProjectSelect {
     }
 
     public static void printVisible(User client, Project project) {
-        ProjectPrinter.printVisible(client, project); // Delegate to ProjectPrinter
+        ProjectPrinter.printProjectDetails(project, client.see3Rooms()); // Delegate to ProjectPrinter
     }
 
     public static Project chooseVisibleProject(User client) {
@@ -19,6 +19,6 @@ public class ProjectSelect {
     }
 
     public static Project chooseVisibleProjectWithoutConflict(User client) {
-        return ProjectSelector.chooseVisibleProjectWithoutConflict(client, Main.projectList);
+        return ProjectSelector.chooseProjectsApplyAsApplicant(client, Main.projectList);
     }
 }

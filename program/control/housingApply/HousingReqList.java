@@ -59,16 +59,6 @@ public class HousingReqList extends ArrayList<HousingReq>{
         project.getReqList().add(0,req);
         client.getReqList().add(0,req);
         Main.reqList.add(0,req);
-        switch (req.getRoomType()){
-            case ROOM_TYPE.room2:
-                project.setUnits2Room(project.getUnits2Room() - 1);
-                break;
-            case ROOM_TYPE.room3:
-                project.setUnits3Room(project.getUnits3Room() - 1);
-                break;
-            default: 
-                System.out.println("Eiyo come take a look at HousingReqList's add function there's something spooky happening here this if else case is never supposed to happen");
-        }
         return true;
     }
 

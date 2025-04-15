@@ -9,6 +9,8 @@ import java.util.List;
 import program.control.Main;
 import program.control.enquiry.Enquiry;
 import program.control.enquiry.Message;
+import program.control.housingApply.HousingReq;
+import program.control.officerApply.AssignReq;
 import program.entity.project.Project;
 import program.entity.users.Applicant;
 import program.entity.users.Manager;
@@ -21,6 +23,8 @@ public class RecordSaver {
         writeUserCSV("ManagerList.csv", Main.managerList);
         writeProjectsCSV("ProjectList.csv");
         writeEnquiryCSV();
+        writeHousingReqCSV("HousingReqList.csv");
+        writeAssignReqCSV("AssignReqList.csv");
 
         System.out.println("All data successfully saved to CSV files.");
     }
@@ -58,10 +62,38 @@ public class RecordSaver {
 
     public static void writeProjectsCSV(String fileName) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("data/" + fileName))) {
+            // Write the CSV header
             bw.write("Project Name,Neighborhood,Type 1,Number of units for Type 1,Selling price for Type 1,Type 2,Number of units for Type 2,Selling price for Type 2,Application opening date,Application closing date,Manager,Officer Slot,Officer\n");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+
+            // Write each project to the CSV file
             for (Project p : Main.projectList) {
-                bw.write(String.join(",", new String[] { p.getName(), p.getNeighbourhood(), "2-Room", String.valueOf(p.getUnits2Room()), String.valueOf(p.getUnits2RoomPrice()), "3-Room", String.valueOf(p.getUnits3Room()), String.valueOf(p.getUnits3RoomPrice()), p.getOpenDate().format(formatter).toString(), p.getCloseDate().format(formatter).toString(), p.getManager().toString(), String.valueOf(p.getOfficerSlots()),p.getOfficers().toString()}));
+                // Convert the officer list to a comma-separated string
+                String officerList = p.getOfficers().isEmpty() 
+                    ? "" 
+                    : String.join(",", p.getOfficers().stream().map(Object::toString).toArray(CharSequence[]::new));
+
+                // Wrap the officer list in quotes if it contains more than one officer
+                if (p.getOfficers().size() > 1) {
+                    officerList = "\"" + officerList + "\"";
+                }
+
+                // Write the project details to the CSV file
+                bw.write(String.join(",", new String[] {
+                    p.getName(),
+                    p.getNeighbourhood(),
+                    "2-Room",
+                    String.valueOf(p.getUnits2Room()),
+                    String.valueOf(p.getUnits2RoomPrice()),
+                    "3-Room",
+                    String.valueOf(p.getUnits3Room()),
+                    String.valueOf(p.getUnits3RoomPrice()),
+                    p.getOpenDate().format(formatter),
+                    p.getCloseDate().format(formatter),
+                    p.getManager().toString(),
+                    String.valueOf(p.getOfficerSlots()),
+                    officerList
+                }));
                 bw.newLine();
             }
         }
@@ -88,6 +120,37 @@ public class RecordSaver {
                     }));
                     bw.newLine();
                 }
+            }
+        }
+    }
+
+    public static void writeHousingReqCSV(String fileName) throws IOException {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("data/" + fileName))) {
+            bw.write("User ID,Project Name,Room Type,Request Status,Withdrawal Status,Approved By\n");
+            for (HousingReq req : Main.reqList) {
+                bw.write(String.join(",", new String[] {
+                    req.getUser().getUserId(),
+                    req.getProject().getName(),
+                    req.getRoomType().toString(),
+                    req.getStatus().toString(),
+                    req.getWithdrawalStatus().toString(),
+                    req.getApprovedBy() == null ? "" : req.getApprovedBy().getUserId()
+                }));
+                bw.newLine();
+            }
+        }
+    }
+
+    public static void writeAssignReqCSV(String fileName) throws IOException {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("data/" + fileName))) {
+            bw.write("Officer ID,Project Name,Application Status\n");
+            for (AssignReq req : Main.assignReqList) {
+                bw.write(String.join(",", new String[] {
+                    req.getOfficer().getUserId(),
+                    req.getProject().getName(),
+                    req.getApplicationStatus().toString()
+                }));
+                bw.newLine();
             }
         }
     }

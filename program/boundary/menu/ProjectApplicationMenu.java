@@ -23,7 +23,7 @@ public class ProjectApplicationMenu extends MenuGroup {
 
         this.addMenuItem("Apply to a project", 
             () -> {
-                Project project = ProjectSelector.chooseVisibleProjectWithoutConflict(user, Main.projectList);
+                Project project = ProjectSelector.chooseProjectsApplyAsApplicant(user, Main.projectList);
                 if (project == null) return;
                 ROOM_TYPE targetRoomType = RoomTypeSelector.selectRoomType(user, project);
 
