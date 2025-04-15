@@ -4,6 +4,7 @@ import java.util.Scanner;
 import java.util.function.Predicate;
 
 import program.boundary.console.AppScanner;
+import program.entity.users.User;
 
 /*
  * MenuItem.java
@@ -28,7 +29,7 @@ public class MenuItem{
      *            This allows for dynamic visibility based on the context in which the menu is displayed.
      * @link Predicate
      */
-    private final Predicate<Object> visibleIf;
+    private final Predicate<User> visibleIf;
 
     /*
      * Constructor: Initializes the menu item with a description.
@@ -39,7 +40,7 @@ public class MenuItem{
      *                  The predicate takes an Object as input and returns a boolean indicating visibility.
      *                 This allows for dynamic visibility based on the context in which the menu is displayed.
      */
-    public MenuItem(String description, MenuAction action, Predicate<Object> visibleIf) {
+    public MenuItem(String description, MenuAction action, Predicate<User> visibleIf) {
         this.description = description;
         this.action = action;
         this.visibleIf = visibleIf;
@@ -69,12 +70,12 @@ public class MenuItem{
     /*
      * isVisible: Checks if the menu item is visible based on the context.
      * Used by MenuNavigator to determine if the menu item should be displayed.
-     * @param context: An Object that represents the context in which the menu item is being checked for visibility.
+     * @param user: User who is looking at the option
      * @return: A boolean indicating if the menu item is visible based on the context.
      *          The predicate takes an Object as input and returns a boolean indicating visibility.
      */
-    public boolean isVisible(Object context) {
-        return visibleIf.test(context);
+    public boolean isVisible(User user) {
+        return visibleIf.test(user);
     }
 
     /*

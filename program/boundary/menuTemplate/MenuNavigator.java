@@ -22,11 +22,8 @@ public class MenuNavigator {
     private final Stack<MenuGroup>menuStack = new Stack<>();
     private static final Scanner sc = AppScanner.getInstance(); 
 
-    /*
-     * context: An object that represents the context in which the menu is displayed.
-     *          It can be used to determine the visibility of menu items based on the current state of the application.
-     */
-    private Object context;
+    
+    private User user;
 
     private static MenuNavigator instance = null;
     private MenuNavigator(){}
@@ -62,7 +59,7 @@ public class MenuNavigator {
             int choice = -1;
 
             System.out.println("\n" + currentMenu.getDescription());
-            List<MenuItem> items = currentMenu.getItems().stream().filter(item -> item.isVisible(context)).toList();
+            List<MenuItem> items = currentMenu.getItems().stream().filter(item -> item.isVisible(user)).toList();
             for (int i = 0; i < items.size(); i++){
                 System.out.printf("%d. %s\n", i + 1, items.get(i).getDescription());
             }
@@ -89,21 +86,13 @@ public class MenuNavigator {
         }
     }
 
-    /*
-     * setContext: A method that sets the context for the menu navigator.
-     *             This context can be used to determine the visibility of menu items based on the current state of the application.
-     * @param ctx: An object representing the context in which the menu is displayed.
-     */
-    public void setContext(Object ctx) {
-        this.context = ctx;
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    /*
-     * getContext: A method that returns the current context of the menu navigator.
-     *             This context can be used to determine the visibility of menu items based on the current state of the application.
-     * @return: The current context of the menu navigator.
-     */
-    public Object getContext() {
-        return context;
+
+    public User getUser() {
+        return user;
     }
 }

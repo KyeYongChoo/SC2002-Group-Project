@@ -11,7 +11,7 @@ import program.entity.users.User;
 public class EnquirySelector {
     private static final Scanner sc = AppScanner.getInstance();
 
-    public static Enquiry selectEnquiry(User user, EnquiryList enqList, Predicate<Object> enquiryFilter) {
+    public static Enquiry selectEnquiry(User user, EnquiryList enqList, Predicate<Enquiry> enquiryFilter) {
         EnquiryList enqListCpy = new EnquiryList();
         enqList.stream().filter(enquiryFilter).forEach(enquiry -> enqListCpy.superAdd(enquiry));
         if (enqListCpy.isEmpty()) {

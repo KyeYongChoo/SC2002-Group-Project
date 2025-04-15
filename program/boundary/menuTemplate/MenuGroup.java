@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import program.entity.users.User;
+
 public class MenuGroup extends MenuItem {
     private final List<MenuItem> menuItems;
     
@@ -12,7 +14,7 @@ public class MenuGroup extends MenuItem {
      * @param description the description of the menu group
      * @param visibleIf a predicate that determines if the menu group is visible
      */
-    public MenuGroup(String description, Predicate<Object> visibleIf) {
+    public MenuGroup(String description, Predicate<User> visibleIf) {
         super(description, 
             null,
             visibleIf); 
@@ -25,7 +27,7 @@ public class MenuGroup extends MenuItem {
      * @param description the description of the menu group
      */
     public MenuGroup(String description) {
-        this(description, dummy -> true); 
+        this(description, user -> true); 
     }
 
     /*
@@ -57,7 +59,7 @@ public class MenuGroup extends MenuItem {
      * @param visibleIf a predicate that determines if the menu item is visible
      * @return MenuGroup, supports method chaining
      */
-    public MenuGroup addMenuItem(String description, MenuAction action, Predicate<Object> visibleIf){
+    public MenuGroup addMenuItem(String description, MenuAction action, Predicate<User> visibleIf){
         return this.addMenuItem(new MenuItem (description, action, visibleIf));
     }
 

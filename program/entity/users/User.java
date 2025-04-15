@@ -24,11 +24,12 @@ public class User{
     private EnquiryList enquiryList = new EnquiryList();
     private FILTER_SETTING filterSetting = FILTER_SETTING.ALPHABETICAL;
 
-    public enum FILTER_SETTING{
+    public static enum FILTER_SETTING{
         LOCATION,
         FLAT_TYPE_2_ROOM,
         FLAT_TYPE_3_ROOM,
-        ALPHABETICAL
+        ALPHABETICAL,
+        OWN_PROJECTS_ONLY
     }
 
     public Project getApprovedProject(){
@@ -173,15 +174,15 @@ public class User{
         return UserPrefSorting.userFilterStream(this, projects);
     }
 
-    public Predicate<Object> getEnquiryViewFilter(){
+    public Predicate<Enquiry> getEnquiryViewFilter(){
         return enquiry -> ((Enquiry) enquiry).getUser().equals(this);
     }
 
-    public Predicate<Object> getEnquiryEditDeleteFilter(){
+    public Predicate<Enquiry> getEnquiryEditDeleteFilter(){
         return enquiry -> ((Enquiry) enquiry).getUser().equals(this) && !((Enquiry) enquiry).isStaffReplyPresent();
     }
 
-    public Predicate<Object> getEnquiryReplyFilter(){
+    public Predicate<Enquiry> getEnquiryReplyFilter(){
         return enquiry -> false; // Applicants cannot reply
     }
 

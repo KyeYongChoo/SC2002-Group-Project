@@ -15,7 +15,7 @@ public class ProjectApplicationMenu extends MenuGroup {
     public ProjectApplicationMenu(User user) {
         super("Manage your BTO Application", 
         // Managers may not apply
-        dummyVar -> !(user instanceof Manager));
+         user_ ->!(user_ instanceof Manager));
 
         this.addMenuItem("View projects", () -> {
             ProjectSelect.printVisible(user);
@@ -31,8 +31,8 @@ public class ProjectApplicationMenu extends MenuGroup {
                 Main.reqList.add(user, project, targetRoomType);
                 System.out.println("Application submitted successfully.");
             }, 
-            // If the user is not a manager and satisfies one of the BTO requirements, they can apply for projects
-            dummyVar -> (user.see2Rooms()) || (user.see3Rooms())
+            // If the User is not a manager and satisfies one of the BTO requirements, they can apply for projects
+             user_ ->(user_.see2Rooms()) || (user_.see3Rooms())
         );
 
         this.addMenuItem("View your applications",
@@ -41,7 +41,7 @@ public class ProjectApplicationMenu extends MenuGroup {
 
         this.addMenuItem("Request application withdrawal",
             () -> Main.reqList.reqWithdrawal(user),
-            dummyVar -> !(user.hasActiveApplication())  // can't withdraw if you havent applied
+             user_ ->!(user_.hasActiveApplication())  // can't withdraw if you havent applied
         );
     }
 }

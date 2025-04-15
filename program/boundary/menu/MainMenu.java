@@ -1,7 +1,13 @@
 package program.boundary.menu;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import program.boundary.menuTemplate.MenuGroup;
+import program.boundary.menuTemplate.SelectionMenu;
 import program.boundary.security.PasswordResetHandler;
+import program.entity.users.Manager;
 import program.entity.users.User;
 
 public class MainMenu extends MenuGroup{
@@ -19,6 +25,18 @@ public class MainMenu extends MenuGroup{
                 PasswordResetHandler.resetPassword(user, sc.nextLine());
             }
         );
+
+        List<User.FILTER_SETTING> filterOptions = new ArrayList<>(Arrays.asList(User.FILTER_SETTING.values()));
+        if (!(user instanceof Manager)) {
+            filterOptions.remove(User.FILTER_SETTING.OWN_PROJECTS_ONLY);
+        }
+
+        this.addMenuItem(new SelectionMenu<>(
+            "Filter options", 
+            (user instanceof Manager)? Arrays.asList(User.FILTER_SETTING.values()):
+            filterOptions, 
+            Object::toString, 
+            user::setFilterSetting));
 
     }
 }

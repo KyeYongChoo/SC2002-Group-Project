@@ -97,12 +97,12 @@ public class Officer extends Applicant {
     }
 
     @Override
-    public Predicate<Object> getEnquiryViewFilter(){
+    public Predicate<Enquiry> getEnquiryViewFilter(){
         return enquiry -> ((Enquiry) enquiry).getUser().equals(this) || ((Enquiry) enquiry).getProject().getOfficers().contains(this);
     }
 
     @Override
-    public Predicate<Object> getEnquiryReplyFilter(){
+    public Predicate<Enquiry> getEnquiryReplyFilter(){
         return enquiry -> ((Enquiry) enquiry).getProject().getOfficers().contains(this) ||
             super.getEnquiryReplyFilter().test(enquiry);
     }

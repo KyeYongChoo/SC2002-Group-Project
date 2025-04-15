@@ -13,7 +13,7 @@ public class OfficerApplyMenu extends MenuGroup {
     public OfficerApplyMenu(User user) {
         // Menu title and condition: Only accessible to Officers who are not Managers
         super("Manage your HDB Officer applications ", 
-            dummyVar -> user instanceof Officer && !(user instanceof Manager));
+            user_ -> user_ instanceof Officer && !(user instanceof Manager));
 
         // Option 1: Check the officer's profile
         this.addMenuItem("Check your Profile", () -> 
