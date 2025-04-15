@@ -28,7 +28,7 @@ public class ProjectApplicationMenu extends MenuGroup {
                 ROOM_TYPE targetRoomType = RoomTypeSelector.selectRoomType(user, project);
 
                 // Add the application to the request list
-                Main.reqList.add(user, project, targetRoomType);
+                Main.housingReqList.add(user, project, targetRoomType);
                 System.out.println("Application submitted successfully.");
             }, 
             // If the User is not a manager and satisfies one of the BTO requirements, they can apply for projects
@@ -40,7 +40,7 @@ public class ProjectApplicationMenu extends MenuGroup {
         );
 
         this.addMenuItem("Request application withdrawal",
-            () -> Main.reqList.reqWithdrawal(user),
+            () -> Main.housingReqList.reqWithdrawal(user),
              user_ ->!(user_.hasActiveApplication())  // can't withdraw if you havent applied
         );
     }

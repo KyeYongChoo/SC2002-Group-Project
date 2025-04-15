@@ -6,7 +6,6 @@ import program.boundary.projectIO.ProjectSelect;
 import program.boundary.projectIO.UserPrefSorting;
 import program.control.Main;
 import program.control.housingApply.HousingReq;
-import program.control.housingApply.HousingReqList;
 import program.control.housingApply.HousingReq.WITHDRAWAL_STATUS;
 import program.entity.project.Project;
 import program.entity.users.User;
@@ -19,7 +18,7 @@ public class HousingReqPrinter {
             return;
         }
         
-        List<HousingReq> reqList = UserPrefSorting.sortHousingReqs(client, Main.reqList);
+        List<HousingReq> reqList = UserPrefSorting.sortHousingReqs(client, Main.housingReqList);
 
         for (int i = 0; i < reqList.size(); i++) {
             HousingReq req = reqList.get(i);
@@ -40,34 +39,6 @@ public class HousingReqPrinter {
 
             ProjectSelect.printVisible(client, project);
         }
-    }
-
-    public static void printWithdrawalRequests(HousingReqList withdrawalList) {
-        if (withdrawalList.isEmpty()) {
-            System.out.println("No withdrawal requests available.");
-            return;
-        }
-
-        System.out.println("=== Withdrawal Requests ===");
-        for (int i = 0; i < withdrawalList.size(); i++) {
-            HousingReq req = withdrawalList.get(i);
-            System.out.printf("%d. Project: %s | Applicant: %s | Status: %s\n",
-                i + 1, req.getProject().getName(), req.getUser().getName(), req.getWithdrawalStatus());
-        }
-    }
-    /**
-     * Generates a receipt for a booked application. 
-     * Typically done after the applicant's status is set to BOOKED.
-     */
-    public static void printReceipt(HousingReq application) {
-        System.out.println("=== Receipt ===");
-        System.out.println("Name         : " + application.getUser().getName());
-        System.out.println("NRIC         : " + application.getUser().getUserId());
-        System.out.println("Age          : " + application.getUser().getAge());
-        System.out.println("Marital Status: " + application.getUser().getMaritalStatus());
-        System.out.println("Flat Type Booked: " + application.getRoomType());
-        System.out.println("Project Name: " + application.getProject().getName());
-        System.out.println("Project Location: " + application.getProject().getNeighbourhood());
     }
 
     /**

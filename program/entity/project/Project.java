@@ -1,14 +1,12 @@
 package program.entity.project;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Scanner;
 
-import program.boundary.console.AppScanner;
+import program.boundary.console.DateTimeFormat;
 import program.control.Main;
+import program.control.TimeCompare;
 import program.control.enquiry.Enquiry;
 import program.control.enquiry.EnquiryList;
 import program.control.housingApply.HousingReqList;
-import program.control.officerApply.TimeCompare;
 import program.entity.users.Manager;
 import program.entity.users.Officer;
 import program.entity.users.User;
@@ -61,9 +59,8 @@ public class Project {
             this.units3roomPrice = Integer.parseInt(units3roomPrice);
         } catch (NumberFormatException ExceptionDueToEmptyString) {
         }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-        this.openDate = LocalDate.parse(openDate, formatter);
-        this.closeDate = LocalDate.parse(closeDate, formatter);
+        this.openDate = LocalDate.parse(openDate, DateTimeFormat.getDateFormatter());
+        this.closeDate = LocalDate.parse(closeDate, DateTimeFormat.getDateFormatter());
         this.createdBy = this.manager = (Manager) Main.managerList.getByName(manager);
         if(this.manager == null) throw new Exception("Manager not Found. Manager field for reference: "+ manager);
         try {
@@ -88,19 +85,8 @@ public class Project {
         return project.isManager(manager);
     }
 
-    public void setVisibility(Manager manager) throws Exception{
-        if (!isManager(manager)){
-            throw new Exception("You are not the manager of this HDB! ");
-        }
-
-        String choice;
-        Scanner sc = AppScanner.getInstance();
-        do { 
-            System.out.println("Please toggle visibility of " + name + " (Y/N)" +"\nCurrent Visibility: " + (visibility?"Y":"N"));
-            choice = sc.nextLine().toUpperCase();
-        } while (!"Y".equals(choice) && !"N".equals(choice));
-        sc.close();
-        this.visibility = ("Y".equals(choice));
+    public void setVisibility(boolean visibility){
+        this.visibility = visibility;
     }
 
     public EnquiryList getEnquiryList(){
@@ -230,5 +216,25 @@ public class Project {
             case room2 -> units2room++;
             case room3 -> units3room--;
         };
+    }
+
+    public void setName(String name) {
+        this.name = name.trim().toUpperCase();
+    }
+
+    public void setNeighbourhood(String neighbourhood) {
+        this.neighbourhood = neighbourhood.trim().toUpperCase();
+    }
+
+    public void setUnits2RoomPrice(int units2roomPrice) {
+        this.units2roomPrice = units2roomPrice;
+    }
+
+    public void setUnits3RoomPrice(int units3roomPrice) {
+        this.units3roomPrice = units3roomPrice;
+    }
+
+    public void setOpenDate(LocalDate openDate) {
+        this.openDate = openDate;
     }
 }

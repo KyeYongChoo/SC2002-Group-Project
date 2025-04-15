@@ -41,7 +41,7 @@ public class HousingReqList extends ArrayList<HousingReq>{
         }
         User client = req.getUser();
         Project project = req.getProject();
-        HousingReq duplicateReq = Main.reqList.get(client,project);
+        HousingReq duplicateReq = Main.housingReqList.get(client,project);
         if (duplicateReq != null){
             if (duplicateReq.getStatus() == REQUEST_STATUS.unsuccessful){
                 System.out.println("Error: Prior request denied for project.");
@@ -58,7 +58,7 @@ public class HousingReqList extends ArrayList<HousingReq>{
         // 2. Front will always be active or unsuccessful. Active requests must be at the front, if it exists
         project.getReqList().add(0,req);
         client.getReqList().add(0,req);
-        Main.reqList.add(0,req);
+        Main.housingReqList.add(0,req);
         return true;
     }
 
@@ -127,7 +127,7 @@ public class HousingReqList extends ArrayList<HousingReq>{
     
     public static HousingReqList getWithdrawalList(Manager manager, boolean unprocessedOnly){
         HousingReqList managerReqList = new HousingReqList();
-        for (HousingReq req : Main.reqList){
+        for (HousingReq req : Main.housingReqList){
 
             // If not the manager then skip to next 
             if (!req.getProject().isManager(manager)){

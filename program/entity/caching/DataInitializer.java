@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import program.boundary.console.DateTimeFormat;
 import program.control.Main;
 import program.control.enquiry.Enquiry;
 import program.control.enquiry.Message;
@@ -167,7 +168,7 @@ public class DataInitializer {
 
     private static void readEnquiryCSV() {
         File file = new File("data/EnquiryList.csv");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormat.getDateTimeFormatter();
 
         // Check if the file exists
         if (!file.exists()){
@@ -246,9 +247,9 @@ public class DataInitializer {
                 HousingReq req = new HousingReq(user, project, roomType);
                 req.setStatus(requestStatus);
                 req.setWithdrawalStatus(withdrawalStatus);
-                req.setApprovedBy(approvedBy);
+                req.setApprovedBy((Manager) approvedBy);
 
-                Main.reqList.add(req);
+                Main.housingReqList.add(req);
             }
         } catch (IOException e) {
             System.out.println("Error reading " + fileName + ": " + e.getMessage());

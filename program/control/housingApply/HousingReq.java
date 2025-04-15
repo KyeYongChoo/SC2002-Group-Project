@@ -29,6 +29,7 @@ public class HousingReq {
         notRequested,
         requested,
         approved,
+        rejected
     }
 
     public WITHDRAWAL_STATUS getWithdrawalStatus(){

@@ -1,10 +1,10 @@
 package program.control.enquiry;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import program.boundary.console.AppScanner;
+import program.boundary.console.DateTimeFormat;
 import program.boundary.enquiryIO.EnquirySelector;
 import program.boundary.projectIO.ProjectSelect;
 import program.control.Main;
@@ -15,7 +15,6 @@ import program.entity.users.User;
  * Similar to HousingReqList, there will be a separate enquiryList for each of the User, Project, and Main classes
  */
 public class EnquiryList extends ArrayList<Enquiry> {
-    public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     public static Enquiry get(User client, Project project) {
         Enquiry targetEnquiry = null;
@@ -63,7 +62,7 @@ public class EnquiryList extends ArrayList<Enquiry> {
         EnquiryList enqList = project.getEnquiryList();
         for (int loopCounter = 0; loopCounter < enqList.size(); loopCounter++) {
             Enquiry enquiry = enqList.get(loopCounter);
-            System.out.println("\n" + (loopCounter + 1) + ".\nCreated on " + enquiry.getDateCreated().format(formatter));
+            System.out.println("\n" + (loopCounter + 1) + ".\nCreated on " + enquiry.getDateCreated().format(DateTimeFormat.getDateFormatter()));
             System.out.println("For project " + enquiry.getProject());
             System.out.println("First Message: " + enquiry.get(0).getText());
         }
@@ -105,10 +104,10 @@ public class EnquiryList extends ArrayList<Enquiry> {
         }
 
         for (Enquiry enquiry : client.getEnquiryList()) {
-            System.out.println("\nCreated on " + enquiry.getDateCreated().format(formatter));
+            System.out.println("\nCreated on " + enquiry.getDateCreated().format(DateTimeFormat.getDateTimeFormatter()));
             System.out.println("For project " + enquiry.getProject());
             for (Message m : enquiry) {
-                System.out.println(m.getTimeStamp().format(formatter) + ": " + m.getUser() + " (" + m.getUser().getClass().getSimpleName() + "): " + m.getText());
+                System.out.println(m.getTimeStamp().format(DateTimeFormat.getDateTimeFormatter()) + ": " + m.getUser() + " (" + m.getUser().getClass().getSimpleName() + "): " + m.getText());
             }
         }
     }

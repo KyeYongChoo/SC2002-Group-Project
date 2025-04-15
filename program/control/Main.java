@@ -17,7 +17,7 @@ public class Main {
     public static UserList managerList = new UserList();
     public static UserList officerList = new UserList();
     public static ProjectList projectList = new ProjectList();
-    public static HousingReqList reqList = new HousingReqList();
+    public static HousingReqList housingReqList = new HousingReqList();
     public static EnquiryList enquiryList = new EnquiryList();
     public static AssignReqList assignReqList = new AssignReqList();
     

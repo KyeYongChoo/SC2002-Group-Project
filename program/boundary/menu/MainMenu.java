@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import program.boundary.menuTemplate.MenuGroup;
-import program.boundary.menuTemplate.SelectionMenu;
 import program.boundary.security.PasswordResetHandler;
 import program.entity.users.Manager;
 import program.entity.users.User;
@@ -31,12 +30,12 @@ public class MainMenu extends MenuGroup{
             filterOptions.remove(User.FILTER_SETTING.OWN_PROJECTS_ONLY);
         }
 
-        this.addMenuItem(new SelectionMenu<>(
+        this.addSelectionMenu(
             "Filter options", 
             (user instanceof Manager)? Arrays.asList(User.FILTER_SETTING.values()):
             filterOptions, 
             Object::toString, 
-            user::setFilterSetting));
+            user::setFilterSetting);
 
     }
 }

@@ -1,8 +1,8 @@
-package program.control.officerApply;
+package program.control;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-import program.control.Main;
 import program.entity.project.Project;
 import program.entity.users.Officer;
 
@@ -26,7 +26,11 @@ public class TimeCompare {
         LocalDate openDate2 = proj2.getOpenDate();
         LocalDate closeDate1 = proj1.getCloseDate();
         LocalDate closeDate2 = proj2.getCloseDate();
-        if (openDate1.isAfter(closeDate2) || closeDate1.isBefore(openDate2)) return false;
-        else return true;
+        return (openDate1.isAfter(closeDate2) || closeDate1.isBefore(openDate2));
+    }
+
+    public static boolean currentlyActive (Project proj){
+        return proj.getOpenDate().isBefore(LocalDate.now()) && 
+            proj.getCloseDate().isAfter(LocalDate.now());
     }
 }

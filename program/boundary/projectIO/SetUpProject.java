@@ -1,18 +1,22 @@
 package program.boundary.projectIO;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 import program.boundary.console.AppScanner;
+import program.boundary.console.DateTimeFormat;
 import program.boundary.menuTemplate.MenuAction;
 import program.control.Main;
 import program.entity.project.Project;
-import program.entity.users.User;
+import program.entity.users.Manager;
 
 public class SetUpProject implements MenuAction{
-    User user;
+    Manager manager;
     private static Scanner sc = AppScanner.getInstance();
-    public SetUpProject(User user){
-        this.user = user;
+    public SetUpProject(Manager manager){
+        this.manager = manager;
     }
     @Override
     public void execute(){
@@ -41,14 +45,35 @@ public class SetUpProject implements MenuAction{
             String units3roomPrice = sc.nextLine().trim();
             if (!units3roomPrice.matches("\\d+")) throw new Exception("Invalid price for 3-room units.");
     
+            System.out.println("Take note you must not have a project assigned to you when you are busy");
+            System.out.println("Times when you are busy: ");
+            Main.projectList.stream().filter(project -> project.isManager(manager)).forEach(
+                project -> System.out.println("Start Date: " + project.getOpenDate().format(DateTimeFormat.getDateFormatter()) + "\nClose Date: " +project.getCloseDate().format(DateTimeFormat.getDateFormatter()))
+            );;
+
             System.out.println("Enter application opening date (dd/MM/yyyy):");
             String openDate = sc.nextLine().trim();
-            if (!openDate.matches("\\d{1,2}/\\d{1,2}/\\d{4}")) throw new Exception("Invalid opening date format.");
-    
+            String dateRegex = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\\d{4}$";
+            if (!openDate.matches(dateRegex)) throw new Exception("Invalid opening date format.");
+
             System.out.println("Enter application closing date (dd/MM/yyyy):");
             String closeDate = sc.nextLine().trim();
-            if (!closeDate.matches("\\d{1,2}/\\d{1,2}/\\d{4}")) throw new Exception("Invalid closing date format.");
-    
+            if (!closeDate.matches(dateRegex)) throw new Exception("Invalid closing date format.");
+
+            LocalDate parsedOpenDate;
+            LocalDate parsedCloseDate;
+            try {
+                parsedOpenDate = LocalDate.parse(openDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                parsedCloseDate = LocalDate.parse(closeDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            } catch (DateTimeParseException e) {
+                throw new Exception("Invalid date format. Please use dd/MM/yyyy.");
+            }
+
+            if (Main.projectList.stream()
+                .anyMatch(project -> project.isManager(manager) &&
+                    (project.getOpenDate().isBefore(parsedCloseDate) && project.getCloseDate().isAfter(parsedOpenDate))))
+                throw new Exception("You have another project assigned to you at that moment.");
+
             System.out.println("Enter number of officer slots:");
             String officerSlots = sc.nextLine().trim();
             if (!officerSlots.matches("\\d+")) throw new Exception("Invalid number of officer slots.");
@@ -66,7 +91,7 @@ public class SetUpProject implements MenuAction{
                 units3roomPrice,
                 openDate,
                 closeDate,
-                user.getName(), // Assuming `user` is the Manager creating the project
+                manager.getName(), 
                 officerSlots,
                 officerList
             );

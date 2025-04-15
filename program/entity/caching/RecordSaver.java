@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import program.boundary.console.DateTimeFormat;
 import program.control.Main;
 import program.control.enquiry.Enquiry;
 import program.control.enquiry.Message;
@@ -64,7 +65,7 @@ public class RecordSaver {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("data/" + fileName))) {
             // Write the CSV header
             bw.write("Project Name,Neighborhood,Type 1,Number of units for Type 1,Selling price for Type 1,Type 2,Number of units for Type 2,Selling price for Type 2,Application opening date,Application closing date,Manager,Officer Slot,Officer\n");
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+            DateTimeFormatter formatter = DateTimeFormat.getDateFormatter();
 
             // Write each project to the CSV file
             for (Project p : Main.projectList) {
@@ -101,7 +102,7 @@ public class RecordSaver {
 
     public static void writeEnquiryCSV() throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("data/EnquiryList.csv"))) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormat.getDateTimeFormatter();
             bw.write("Enquiry ID|User ID|Project ID|Date Created\n"); 
             for (Enquiry e : Main.enquiryList) {
                 bw.write(String.join("|", new String[] { 
@@ -127,7 +128,7 @@ public class RecordSaver {
     public static void writeHousingReqCSV(String fileName) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("data/" + fileName))) {
             bw.write("User ID,Project Name,Room Type,Request Status,Withdrawal Status,Approved By\n");
-            for (HousingReq req : Main.reqList) {
+            for (HousingReq req : Main.housingReqList) {
                 bw.write(String.join(",", new String[] {
                     req.getUser().getUserId(),
                     req.getProject().getName(),

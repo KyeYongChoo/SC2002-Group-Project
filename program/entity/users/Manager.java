@@ -3,6 +3,7 @@ package program.entity.users;
 import java.util.function.Predicate;
 
 import program.control.Main;
+import program.control.TimeCompare;
 import program.control.enquiry.Enquiry;
 import program.control.security.Password;
 import program.entity.project.Project;
@@ -25,9 +26,13 @@ public class Manager extends Officer {
         return this;
     }
 
+    /*
+     * returns the project which Manager is in charge of now
+     * Take note Manager may be in charge of different projects in the past and future 
+     */
     @Override 
     public Project getCurProject() {
-        return Main.projectList.stream().filter(project -> project.getManager().equals(this)).findAny().orElse(null);
+        return Main.projectList.stream().filter(project -> project.getManager().equals(this) && TimeCompare.currentlyActive(project)).findAny().orElse(null);
     }
 
     @Override

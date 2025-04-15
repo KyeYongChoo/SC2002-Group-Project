@@ -1,13 +1,12 @@
 package program.control.officerApply;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import program.control.Main;
+import program.control.TimeCompare;
 import program.entity.project.Project;
 import program.entity.users.Officer;
 
 public class AssignReqList extends ArrayList<AssignReq>{
-    public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     public static AssignReq get(Officer officer, Project project){
         for (AssignReq assignReq : Main.assignReqList){

@@ -2,6 +2,8 @@ package program.boundary.menuTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import program.entity.users.User;
@@ -29,6 +31,16 @@ public class MenuGroup extends MenuItem {
     public MenuGroup(String description) {
         this(description, user -> true); 
     }
+
+    /*
+     * There will be 3 kinds of adding here:
+     * 1. addMenuItem adds 1 single choice
+     * 2. addMenuItem(new MenuGroup(...)) when clicking on a choice leads to another Menu
+     * 3. addSelectionMenu() when you have a list of indeterminate length and u want the user to click on one of them
+     * 
+     * All of these can be chained indefinitely. 
+     * 2 in particular, highly requires chaining. 
+     */
 
     /*
      * Adds a menu item to the menu group
@@ -61,6 +73,13 @@ public class MenuGroup extends MenuItem {
      */
     public MenuGroup addMenuItem(String description, MenuAction action, Predicate<User> visibleIf){
         return this.addMenuItem(new MenuItem (description, action, visibleIf));
+    }
+
+    public <T> MenuGroup addSelectionMenu (String description, Predicate<User> visibleIf, List<T> items, Function<T, String> itemLabelFunc, Consumer<T> onSelect){
+        return this.addMenuItem(new SelectionMenu<>(description, visibleIf, items, itemLabelFunc, onSelect));
+    }
+    public <T> MenuGroup addSelectionMenu (String description, List<T> items, Function<T, String> itemLabelFunc, Consumer<T> onSelect){
+        return this.addMenuItem(new SelectionMenu<>(description, items, itemLabelFunc, onSelect));
     }
 
     /*

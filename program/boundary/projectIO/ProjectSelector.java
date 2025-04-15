@@ -1,7 +1,7 @@
 package program.boundary.projectIO;
 
 import program.control.Main;
-import program.control.officerApply.TimeCompare;
+import program.control.TimeCompare;
 import program.entity.project.Project;
 import program.entity.users.Officer;
 import program.entity.users.User;

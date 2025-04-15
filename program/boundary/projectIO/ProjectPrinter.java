@@ -32,28 +32,40 @@ public class ProjectPrinter {
     }
 
     /**
+     * Returns the details of a project as a string.
+     * @param project The project to get details for.
+     * @param show3Room Whether to include 3-room details.
+     * @return A string containing the project details.
+     */
+    public static String getProjectDetailsString(Project project, boolean show3Room) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("========================================\n");
+        sb.append("Project Name       : ").append(project.getName()).append("\n");
+        sb.append("Neighborhood       : ").append(project.getNeighbourhood()).append("\n");
+        sb.append("Available 2-Room   : ").append(project.getUnits2Room()).append("\n");
+        sb.append("Price (2-Room)     : ").append(project.getUnits2RoomPrice()).append("\n");
+        if (show3Room) {
+            sb.append("Available 3-Room   : ").append(project.getUnits3Room()).append("\n");
+            sb.append("Price (3-Room)     : ").append(project.getUnits3RoomPrice()).append("\n");
+        }
+        sb.append("Application Open   : ").append(project.getOpenDate()).append("\n");
+        sb.append("Application Close  : ").append(project.getCloseDate()).append("\n");
+        sb.append("Manager            : ").append(project.getManager()).append("\n");
+        sb.append("Officer Slots      : ").append(project.getOfficerSlots()).append("\n");
+        sb.append("Assigned Officers  :\n");
+        for (User officer : project.getOfficers()) {
+            sb.append("  - ").append(officer.getName()).append("\n");
+        }
+        sb.append("========================================\n");
+        return sb.toString();
+    }
+
+    /**
      * Prints the details of a project in a line-by-line format.
      * @param project The project to print.
      * @param show3Room Whether to include 3-room details.
      */
     public static void printProjectDetails(Project project, boolean show3Room) {
-        System.out.println("========================================");
-        System.out.println("Project Name       : " + project.getName());
-        System.out.println("Neighborhood       : " + project.getNeighbourhood());
-        System.out.println("Available 2-Room   : " + project.getUnits2Room());
-        System.out.println("Price (2-Room)     : " + project.getUnits2RoomPrice());
-        if (show3Room) {
-            System.out.println("Available 3-Room   : " + project.getUnits3Room());
-            System.out.println("Price (3-Room)     : " + project.getUnits3RoomPrice());
-        }
-        System.out.println("Application Open   : " + project.getOpenDate());
-        System.out.println("Application Close  : " + project.getCloseDate());
-        System.out.println("Manager            : " + project.getManager());
-        System.out.println("Officer Slots      : " + project.getOfficerSlots());
-        System.out.println("Assigned Officers  :");
-        for (User officer : project.getOfficers()) {
-            System.out.println("  - " + officer.getName());
-        }
-        System.out.println("========================================");
+        System.out.print(getProjectDetailsString(project, show3Room));
     }
 }
