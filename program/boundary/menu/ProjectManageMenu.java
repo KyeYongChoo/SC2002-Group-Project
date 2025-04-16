@@ -131,7 +131,7 @@ public class ProjectManageMenu extends MenuGroup {
             , user_ -> user_ instanceof Manager && 
                 Main.projectList.stream().anyMatch(project -> 
                 project.isManager((Manager) user_))
-            ))
+            )
             .addMenuItem("Create Project Listing", new SetUpProject((Manager) user))
             .addSelectionMenu("Edit Project Listing",
                 Main.projectList.stream()
@@ -218,22 +218,34 @@ public class ProjectManageMenu extends MenuGroup {
                     project.setVisibility(!project.getVisibility());
                     System.out.println("Visibility Toggled");
                 }
-            );
+        ));
 
-        //     for tmr hehehe
-        // this.addSelectionMenu("Promote Officer to Manager", 
-        //     user_ -> user_ instanceof Manager, 
-        //     Main.officerList.stream()
-        //         .filter(officer -> Main.projectList.stream()
-        //             )
-        //         .filter()
-        //         .collect(Collectors.toList()) ,
-        //     officer -> new StringBuilder()
-        //         .append("\n")
-        //         .toString(),
-        //     null
+        this.addSelectionMenu("Promote Officer to Manager", 
+            user_ -> user_ instanceof Manager, 
+            Main.officerList.stream()
+                .filter(officer -> Main.projectList.stream()
+                    .anyMatch(project -> project.isManager((Manager) user) && project.getOfficers().contains(officer))
+                )
+                .collect(Collectors.toList()),
+            officer -> {
+                StringBuilder sb = new StringBuilder()
+                    .append("\nOfficer Name" + officer.getName())
+                    .append("\nOfficer NRIC" + officer.getUserId())
+                    .append("\nOfficer Age" + officer.getAge())
+                    .append("\nOfficer Marital Status" + officer.getMaritalStatus())
+                    .append("\nHousing Application Status: ");
+                Main.housingReqList.stream()
+                    .filter(housingReq -> housingReq.getUser().equals(officer))
+                    .forEach(housingReq -> sb.append(housingReq).append("\n"));
+                sb.append("\nPast HDB Applications");
+                Main.assignReqList.stream()
+                    .filter(officerReq -> officerReq.getOfficer().equals(officer))
+                    .forEach(assignReq -> sb.append(assignReq.toString()));
+                return sb.toString();
+            },
+            null
 
-        // );
+        );
 
         this.addMenuItem("Generate report on Applicants", () -> {
             /*

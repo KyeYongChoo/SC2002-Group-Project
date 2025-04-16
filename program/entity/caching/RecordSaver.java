@@ -65,7 +65,7 @@ public class RecordSaver {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("data/" + fileName))) {
             // Write the CSV header
             bw.write("Project Name,Neighborhood,Type 1,Number of units for Type 1,Selling price for Type 1,Type 2,Number of units for Type 2,Selling price for Type 2,Application opening date,Application closing date,Manager,Officer Slot,Officer\n");
-            DateTimeFormatter formatter = DateTimeFormat.getDateFormatter();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 
             // Write each project to the CSV file
             for (Project p : Main.projectList) {

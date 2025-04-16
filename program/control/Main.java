@@ -28,7 +28,7 @@ public class Main {
         boolean skipLogin = true;
         User client; 
         if (skipLogin){
-            client = SkipLogin(USER.Officer);
+            client = SkipLogin(USER.Manager);
         } else {
             client = LoginHandler.loginUser();
         }

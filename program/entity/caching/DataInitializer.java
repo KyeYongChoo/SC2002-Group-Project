@@ -23,12 +23,17 @@ import program.entity.users.User;
 public class DataInitializer {
     public static void initialise() {
         try{
-            readAssignReqCSV("AssignReqList.csv");
+            // reorder at your own risk 
             readUserCSV("ApplicantList.csv", Main.applicantList, "Applicant");
             readUserCSV("OfficerList.csv", Main.officerList, "Officer");
             readUserCSV("ManagerList.csv", Main.managerList, "Manager");
+            
+            // must happen after loading Officer and Manager due to ProjectList.csv also holding officer and Manager info
             readProjectsCSV("ProjectList.csv");
             readEnquiryCSV();
+
+            // must be read after projectList due to identify via projects
+            readAssignReqCSV("AssignReqList.csv");
             readHousingReqCSV("HousingReqList.csv");
 
         }catch (Exception e){
@@ -273,6 +278,7 @@ public class DataInitializer {
 
                 Officer officer = (Officer) Main.officerList.get(fields[0]);
                 Project project = Main.projectList.get(fields[1]);
+                if (project == null) throw new Exception("Hey the project " + fields[0] + " is missing.\n" + "Projects available for reference: " + Main.projectList.stream());
                 AssignReq.APPLICATION_STATUS applicationStatus = AssignReq.APPLICATION_STATUS.valueOf(fields[2]);
 
                 AssignReq req = new AssignReq(officer, project);

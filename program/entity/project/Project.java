@@ -1,7 +1,7 @@
 package program.entity.project;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-import program.boundary.console.DateTimeFormat;
 import program.control.Main;
 import program.control.TimeCompare;
 import program.control.enquiry.Enquiry;
@@ -59,8 +59,8 @@ public class Project {
             this.units3roomPrice = Integer.parseInt(units3roomPrice);
         } catch (NumberFormatException ExceptionDueToEmptyString) {
         }
-        this.openDate = LocalDate.parse(openDate, DateTimeFormat.getDateFormatter());
-        this.closeDate = LocalDate.parse(closeDate, DateTimeFormat.getDateFormatter());
+        this.openDate = LocalDate.parse(openDate, DateTimeFormatter.ofPattern("d/M/yyyy"));
+        this.closeDate = LocalDate.parse(closeDate, DateTimeFormatter.ofPattern("d/M/yyyy"));
         this.createdBy = this.manager = (Manager) Main.managerList.getByName(manager);
         if(this.manager == null) throw new Exception("Manager not Found. Manager field for reference: "+ manager);
         try {

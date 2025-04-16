@@ -32,7 +32,11 @@ public class Manager extends Officer {
      */
     @Override 
     public Project getCurProject() {
-        return Main.projectList.stream().filter(project -> project.getManager().equals(this) && TimeCompare.currentlyActive(project)).findAny().orElse(null);
+        return Main.projectList.stream()
+            .filter(project -> project.getManager().equals(this) && 
+                TimeCompare.currentlyActive(project))
+            .findAny()
+            .orElse(null);
     }
 
     @Override

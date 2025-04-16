@@ -15,10 +15,10 @@ public class SelectionMenu<T> extends MenuGroup {
     public SelectionMenu(String description, Predicate<User> visibleIf, List<T> items, Function<T, String> itemLabelFunc, Consumer<T> onSelect) {
         super(description, visibleIf);
 
+        if (items == null) System.out.println("Sorry, no " + items.getClass().getSimpleName() + "applicable");
         for (int i = 0; i < items.size(); i++) {
             T item = items.get(i);
-            String label = String.format("%d. %s", i + 1, itemLabelFunc.apply(item));
-            this.addMenuItem(label, () -> {
+            this.addMenuItem(itemLabelFunc.apply(item), () -> {
                 if (onSelect != null) onSelect.accept(item);
             });
         }

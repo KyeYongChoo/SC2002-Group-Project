@@ -30,11 +30,7 @@ public class OfficerAssignPrinter {
      * @param req The assignment request to print.
      */
     public static void printAssignReq(AssignReq req) {
-        System.out.println("=== Assignment Request Details ===");
-        System.out.println("Officer: " + req.getOfficer().getName());
-        System.out.println("Project: " + req.getProject().getName());
-        System.out.println("Manager: " + req.getManager().getName());
-        System.out.println("Status: " + req.getApplicationStatus());
+        System.out.println(req.toString());
     }
 
     /**
