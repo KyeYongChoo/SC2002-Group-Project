@@ -70,7 +70,7 @@ public class MenuNavigator {
 
                 if (choice < 0 || choice > items.size()) throw new Exception("Please enter a number between 0 and " + String.valueOf(items.size()) + " inclusive. \n");
                 // pop the newest layer and get to previous view
-                if (choice == items.size()) {menuStack.pop(); continue;}
+                if (choice == items.size()|| currentMenu instanceof SelectionMenu) {menuStack.pop(); continue;}
                 else {
                     MenuItem selected = items.get(choice);
                     selected.execute();

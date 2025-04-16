@@ -1,6 +1,8 @@
 package program.boundary.menu;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.time.LocalDate;
 
@@ -19,6 +21,7 @@ import program.entity.project.Project;
 import program.entity.users.Manager;
 import program.entity.users.Officer;
 import program.entity.users.User;
+import program.entity.users.User.MARITAL_STATUS;
 
 public class ProjectManageMenu extends MenuGroup {
     public ProjectManageMenu(User user) {
@@ -220,51 +223,66 @@ public class ProjectManageMenu extends MenuGroup {
                 }
         ));
 
-        this.addSelectionMenu("Promote Officer to Manager", 
-            user_ -> user_ instanceof Manager, 
-            Main.officerList.stream()
-                .filter(officer -> Main.projectList.stream()
-                    .anyMatch(project -> project.isManager((Manager) user) && project.getOfficers().contains(officer))
-                )
-                .collect(Collectors.toList()),
-            officer -> {
-                StringBuilder sb = new StringBuilder()
-                    .append("\nOfficer Name" + officer.getName())
-                    .append("\nOfficer NRIC" + officer.getUserId())
-                    .append("\nOfficer Age" + officer.getAge())
-                    .append("\nOfficer Marital Status" + officer.getMaritalStatus())
-                    .append("\nHousing Application Status: ");
-                Main.housingReqList.stream()
-                    .filter(housingReq -> housingReq.getUser().equals(officer))
-                    .forEach(housingReq -> sb.append(housingReq).append("\n"));
-                sb.append("\nPast HDB Applications");
-                Main.assignReqList.stream()
-                    .filter(officerReq -> officerReq.getOfficer().equals(officer))
-                    .forEach(assignReq -> sb.append(assignReq.toString()));
-                return sb.toString();
+        Function<Manager, List<User>> generateRelevantApplicants = 
+            (Manager manager) -> {
+                List<User> userList = new ArrayList<User>(Main.applicantList);
+                userList.addAll(Main.officerList);
+                return userList.stream()
+                    .filter(user_ -> Main.housingReqList.stream()
+                        .anyMatch(housingReq -> 
+                            housingReq.getProject().isManager(manager) && 
+                            housingReq.getUser().equals(user_)
+                    )).collect(Collectors.toList());
+            };
+
+        this.addMenuItem("Generate report on Applicants", 
+            () -> {
+                List<User> relevantApplicants = generateRelevantApplicants.apply((Manager) user);
+
+                System.out.println("=== Applicant Report ===");
+                relevantApplicants.stream().forEach(applicant -> {
+                    System.out.println("Applicant Name   : " + applicant.getName());
+                    System.out.println("Age              : " + applicant.getAge());
+                    System.out.println("Marital Status   : " + (applicant.getMaritalStatus().equals(MARITAL_STATUS.Married) ? "Married" : "Single"));
+
+                    // Get the housing requests for this applicant
+                    List<HousingReq> applicantRequests = Main.housingReqList.stream()
+                        .filter(req -> req.getUser().equals(applicant))
+                        .collect(Collectors.toList());
+
+                    if (applicantRequests.isEmpty()) {
+                        System.out.println("No flat bookings found for this applicant.");
+                    } else {
+                        System.out.println("Flat Bookings:");
+                        applicantRequests.forEach(req -> {
+                            System.out.println("  - Project Name : " + req.getProject().getName());
+                            System.out.println("    Flat Type    : " + req.getRoomType());
+                            System.out.println("    Status       : " + req.getStatus());
+                        });
+                    }
+                    System.out.println("----------------------------------------");
+                });
+
+                // Example filter: Generate a report for married applicants
+                System.out.println("=== Married Applicants Report ===");
+                relevantApplicants.stream()
+                    .filter(user_ -> user_.getMaritalStatus().equals(MARITAL_STATUS.Married))
+                    .forEach(applicant -> {
+                        System.out.println("Applicant Name   : " + applicant.getName());
+                        System.out.println("Age              : " + applicant.getAge());
+                        System.out.println("Flat Choices:");
+                        Main.housingReqList.stream()
+                            .filter(req -> req.getUser().equals(applicant))
+                            .forEach(req -> {
+                                System.out.println("  - Project Name : " + req.getProject().getName());
+                                System.out.println("    Flat Type    : " + req.getRoomType());
+                            });
+                        System.out.println("----------------------------------------");
+                    });
             },
-            null
-
+            user_ -> user_ instanceof Manager && 
+                Main.projectList.stream().anyMatch(project -> project.isManager((Manager) user))
         );
-
-        this.addMenuItem("Generate report on Applicants", () -> {
-            /*
-             * • Able to generate a report of the list of applicants with their respective 
-flat booking – flat type, project name, age, marital status 
-o There should be filters to generate a list based on various categories 
-(e.g. report of married applicants’ choice of flat type)
-             */
-        }, user_ -> user_ instanceof Manager && Main.projectList.stream().anyMatch(project -> project.isManager((Manager) user)));
-        
-        // template
-        // this.addMenuItem("", () -> {
-        // });
-        // this.addSelectionMenu("Template"
-        //     , user_ -> user_ instanceof Officer && !(user_ instanceof Manager)
-        //     , null
-        //     , null
-        //     , null
-        // );
     }
     
 }
