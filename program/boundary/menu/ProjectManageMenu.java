@@ -44,7 +44,7 @@ public class ProjectManageMenu extends MenuGroup {
         this.addSelectionMenu(
             "Approve HDB Applications", 
             user_ -> user_ instanceof Manager,
-            Main.housingReqList.stream()
+            () -> Main.housingReqList.stream()
                 .filter(req -> req.getProject().getManager().equals(user))
                 .filter(req -> req.getStatus() == HousingReq.REQUEST_STATUS.pending)
                 .collect(Collectors.toList()), 
@@ -61,7 +61,7 @@ public class ProjectManageMenu extends MenuGroup {
 
                         MenuNavigator.getInstance().pushMenu(new SelectionMenu<>(
                             menuName,
-                            choices,
+                            () -> choices,
                             String::toString,
                             strChoice -> {
                                 if (strChoice.equals("Accept")){
@@ -80,14 +80,14 @@ public class ProjectManageMenu extends MenuGroup {
 
         this.addSelectionMenu("Process withdrawal Requests"
             , user_ -> user_ instanceof Manager
-            , Main.housingReqList.stream()
+            , () -> Main.housingReqList.stream()
                 .filter(project -> project.getManager().equals(user))
                 .filter(req -> req.getWithdrawalStatus().equals(HousingReq.WITHDRAWAL_STATUS.requested))
                 .collect(Collectors.toList())
             , HousingReq::toString
             , req -> MenuNavigator.getInstance().pushMenu(new SelectionMenu<>(
                             "Please choose to accept or reject this withdrawal",
-                            List.of("Accept", "Reject"),
+                            () -> List.of("Accept", "Reject"),
                             String::toString,
                             strChoice -> {
                                 if (strChoice.equals("Accept")){
@@ -106,7 +106,7 @@ public class ProjectManageMenu extends MenuGroup {
 
         this.addSelectionMenu("Help applicant book", 
             user_ -> user_ instanceof Officer && !(user_ instanceof Manager),
-            Main.housingReqList.stream()
+            () -> Main.housingReqList.stream()
                 .filter(req -> req.getStatus().equals(HousingReq.REQUEST_STATUS.successful))
                 .filter(req -> req.getProject().getOfficers().contains(user))
                 .collect(Collectors.toList()), 
@@ -119,7 +119,7 @@ public class ProjectManageMenu extends MenuGroup {
 
         this.addSelectionMenu("Generate Receipt of Applicant Booking"
             , user_ -> user_ instanceof Officer && !(user_ instanceof Manager)
-            , Main.housingReqList.stream()
+            , () -> Main.housingReqList.stream()
                 .filter(req -> req.getProject().getOfficers().contains((Officer) user))
                 .filter(req -> req.getStatus().equals(HousingReq.REQUEST_STATUS.booked))
                 .collect(Collectors.toList())
@@ -137,71 +137,16 @@ public class ProjectManageMenu extends MenuGroup {
             )
             .addMenuItem("Create Project Listing", new SetUpProject((Manager) user))
             .addSelectionMenu("Edit Project Listing",
-                Main.projectList.stream()
+                () -> Main.projectList.stream()
                     .filter(project -> project.isManager((Manager) user))
                     .collect(Collectors.toList()),
                 Project::toString,
-                project -> MenuNavigator.getInstance().pushMenu(
-                    new MenuGroup("Which field do you want to edit? \n" + ProjectPrinter.getProjectDetailsString(project, true))
-                        .addMenuItem("Edit Project Name", () -> {
-                            System.out.println("Enter new project name:");
-                            String newName = sc.nextLine().trim();
-                            project.setName(newName);
-                            System.out.println("Project name updated successfully.");
-                        })
-                        .addMenuItem("Edit Neighborhood", () -> {
-                            System.out.println("Enter new neighborhood:");
-                            String newNeighborhood = sc.nextLine().trim();
-                            project.setNeighbourhood(newNeighborhood);
-                            System.out.println("Neighborhood updated successfully.");
-                        })
-                        .addMenuItem("Edit 2-Room Units", () -> {
-                            System.out.println("Enter new number of 2-room units:");
-                            int newUnits2Room = Integer.parseInt(sc.nextLine().trim());
-                            project.setUnits2Room(newUnits2Room);
-                            System.out.println("2-room units updated successfully.");
-                        })
-                        .addMenuItem("Edit 2-Room Price", () -> {
-                            System.out.println("Enter new price for 2-room units:");
-                            int newPrice2Room = Integer.parseInt(sc.nextLine().trim());
-                            project.setUnits2RoomPrice(newPrice2Room);
-                            System.out.println("2-room price updated successfully.");
-                        })
-                        .addMenuItem("Edit 3-Room Units", () -> {
-                            System.out.println("Enter new number of 3-room units:");
-                            int newUnits3Room = Integer.parseInt(sc.nextLine().trim());
-                            project.setUnits3Room(newUnits3Room);
-                            System.out.println("3-room units updated successfully.");
-                        })
-                        .addMenuItem("Edit 3-Room Price", () -> {
-                            System.out.println("Enter new price for 3-room units:");
-                            int newPrice3Room = Integer.parseInt(sc.nextLine().trim());
-                            project.setUnits3RoomPrice(newPrice3Room);
-                            System.out.println("3-room price updated successfully.");
-                        })
-                        .addMenuItem("Edit Application Open Date", () -> {
-                            System.out.println("Enter new application open date (dd/MM/yyyy):");
-                            String newOpenDate = sc.nextLine().trim();
-                            project.setOpenDate(LocalDate.parse(newOpenDate, DateTimeFormat.getDateFormatter()));
-                            System.out.println("Application open date updated successfully.");
-                        })
-                        .addMenuItem("Edit Application Close Date", () -> {
-                            System.out.println("Enter new application close date (dd/MM/yyyy):");
-                            String newCloseDate = sc.nextLine().trim();
-                            project.setCloseDate(LocalDate.parse(newCloseDate, DateTimeFormat.getDateFormatter()));
-                            System.out.println("Application close date updated successfully.");
-                        })
-                        .addMenuItem("Edit Officer Slots", () -> {
-                            System.out.println("Enter new number of officer slots:");
-                            int newOfficerSlots = Integer.parseInt(sc.nextLine().trim());
-                            project.setOfficerSlots(newOfficerSlots);
-                            System.out.println("Officer slots updated successfully.");
-                        })
-                )
+                project -> MenuNavigator.getInstance().pushMenu(createProjectEditMenu(project))
             )
+            
 
             .addSelectionMenu("Delete Project Listing", 
-                Main.projectList.stream()
+                () -> Main.projectList.stream()
                     .filter(project -> project.isManager((Manager) user))
                     .collect(Collectors.toList()), 
                 Project::toString, 
@@ -212,7 +157,7 @@ public class ProjectManageMenu extends MenuGroup {
             )
 
             .addSelectionMenu("Toggle Visibility of project listing", 
-                Main.projectList.stream()
+                () -> Main.projectList.stream()
                     .filter(project -> project.isManager((Manager) user))
                     .collect(Collectors.toList()), 
                 project -> project.toString() 
@@ -241,7 +186,8 @@ public class ProjectManageMenu extends MenuGroup {
 
                 System.out.println("=== Applicant Report ===");
                 relevantApplicants.stream().forEach(applicant -> {
-                    System.out.println("Applicant Name   : " + applicant.getName());
+                    System.out.println("Name   : " + applicant.getName());
+                    System.out.println("User type: " + applicant.getClass().getSimpleName());
                     System.out.println("Age              : " + applicant.getAge());
                     System.out.println("Marital Status   : " + (applicant.getMaritalStatus().equals(MARITAL_STATUS.Married) ? "Married" : "Single"));
 
@@ -284,5 +230,68 @@ public class ProjectManageMenu extends MenuGroup {
                 Main.projectList.stream().anyMatch(project -> project.isManager((Manager) user))
         );
     }
-    
+
+    // the problem is, the content gets refreshed 
+    private MenuGroup createProjectEditMenu(Project project) {
+        // Create a new MenuGroup with the current project details
+        MenuGroup editMenu = new MenuGroup("Which field do you want to edit? \n" + 
+                                       ProjectPrinter.getProjectDetailsString(project, true));
+        editMenu.addMenuItem("Edit Project Name", () -> {
+                System.out.println("Enter new project name:");
+                String newName = sc.nextLine().trim();
+                project.setName(newName);
+                System.out.println("Project name updated successfully.");
+        });
+        editMenu.addMenuItem("Edit Neighborhood", () -> {
+                System.out.println("Enter new neighborhood:");
+                String newNeighborhood = sc.nextLine().trim();
+                project.setNeighbourhood(newNeighborhood);
+                System.out.println("Neighborhood updated successfully.");
+        });
+        editMenu.addMenuItem("Edit 2-Room Units", () -> {
+                System.out.println("Enter new number of 2-room units:");
+                int newUnits2Room = Integer.parseInt(sc.nextLine().trim());
+                project.setUnits2Room(newUnits2Room);
+                System.out.println("2-room units updated successfully.");
+        });
+        editMenu.addMenuItem("Edit 2-Room Price", () -> {
+                System.out.println("Enter new price for 2-room units:");
+                int newPrice2Room = Integer.parseInt(sc.nextLine().trim());
+                project.setUnits2RoomPrice(newPrice2Room);
+                System.out.println("2-room price updated successfully.");
+        });
+        editMenu.addMenuItem("Edit 3-Room Units", () -> {
+                System.out.println("Enter new number of 3-room units:");
+                int newUnits3Room = Integer.parseInt(sc.nextLine().trim());
+                project.setUnits3Room(newUnits3Room);
+                System.out.println("3-room units updated successfully.");
+        });
+        editMenu.addMenuItem("Edit 3-Room Price", () -> {
+                System.out.println("Enter new price for 3-room units:");
+                int newPrice3Room = Integer.parseInt(sc.nextLine().trim());
+                project.setUnits3RoomPrice(newPrice3Room);
+                System.out.println("3-room price updated successfully.");
+        });
+        editMenu.addMenuItem("Edit Application Open Date", () -> {
+                System.out.println("Enter new application open date (dd/MM/yyyy):");
+                String newOpenDate = sc.nextLine().trim();
+                project.setOpenDate(LocalDate.parse(newOpenDate, DateTimeFormat.getDateFormatter()));
+                System.out.println("Application open date updated successfully.");
+        });
+        editMenu.addMenuItem("Edit Application Close Date", () -> {
+                System.out.println("Enter new application close date (dd/MM/yyyy):");
+                String newCloseDate = sc.nextLine().trim();
+                project.setCloseDate(LocalDate.parse(newCloseDate, DateTimeFormat.getDateFormatter()));
+                System.out.println("Application close date updated successfully.");
+        });
+        editMenu.addMenuItem("Edit Officer Slots", () -> {
+                System.out.println("Enter new number of officer slots:");
+                int newOfficerSlots = Integer.parseInt(sc.nextLine().trim());
+                project.setOfficerSlots(newOfficerSlots);
+                System.out.println("Officer slots updated successfully.");
+        });
+        editMenu.setDynamicDesc(() -> "Which field do you want to edit? \n" + 
+                                       ProjectPrinter.getProjectDetailsString(project, true));
+        return editMenu;
+    }
 }

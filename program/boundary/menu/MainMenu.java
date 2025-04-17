@@ -31,10 +31,12 @@ public class MainMenu extends MenuGroup{
         }
 
         this.addSelectionMenu(
-            "Filter options", 
-            (user instanceof Manager)? Arrays.asList(User.FILTER_SETTING.values()):
+            "Filter options",
+            () -> (user instanceof Manager)? Arrays.asList(User.FILTER_SETTING.values()):
             filterOptions, 
-            Object::toString, 
+            filterSetting -> user.getFilterSetting().equals(filterSetting)?
+                filterSetting.toString() + " <-- Current":
+                filterSetting.toString(),
             user::setFilterSetting);
 
     }

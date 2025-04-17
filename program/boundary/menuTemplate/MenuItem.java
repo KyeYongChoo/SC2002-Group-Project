@@ -14,8 +14,9 @@ public class MenuItem{
     protected static final Scanner sc = AppScanner.getInstance();
     /*
      * description: A string that describes the menu item.
+     * package private because MenuGroup etc will update it dynamically, but closed to other packages
      */
-    private final String description;
+    String description;
 
     /*
      * action: A MenuAction that defines the action to be performed when the menu item is selected.
