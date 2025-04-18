@@ -64,7 +64,7 @@ public class RecordSaver {
     public static void writeProjectsCSV(String fileName) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("data/" + fileName))) {
             // Write the CSV header
-            bw.write("Project Name,Neighborhood,Type 1,Number of units for Type 1,Selling price for Type 1,Type 2,Number of units for Type 2,Selling price for Type 2,Application opening date,Application closing date,Manager,Officer Slot,Officer\n");
+            bw.write("Project Name,Neighborhood,Type 1,Number of units for Type 1,Selling price for Type 1,Type 2,Number of units for Type 2,Selling price for Type 2,Application opening date,Application closing date,Manager,Officer Slot,Officer,Visibility\n");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 
             // Write each project to the CSV file
@@ -93,7 +93,8 @@ public class RecordSaver {
                     p.getCloseDate().format(formatter),
                     p.getManager().toString(),
                     String.valueOf(p.getOfficerSlots()),
-                    officerList
+                    officerList,
+                    String.valueOf(p.getVisibility()) // Save visibility
                 }));
                 bw.newLine();
             }

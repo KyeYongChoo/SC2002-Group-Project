@@ -22,6 +22,8 @@ public class AssignReqList extends ArrayList<AssignReq>{
         // if a request has been made before for same applicant and same project
         if (!TimeCompare.officerUnassigned(req.getOfficer(), req.getProject())){
             System.out.println("Error: You have an active application at " + req.getOfficer().getCurProject());
+            // DEBUG:
+            // System.out.println(req.getOfficer() + " application to " + req.getProject());
             return false;
         }
         Officer officer = req.getOfficer();
@@ -39,6 +41,8 @@ public class AssignReqList extends ArrayList<AssignReq>{
         }
         Main.assignReqList.add(0,req);
         System.out.println("Requested successfully");
+        // DEBUG:
+        // System.out.println(officer + " application to " + project);
         return true;
     }
 
@@ -48,8 +52,10 @@ public class AssignReqList extends ArrayList<AssignReq>{
     }
 
     // Used if need to modify in place ie avoid java.util.ConcurrentModificationException
-    public void superAdd(AssignReq e){
-        super.add(e);
+    // Does not add a copy if it is already present 
+    public boolean superAdd(AssignReq req){
+        if (this.stream().anyMatch(req_ -> ((AssignReq) req_).equals(req))) return false;
+        return super.add(req);
     }
 
     public static void delete(AssignReq req){

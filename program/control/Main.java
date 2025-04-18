@@ -23,6 +23,7 @@ public class Main {
     
     public static void main(String[] args) throws Exception{
         DataInitializer.initialise();
+        assignReqList.stream().forEach(assignReq -> System.out.println("" + assignReq.getOfficer() + assignReq.getProject()));
 
         // TESTING
         boolean skipLogin = true;
