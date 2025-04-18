@@ -18,12 +18,16 @@ import program.control.housingApply.HousingReq;
 import program.control.housingApply.HousingReq.WITHDRAWAL_STATUS;
 import program.control.officerApply.AssignReq;
 import program.entity.project.Project;
+import program.entity.project.Project.ROOM_TYPE;
 import program.entity.users.Manager;
+import program.entity.users.Manager.REPORT_FILTER;
 import program.entity.users.Officer;
 import program.entity.users.User;
 import program.entity.users.User.MARITAL_STATUS;
 
 public class ProjectManageMenu extends MenuGroup {
+    private Project selectedProjectForReport = null;
+
     public ProjectManageMenu(User user) {
         super("Manage your Projects", 
             // only officers and above may manage projects
@@ -78,7 +82,7 @@ public class ProjectManageMenu extends MenuGroup {
             }
         );
 
-        this.addSelectionMenu("Process withdrawal Requests"
+        this.addSelectionMenu("Process Withdrawal Requests"
             , user_ -> user_ instanceof Manager
             , () -> Main.housingReqList.stream()
                 .filter(project -> project.getManager().equals(user))
@@ -156,7 +160,7 @@ public class ProjectManageMenu extends MenuGroup {
                 }
             )
 
-            .addSelectionMenu("Toggle Visibility of project listing", 
+            .addSelectionMenu("Toggle Visibility of Project Listing", 
                 () -> Main.projectList.stream()
                     .filter(project -> project.isManager((Manager) user))
                     .collect(Collectors.toList()), 
@@ -168,67 +172,78 @@ public class ProjectManageMenu extends MenuGroup {
                 }
         ));
 
-        Function<Manager, List<User>> generateRelevantApplicants = 
-            (Manager manager) -> {
-                List<User> userList = new ArrayList<User>(Main.applicantList);
-                userList.addAll(Main.officerList);
-                return userList.stream()
-                    .filter(user_ -> Main.housingReqList.stream()
-                        .anyMatch(housingReq -> 
-                            housingReq.getProject().isManager(manager) && 
-                            housingReq.getUser().equals(user_)
-                    )).collect(Collectors.toList());
-            };
+        SelectionMenu<Project> selectProjectMenu = new SelectionMenu<>(
+            "Select a Project for the Report",
+            () -> Main.projectList.stream()
+                .filter(project -> project.isManager((Manager) user)) // Only projects managed by the current manager
+                .collect(Collectors.toList()),
+            project -> project.equals(selectedProjectForReport) ? 
+                project.toString() + " <-- Current" :
+                project.toString(),
+            project -> {
+                selectedProjectForReport = project; // Store the selected project
+                System.out.println("Selected project: " + project.getName());
+            }
+        );
 
-        this.addMenuItem("Generate report on Applicants", 
-            () -> {
-                List<User> relevantApplicants = generateRelevantApplicants.apply((Manager) user);
+        SelectionMenu<REPORT_FILTER> generateReportMenu = new SelectionMenu<>(
+            "Generate Report on Applicants",
+            user_ -> user_ instanceof Manager &&
+                Main.projectList.stream().anyMatch(project -> project.isManager((Manager) user_)),
+            () -> List.of(REPORT_FILTER.values()),
+            reportFilter -> ((Manager) user).getReportFilter().equals(reportFilter) ?
+                reportFilter.toString() + " <-- Current" :
+                reportFilter.toString(),
+            reportFilter -> {
+                ((Manager) user).setReportFilter(reportFilter);
+                if (reportFilter == REPORT_FILTER.PROJECT) {
+                    // Push the project selection menu
+                    MenuNavigator.getInstance().pushMenu(selectProjectMenu);
+                }
+            }
+        );
 
-                System.out.println("=== Applicant Report ===");
+        generateReportMenu.setDynamicDesc(() -> {
+            Manager manager = (Manager) user;
+            List<User> relevantApplicants = generateRelevantApplicants.apply(manager);
+
+            StringBuilder sb = new StringBuilder(); 
+            sb.append("Generate report on Applicants");
+            sb.append("\n=== Applicant Report ===\n");
+
+            if (relevantApplicants.isEmpty()){
+                sb.append("Sorry, no relevant applicants\n").toString();
+            }else{
                 relevantApplicants.stream().forEach(applicant -> {
-                    System.out.println("Name   : " + applicant.getName());
-                    System.out.println("User type: " + applicant.getClass().getSimpleName());
-                    System.out.println("Age              : " + applicant.getAge());
-                    System.out.println("Marital Status   : " + (applicant.getMaritalStatus().equals(MARITAL_STATUS.Married) ? "Married" : "Single"));
+                    sb.append("Name   : " + applicant.getName() + "\n");
+                    sb.append("User type: " + applicant.getClass().getSimpleName() + "\n");
+                    sb.append("Age              : " + applicant.getAge() + "\n");
+                    sb.append("Marital Status   : " + (applicant.getMaritalStatus().equals(MARITAL_STATUS.Married) ? "Married\n" : "Single\n"));
 
                     // Get the housing requests for this applicant
                     List<HousingReq> applicantRequests = Main.housingReqList.stream()
-                        .filter(req -> req.getUser().equals(applicant))
+                        .filter(req -> filterManagerReport(req, applicant, manager))
                         .collect(Collectors.toList());
 
                     if (applicantRequests.isEmpty()) {
-                        System.out.println("No flat bookings found for this applicant.");
+                        sb.append("No flat bookings found for this applicant.\n");
                     } else {
-                        System.out.println("Flat Bookings:");
+                        sb.append("Flat Bookings:\n");
                         applicantRequests.forEach(req -> {
-                            System.out.println("  - Project Name : " + req.getProject().getName());
-                            System.out.println("    Flat Type    : " + req.getRoomType());
-                            System.out.println("    Status       : " + req.getStatus());
+                            sb.append("  - Project Name : " + req.getProject().getName() + "\n");
+                            sb.append("    Flat Type    : " + req.getRoomType() + "\n");
+                            sb.append("    Status       : " + req.getStatus() + "\n");
                         });
                     }
-                    System.out.println("----------------------------------------");
+                    sb.append("----------------------------------------\n");
                 });
+            }
+            sb.append("\nPlease select your filter: \n");
+            return sb.toString();
+        });
 
-                // Example filter: Generate a report for married applicants
-                System.out.println("=== Married Applicants Report ===");
-                relevantApplicants.stream()
-                    .filter(user_ -> user_.getMaritalStatus().equals(MARITAL_STATUS.Married))
-                    .forEach(applicant -> {
-                        System.out.println("Applicant Name   : " + applicant.getName());
-                        System.out.println("Age              : " + applicant.getAge());
-                        System.out.println("Flat Choices:");
-                        Main.housingReqList.stream()
-                            .filter(req -> req.getUser().equals(applicant))
-                            .forEach(req -> {
-                                System.out.println("  - Project Name : " + req.getProject().getName());
-                                System.out.println("    Flat Type    : " + req.getRoomType());
-                            });
-                        System.out.println("----------------------------------------");
-                    });
-            },
-            user_ -> user_ instanceof Manager && 
-                Main.projectList.stream().anyMatch(project -> project.isManager((Manager) user))
-        );
+        // dont add menu directly because it would cause the whole application report to be generated as description in ProjectManagerMenu
+        this.addMenuItem("Generate report on Applicants", () -> MenuNavigator.getInstance().pushMenu(generateReportMenu));
     }
 
     // the problem is, the content gets refreshed 
@@ -293,5 +308,51 @@ public class ProjectManageMenu extends MenuGroup {
         editMenu.setDynamicDesc(() -> "Which field do you want to edit? \n" + 
                                        ProjectPrinter.getProjectDetailsString(project, true));
         return editMenu;
+    }
+
+    private Function<Manager, List<User>> generateRelevantApplicants = 
+            (Manager manager) -> {
+                List<User> userList = new ArrayList<User>(Main.applicantList);
+                userList.addAll(Main.officerList);
+                userList = userList.stream()
+                    .filter(user_ -> Main.housingReqList.stream()
+                        .anyMatch(housingReq -> 
+                            filterManagerReport(housingReq, user_, manager)
+                    ))
+                    .collect(Collectors.toList());
+
+                return userList;
+    };
+
+    private boolean filterManagerReport(HousingReq req, User user, Manager manager) {
+        REPORT_FILTER filter = manager.getReportFilter();
+
+        // Check if the housing request belongs to the manager's project
+        if (!req.getProject().isManager(manager)) {
+            return false;
+        }
+
+        // Check if the housing request belongs to the applicant
+        if (!req.getUser().equals(user)) {
+            return false;
+        }
+
+        // Apply filters based on the manager's report filter
+        switch (filter) {
+            case MARRIED:
+                return user.getMaritalStatus() == MARITAL_STATUS.Married;
+            case SINGLE:
+                return user.getMaritalStatus() == MARITAL_STATUS.Single;
+            case PROJECT:
+                return selectedProjectForReport != null &&
+                       req.getProject().equals(selectedProjectForReport) &&
+                       req.getUser().equals(user);
+            case FLAT_TYPE_2_ROOM:
+                return req.getRoomType() == ROOM_TYPE.room2 && req.getUser().equals(user);
+            case FLAT_TYPE_3_ROOM:
+                return req.getRoomType() == ROOM_TYPE.room3 && req.getUser().equals(user);
+            default:
+                return true; // No specific filter applied
+        }
     }
 }

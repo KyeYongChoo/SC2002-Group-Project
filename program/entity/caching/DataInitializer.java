@@ -41,7 +41,7 @@ public class DataInitializer {
             System.out.println("Error loading data from CSV files: " + e.getMessage());
         }
 
-        System.out.println("All data successfully loaded from CSV files.");
+        System.out.println("Completed loading of CSV files.");
     }
 
     private static void readUserCSV(String fileName, List<?> list, String type) {
@@ -85,11 +85,7 @@ public class DataInitializer {
 
     private static Project createProject(String[] fields, String fileName) throws Exception {
         try {
-            if (fields.length == 12) {
-                fields = Arrays.copyOf(fields, 13);
-                fields[12] = "";
-            }
-            if (fields.length != 13) {
+            if (fields.length != 14) {
                 throw new Exception("Invalid CSV format in " + fileName);
             }
 
@@ -133,13 +129,22 @@ public class DataInitializer {
                 }
 
                 if (fields.length == 12) {
-                    fields = Arrays.copyOf(fields, 13);
-                    fields[12] = "";
+                    fields = Arrays.copyOf(fields, 14); // Extend to include visibility
+                    fields[12] = ""; // Officer list
+                    fields[13] = ""; // Visibility
+                } else if (fields.length == 13) {
+                    fields = Arrays.copyOf(fields, 14); // Extend to include visibility
+                    fields[13] = ""; // Visibility
                 }
 
                 try {
                     Project project = createProject(fields, fileName);
                     Main.projectList.add(project);
+
+                    // Set visibility if provided
+                    if (!fields[13].isEmpty()) {
+                        project.setVisibility(Boolean.parseBoolean(fields[13]));
+                    }
 
                     // Check for existing successful assignments
                     String[] officers = fields[12].split(",");
@@ -147,7 +152,10 @@ public class DataInitializer {
                         officerName = officerName.trim();
                         if (!officerName.isEmpty()) {
                             final String officerNameFinal = officerName;
-                            Officer officer = (Officer) Main.officerList.stream().filter(user -> user.getName().equals(officerNameFinal)).findAny().orElse(null);
+                            Officer officer = (Officer) Main.officerList.stream()
+                                .filter(user -> user.getName().equals(officerNameFinal))
+                                .findAny()
+                                .orElse(null);
                             boolean hasSuccessfulAssignment = Main.assignReqList.stream()
                                 .anyMatch(req -> req.getOfficer().equals(officer) && req.getProject().equals(project) && req.getApplicationStatus() == AssignReq.APPLICATION_STATUS.accepted);
 
@@ -155,7 +163,7 @@ public class DataInitializer {
                             if (!hasSuccessfulAssignment) {
                                 AssignReq req = new AssignReq(officer, project);
                                 req.setApplicationStatus(AssignReq.APPLICATION_STATUS.accepted);
-                                Main.assignReqList.add(req);
+                                Main.assignReqList.superAdd(req);
                             }
                         }
                     }
@@ -284,7 +292,7 @@ public class DataInitializer {
                 AssignReq req = new AssignReq(officer, project);
                 req.setApplicationStatus(applicationStatus);
 
-                Main.assignReqList.add(req);
+                Main.assignReqList.superAdd(req);
             }
         } catch (IOException e) {
             System.out.println("Error reading " + fileName + ": " + e.getMessage());

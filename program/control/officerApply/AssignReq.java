@@ -59,4 +59,21 @@ public class AssignReq {
         }
         return sb.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true; // Same reference
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false; // Null or different class
+        }
+        AssignReq other = (AssignReq) obj;
+
+        // Compare all attributes
+        return officer.equals(other.officer) &&
+               manager.equals(other.manager) &&
+               project.equals(other.project) &&
+               applicationStatus == other.applicationStatus;
+    }
 }
