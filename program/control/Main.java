@@ -13,6 +13,7 @@ import program.entity.users.User;
 import program.entity.users.UserList;
 
 public class Main {
+    public static User curUser = null;
     public static UserList applicantList = new UserList();
     public static UserList managerList = new UserList();
     public static UserList officerList = new UserList();
@@ -23,22 +24,21 @@ public class Main {
     
     public static void main(String[] args) throws Exception{
         DataInitializer.initialise();
-        assignReqList.stream().forEach(assignReq -> System.out.println("" + assignReq.getOfficer() + assignReq.getProject()));
 
         // TESTING
-        boolean skipLogin = true;
-        User client; 
+        boolean skipLogin = false;
+        User curUser; 
         if (skipLogin){
-            client = SkipLogin(USER.Manager);
+            curUser = SkipLogin(USER.Applicant);
         } else {
-            client = LoginHandler.loginUser();
+            curUser = LoginHandler.loginUser();
         }
 
         // PRODUCTION
-        // User client = LoginHandler.loginUser();
+        // curUser = LoginHandler.loginUser();
         
-        MenuNavigator.getInstance().pushMenu(new MainMenu(client));
-        MenuNavigator.getInstance().start(client);
+        MenuNavigator.getInstance().pushMenu(new MainMenu(curUser));
+        MenuNavigator.getInstance().start(curUser);
 
         RecordSaver.save();
     }

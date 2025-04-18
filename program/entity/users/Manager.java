@@ -54,7 +54,7 @@ public class Manager extends Officer {
 
     @Override
     public String getGreeting(){
-        return "\nYou are currently handling project:\n" + this.getCurProject() + "\nFrom " + this.getCurProject().getOpenDate() + " until " + this.getCurProject().getCloseDate();
+        return "\nHello " + this.getName() + ".\nYou are currently handling project:\n" + this.getCurProject() + "\nFrom " + this.getCurProject().getOpenDate() + " until " + this.getCurProject().getCloseDate();
     }
 
     @Override

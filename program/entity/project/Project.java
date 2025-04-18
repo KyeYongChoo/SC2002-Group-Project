@@ -94,11 +94,12 @@ public class Project {
     }
 
     public boolean isVisibleTo(User user) {
+        boolean alreadyApplied = HousingReqList.activeReq(user) != null;
         boolean inCharge = (user instanceof Manager && user.equals(this.manager)) || this.projOfficerList.contains(user);
         boolean applicationOpen = visibility  
                                 && nowOpen()
-                                && (user.see2Rooms() && units2room > 0 || user.see3Rooms() && units3room > 0);
-        return applicationOpen || inCharge;
+                                && (user.see2Rooms() && units2room > 0 || user.see3Rooms() && (units3room > 0 || units2room > 0));
+        return applicationOpen || inCharge || alreadyApplied;
     }
 
     public boolean nowOpen(){
@@ -108,10 +109,11 @@ public class Project {
 
     public boolean conflictInterest(User user) {
         // // For debug
+        // System.out.println("Project: " + this);
         // System.out.println("Manager: " + (user instanceof Manager)); // User is a manager
         // System.out.println("Involved in this proj: " + this.projOfficerList.contains(user)); // User is/was an officer working on this project
         // System.out.println("user busy: " + (user instanceof Officer && !TimeCompare.officerUnassigned(((Officer) user), this))); // User is an officer with overlapping time with this project
-        // System.out.println("alreadyHave House: " + user.hasActiveApplication());
+        // System.out.println("alreadyHave application: " + user.hasActiveApplication());
         return (user instanceof Manager) // User is a manager
                 || this.projOfficerList.contains(user) // User is/was an officer working on this project
                 || (user instanceof Officer && !TimeCompare.officerUnassigned(((Officer) user), this)) // User is an officer with overlapping time with this project

@@ -50,7 +50,9 @@ public class ProjectManageMenu extends MenuGroup {
             user_ -> user_ instanceof Manager,
             () -> Main.housingReqList.stream()
                 .filter(req -> req.getProject().getManager().equals(user))
+                .peek(req -> System.out.println("Reqsame manager: " + req))
                 .filter(req -> req.getStatus() == HousingReq.REQUEST_STATUS.pending)
+                .peek(req -> System.out.println("Req pending status: " + req))
                 .collect(Collectors.toList()), 
             HousingReq::toString, 
             req -> {
@@ -139,7 +141,7 @@ public class ProjectManageMenu extends MenuGroup {
                 Main.projectList.stream().anyMatch(project -> 
                 project.isManager((Manager) user_))
             )
-            .addMenuItem("Create Project Listing", new SetUpProject((Manager) user))
+            .addMenuItem("Create Project Listing", new SetUpProject(user))
             .addSelectionMenu("Edit Project Listing",
                 () -> Main.projectList.stream()
                     .filter(project -> project.isManager((Manager) user))

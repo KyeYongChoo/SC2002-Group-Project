@@ -1,4 +1,9 @@
 Project Name,Neighborhood,Type 1,Number of units for Type 1,Selling price for Type 1,Type 2,Number of units for Type 2,Selling price for Type 2,Application opening date,Application closing date,Manager,Officer Slot,Officer,Visibility
-ACACIA BREEZE,YISHUN,2-Room,1,350000,3-Room,2,450000,15/2/2025,20/3/2026,Jessica,3,"Daniel,Emily",true
+ACACIA BREEZE,YISHUN,2-Room,2,350000,3-Room,3,450000,15/2/2025,20/3/2026,Jessica,3,"Daniel,Emily",true
 BETA BREEZE,SEMBAHWANG,2-Room,3,300000,3-Room,4,400000,15/2/2025,20/3/2026,Michael,4,,true
-GAMME BREEZE,SEMBAHWANG,2-Room,3,300000,3-Room,4,400000,15/2/2027,20/3/2028,John,4,,true
+NOT YET OPEN BREEZE,SEMBAHWANG,2-Room,3,300000,3-Room,4,400000,15/2/2027,20/3/2028,John,4,,true
+NO 3 ROOM BREEZE,NTU,2-Room,3,300000,3-Room,0,400000,15/2/2025,20/3/2026,Joe,4,,true
+NO 2 ROOM BREEZE,NTU,2-Room,0,300000,3-Room,1,400000,15/2/2025,20/3/2026,Alice,4,,true
+COMPLETELY NO ROOM BREEZE,NTU,2-Room,0,300000,3-Room,0,400000,15/2/2025,20/3/2026,Hulk,4,,true
+VISIBILITY FALSE BREEZE,NTU,2-Room,0,300000,3-Room,1,400000,15/2/2025,20/3/2026,Iron Man,1,,false
+NO OFFICER SLOT BREEZE,NTU,2-Room,1,300000,3-Room,1,400000,15/2/2025,20/3/2026,Steve,0,,true

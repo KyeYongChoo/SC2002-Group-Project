@@ -26,7 +26,7 @@ public class ProjectSelector {
         List<Project> visibleProjects = UserPrefSorting.userFilterStream(client,projectList)
             .filter(project -> 
             ((client.see2Rooms() && project.getUnits2Room() > 0) || 
-            (client.see3Rooms() && project.getUnits3Room() > 0)))
+            (client.see3Rooms() && (project.getUnits3Room() > 0 || project.getUnits2Room() > 0 ))))
             .filter(project -> project.isVisibleTo(client))
             .filter(project -> !project.conflictInterest(client))
             .collect(Collectors.toList());

@@ -9,9 +9,10 @@ import java.util.function.Supplier;
 
 import program.entity.users.User;
 
-public class MenuGroup extends MenuItem {
+public class MenuGroup extends MenuItem{
     private final List<MenuItem> menuItems;
     private Supplier<String> dynamicDesc;
+    private ArrayList<Supplier<MenuItem>> menuItemSuppliers = new ArrayList<>();
     
     /*
      * Constructor for MenuGroup
@@ -24,7 +25,19 @@ public class MenuGroup extends MenuItem {
             visibleIf); 
         this.menuItems = new ArrayList<>();
         dynamicDesc = () -> description;
-        this.setAction(() -> MenuNavigator.getInstance().pushMenu(this));
+        // need to set Action here because keyword "this" is not allowed when calling the super constructor
+        this.setAction(() -> {
+            lazyInstantiate();
+            MenuNavigator.getInstance().pushMenu(this);
+        });
+    }
+
+    // used by MenuNavigator to jumpstart the first Menu
+    public void lazyInstantiate(){
+        if (menuItems.isEmpty()){
+            // time to lazy instantiate
+            menuItemSuppliers.forEach(menuItemSupplier -> menuItems.add(menuItemSupplier.get()));
+        }
     }
 
     /*
@@ -52,6 +65,10 @@ public class MenuGroup extends MenuItem {
         }
     }
 
+    private MenuGroup addMenuItem(Supplier<MenuItem> menuItemSupplier){
+        menuItemSuppliers.add(menuItemSupplier);
+        return this;
+    }
     /*
      * There will be 3 kinds of adding here:
      * 1. addMenuItem adds 1 single choice
@@ -69,7 +86,7 @@ public class MenuGroup extends MenuItem {
      * @return MenuGroup, supports method chaining
      */
     public MenuGroup addMenuItem(MenuItem menuItem) {
-        menuItems.add(menuItem);
+        addMenuItem(() -> menuItem);
         return this;
     }
 
@@ -80,7 +97,7 @@ public class MenuGroup extends MenuItem {
      * @return MenuGroup, supports method chaining
      */
     public MenuGroup addMenuItem(String description, MenuAction action){
-        return this.addMenuItem(new MenuItem (description, action));
+        return this.addMenuItem(() -> new MenuItem (description, action));
     }
 
     /*
@@ -92,14 +109,14 @@ public class MenuGroup extends MenuItem {
      * @return MenuGroup, supports method chaining
      */
     public MenuGroup addMenuItem(String description, MenuAction action, Predicate<User> visibleIf){
-        return this.addMenuItem(new MenuItem (description, action, visibleIf));
+        return this.addMenuItem(() -> new MenuItem (description, action, visibleIf));
     }
 
     public <T> MenuGroup addSelectionMenu (String description, Predicate<User> visibleIf, Supplier<List<T>> itemListSupplier, Function<T, String> itemLabelFunc, Consumer<T> onSelect){
-        return this.addMenuItem(new SelectionMenu<>(description, visibleIf, itemListSupplier, itemLabelFunc, onSelect));
+        return this.addMenuItem(() -> new SelectionMenu<>(description, visibleIf, itemListSupplier, itemLabelFunc, onSelect));
     }
     public <T> MenuGroup addSelectionMenu (String description, Supplier<List<T>> itemListSupplier, Function<T, String> itemLabelFunc, Consumer<T> onSelect){
-        return this.addMenuItem(new SelectionMenu<>(description, itemListSupplier, itemLabelFunc, onSelect));
+        return this.addMenuItem(() -> new SelectionMenu<>(description, itemListSupplier, itemLabelFunc, onSelect));
     }
 
     /*
@@ -114,9 +131,7 @@ public class MenuGroup extends MenuItem {
         return dynamicDesc;
     }
 
-    // Supports method chaining
-    public MenuGroup setDynamicDesc(Supplier<String> descSupplier){
+    public void setDynamicDesc(Supplier<String> descSupplier){
         dynamicDesc = descSupplier;
-        return this;
     }
 }

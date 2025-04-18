@@ -11,16 +11,19 @@ import program.boundary.menuTemplate.MenuAction;
 import program.control.Main;
 import program.entity.project.Project;
 import program.entity.users.Manager;
+import program.entity.users.User;
 
 public class SetUpProject implements MenuAction{
-    Manager manager;
+    User user;
     private static Scanner sc = AppScanner.getInstance();
-    public SetUpProject(Manager manager){
-        this.manager = manager;
+    // the reason why this takes a user argument rather than a Manager argument is due to Lazy Instantiation problems when applicant is called, this quick fix is far easier than the more principled way to solve it
+    public SetUpProject(User user){
+        this.user = user;
     }
     @Override
     public void execute(){
         try {
+            Manager manager = (Manager) user;
             System.out.println("Enter Project Name:");
             String name = sc.nextLine().trim();
             if (name.isEmpty()) throw new Exception("Project Name cannot be empty.");

@@ -32,9 +32,8 @@ public class SelectionMenu<T> extends MenuGroup {
         this.itemSupplier = itemSupplier;
         this.itemLabelFunc = itemLabelFunc;
         this.onSelect = onSelect;
-        
-        // Initial population of items
-        populateItems();
+
+        // cannot populateItems now. Need lazy Instantiation. If always instatiate at start, a lot of problems will occur with applicants trying to instantiate Manager menus and things not working out 
     }
 
     private void populateItems() {

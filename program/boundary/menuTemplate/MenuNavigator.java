@@ -44,6 +44,8 @@ public class MenuNavigator {
      * @param menu: The menu group to be pushed onto the stack.
      */
     public void pushMenu(MenuGroup menu){
+        // lazy instantiation needs to be started
+        menu.lazyInstantiate();
         menuStack.push(menu);
     }
     /*

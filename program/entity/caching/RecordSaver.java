@@ -27,7 +27,7 @@ public class RecordSaver {
         writeHousingReqCSV("HousingReqList.csv");
         writeAssignReqCSV("AssignReqList.csv");
 
-        System.out.println("All data successfully saved to CSV files.");
+        System.out.println("Completed saving to CSV files.");
     }
 
     public static void writeUserCSV(String fileName, List<?> list) throws IOException {
