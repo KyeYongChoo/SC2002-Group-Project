@@ -101,6 +101,7 @@ public class HousingReqList extends ArrayList<HousingReq>{
         return this.add(req);
     }
 
+    // each client 1 request at a time i guess
     public static HousingReq activeReq(User client){
         if (client.getReqList().isEmpty()) return null; // if no prior request, return null
         HousingReq req = client.getReqList().get(0);

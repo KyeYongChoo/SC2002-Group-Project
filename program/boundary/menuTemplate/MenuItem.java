@@ -95,6 +95,10 @@ public class MenuItem{
         this.action = action;
     }
 
+    public MenuAction getAction(){
+        return action;
+    }
+
     /*
      * addAction: Adds an action to the existing action for the menu item.
      * This allows for chaining multiple actions together.
@@ -104,5 +108,9 @@ public class MenuItem{
      */
     public void addAction(MenuAction action) {
         this.action = this.action.andThen(action);
+    }
+
+    public Predicate<User> getVisibleIf(){
+        return visibleIf;
     }
 }

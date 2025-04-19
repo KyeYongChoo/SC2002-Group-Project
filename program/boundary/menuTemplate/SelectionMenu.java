@@ -26,30 +26,30 @@ public class SelectionMenu<T> extends MenuGroup {
     }
 
     public SelectionMenu(String description, Predicate<User> visibleIf, Supplier<List<T>> itemSupplier, Function<T, String> itemLabelFunc, Consumer<T> onSelect) {
-        super(description, visibleIf);
-        
+        super(description, user_ -> visibleIf.test(user_) &&
+            itemSupplier.get()!=null && 
+            !itemSupplier.get().isEmpty());
         // Store these for later refresh calls
         this.itemSupplier = itemSupplier;
         this.itemLabelFunc = itemLabelFunc;
         this.onSelect = onSelect;
-
-        // cannot populateItems now. Need lazy Instantiation. If always instatiate at start, a lot of problems will occur with applicants trying to instantiate Manager menus and things not working out 
     }
 
     private void populateItems() {
         // Clear existing items first
         getItems().clear();
+        getItemSuppliers().clear();
         
         List<T> items = itemSupplier.get();
 
         if (items == null) System.out.println("Sorry, no items");
         else {
-            for (int i = 0; i < items.size(); i++) {
-                T item = items.get(i);
+            items.forEach(item -> {
                 this.addMenuItem(itemLabelFunc.apply(item), () -> {
                     if (onSelect != null) onSelect.accept(item);
                 });
-            }
+            });
+            // this empty check sometimes trigger because going into the menu it was visible but coming back out from another menu its no longer visible
         }
     }
 

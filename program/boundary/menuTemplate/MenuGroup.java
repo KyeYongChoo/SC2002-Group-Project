@@ -13,9 +13,12 @@ public class MenuGroup extends MenuItem{
     private final List<MenuItem> menuItems;
     private Supplier<String> dynamicDesc;
     private ArrayList<Supplier<MenuItem>> menuItemSuppliers = new ArrayList<>();
+    private boolean isTransient = false;
+
     
     /*
      * Constructor for MenuGroup
+     * Both functions as a Factory and a actual Menu in its own right. 
      * @param description the description of the menu group
      * @param visibleIf a predicate that determines if the menu group is visible
      */
@@ -26,18 +29,7 @@ public class MenuGroup extends MenuItem{
         this.menuItems = new ArrayList<>();
         dynamicDesc = () -> description;
         // need to set Action here because keyword "this" is not allowed when calling the super constructor
-        this.setAction(() -> {
-            lazyInstantiate();
-            MenuNavigator.getInstance().pushMenu(this);
-        });
-    }
-
-    // used by MenuNavigator to jumpstart the first Menu
-    public void lazyInstantiate(){
-        if (menuItems.isEmpty()){
-            // time to lazy instantiate
-            menuItemSuppliers.forEach(menuItemSupplier -> menuItems.add(menuItemSupplier.get()));
-        }
+        this.setAction(() -> MenuNavigator.getInstance().pushMenu(this));
     }
 
     /*
@@ -48,6 +40,13 @@ public class MenuGroup extends MenuItem{
         this(description, user -> true); 
     }
 
+    // must be separate from Refresh. Because refresh recursively refreshes through all the lists, but instantiation should only occur if parent menu chosen, due to class cast probelms when applicants instantiate manager menus
+    // Used by MenuNavigator
+    public void lazyInstantiate(){
+        if (menuItems.isEmpty()){
+            menuItemSuppliers.forEach(menuItemSupplier -> menuItems.add(menuItemSupplier.get()));
+        }
+    }
     /**
      * Refreshes the menu items in this group.
      * Override this method in subclasses that need dynamic refreshing.
@@ -127,6 +126,10 @@ public class MenuGroup extends MenuItem{
         return menuItems;
     }
 
+    public ArrayList<Supplier<MenuItem>> getItemSuppliers(){
+        return menuItemSuppliers;
+    }
+
     public Supplier<String> getDynamicDesc(){
         return dynamicDesc;
     }
@@ -134,4 +137,11 @@ public class MenuGroup extends MenuItem{
     public void setDynamicDesc(Supplier<String> descSupplier){
         dynamicDesc = descSupplier;
     }
+    public MenuGroup setTransient(boolean isTransient) {
+        this.isTransient = isTransient;
+        return this;
+    }
+    public boolean isTransient() {
+        return isTransient;
+    }    
 }

@@ -37,6 +37,10 @@ public class MenuNavigator {
         if (instance == null) instance = new MenuNavigator();
         return instance;
     }
+
+    public MenuGroup popMenu(){
+        return menuStack.pop();
+    }
     
     /*
      * pushMenu: A method that pushes a new menu group onto the stack.
@@ -44,7 +48,6 @@ public class MenuNavigator {
      * @param menu: The menu group to be pushed onto the stack.
      */
     public void pushMenu(MenuGroup menu){
-        // lazy instantiation needs to be started
         menu.lazyInstantiate();
         menuStack.push(menu);
     }
@@ -63,6 +66,7 @@ public class MenuNavigator {
 
             System.out.println("\n" + currentMenu.getDescription());
             List<MenuItem> items = currentMenu.getItems().stream().filter(item -> item.isVisible(user)).toList();
+            if (items.isEmpty()) System.out.println("Sorry, no items");
             for (int i = 0; i < items.size(); i++){
                 System.out.printf("%d. %s\n", i + 1, items.get(i).getDescription());
             }
@@ -73,7 +77,8 @@ public class MenuNavigator {
 
                 if (choice < 0 || choice > items.size()) throw new Exception("Please enter a number between 0 and " + String.valueOf(items.size()) + " inclusive. \n");
                 // pop the newest layer and get to previous view
-                if (choice == items.size()) {menuStack.pop(); continue;}
+                if (choice == items.size() || currentMenu.isTransient()) menuStack.pop();
+                if (choice == items.size()) continue;
                 else {
                     MenuItem selected = items.get(choice);
                     selected.execute();

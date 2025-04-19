@@ -50,9 +50,9 @@ public class ProjectManageMenu extends MenuGroup {
             user_ -> user_ instanceof Manager,
             () -> Main.housingReqList.stream()
                 .filter(req -> req.getProject().getManager().equals(user))
-                .peek(req -> System.out.println("Reqsame manager: " + req))
+                // .peek(req -> System.out.println("Reqsame manager: " + req))
                 .filter(req -> req.getStatus() == HousingReq.REQUEST_STATUS.pending)
-                .peek(req -> System.out.println("Req pending status: " + req))
+                // .peek(req -> System.out.println("Req pending status: " + req))
                 .collect(Collectors.toList()), 
             HousingReq::toString, 
             req -> {
@@ -79,7 +79,7 @@ public class ProjectManageMenu extends MenuGroup {
                                     req.setStatus(HousingReq.REQUEST_STATUS.unsuccessful);
                                 }
                             }
-                        )
+                        ).setTransient(true)
                     );
             }
         );
@@ -107,7 +107,7 @@ public class ProjectManageMenu extends MenuGroup {
                                     req.setWithdrawalStatus(WITHDRAWAL_STATUS.rejected);
                                 }
                             }
-                        ))
+                        ).setTransient(true))
         );
 
         this.addSelectionMenu("Help applicant book", 

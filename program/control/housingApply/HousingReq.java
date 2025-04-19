@@ -116,6 +116,7 @@ public class HousingReq {
         sb.append("Project Name     : ").append(project.getName()).append("\n");
         sb.append("Project Location : ").append(project.getNeighbourhood()).append("\n");
         sb.append("Flat Type        : ").append(roomType).append("\n");
+        sb.append("Remaining flats  : ").append(project.getVacancy(roomType)).append("\n");
         sb.append("Request Status   : ").append(requestStatus).append("\n");
         sb.append("Withdrawal Status: ").append(withdrawalStatus).append("\n");
         if (approvedBy != null) {
