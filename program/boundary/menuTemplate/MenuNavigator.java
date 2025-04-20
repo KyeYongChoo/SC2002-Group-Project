@@ -48,7 +48,6 @@ public class MenuNavigator {
      * @param menu: The menu group to be pushed onto the stack.
      */
     public void pushMenu(MenuGroup menu){
-        menu.lazyInstantiate();
         menuStack.push(menu);
     }
     /*
@@ -88,7 +87,9 @@ public class MenuNavigator {
                     }
                 }
 
-            } catch (Exception e){
+            } catch (NumberFormatException e){
+                System.out.println("Please enter a number only");
+            }catch (Exception e){
                 System.out.println(e.getMessage());
             }
         }

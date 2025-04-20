@@ -1,11 +1,13 @@
 package program.entity.project;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import program.control.Main;
 import program.control.TimeCompare;
 import program.control.enquiry.Enquiry;
 import program.control.enquiry.EnquiryList;
+import program.control.housingApply.HousingReq;
 import program.control.housingApply.HousingReqList;
 import program.entity.users.Manager;
 import program.entity.users.Officer;
@@ -94,12 +96,16 @@ public class Project {
     }
 
     public boolean isVisibleTo(User user) {
-        boolean alreadyApplied = HousingReqList.activeReq(user) != null;
+        boolean activeApplication = Main.housingReqList.stream().anyMatch(req -> req.getProject().equals(this) && 
+            req.getUser().equals(user) &&
+            req.getStatus() != HousingReq.REQUEST_STATUS.unsuccessful &&
+            req.getWithdrawalStatus() != HousingReq.WITHDRAWAL_STATUS.approved
+            );
         boolean inCharge = (user instanceof Manager && user.equals(this.manager)) || this.projOfficerList.contains(user);
         boolean applicationOpen = visibility  
                                 && nowOpen()
                                 && (user.see2Rooms() && units2room > 0 || user.see3Rooms() && (units3room > 0 || units2room > 0));
-        return applicationOpen || inCharge || alreadyApplied;
+        return applicationOpen || inCharge || activeApplication;
     }
 
     public boolean nowOpen(){
@@ -238,5 +244,15 @@ public class Project {
 
     public void setOpenDate(LocalDate openDate) {
         this.openDate = openDate;
+    }
+
+    public void addOfficer(Officer officer){
+        projOfficerList.add(officer);
+    }
+
+    public void setOfficerList(List<Officer> officerList){
+        UserList officerListTemp = new UserList();
+        officerList.forEach(officer -> officerListTemp.add(officer));
+        this.projOfficerList = officerListTemp;
     }
 }

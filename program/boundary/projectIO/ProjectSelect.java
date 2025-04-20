@@ -4,7 +4,6 @@ import program.control.Main;
 import program.entity.project.Project;
 import program.entity.users.User;
 
-// facade pattern :)
 public class ProjectSelect {
 
     public static void printVisible(User client) {

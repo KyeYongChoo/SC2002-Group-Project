@@ -2,6 +2,7 @@ package program.boundary.projectIO;
 
 import program.control.Main;
 import program.entity.project.Project;
+import program.entity.users.Manager;
 import program.entity.users.User;
 
 public class ProjectPrinter {
@@ -11,6 +12,15 @@ public class ProjectPrinter {
         UserPrefSorting.userFilterStream(client, Main.projectList)
             .filter(project -> project.isVisibleTo(client)) // Use Project's isVisibleTo method
             .forEach(project -> printVisible(client, project)); // Delegate to the overloaded method
+    }
+
+    /*
+     * manager can see all rooms but for a lot of purposes isVisibleTo will filter away choices the Manager cant use. 
+     * This method prints all, userFilters is the ones the manager puts on themselves. 
+     */ 
+    public static void printManagerViewAll(Manager manager){
+        UserPrefSorting.userFilterStream(manager, Main.projectList)
+            .forEach(project -> printProjectDetails(project, true));
     }
 
     // Overloaded method: Print a specific project for a client

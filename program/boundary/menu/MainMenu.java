@@ -30,8 +30,9 @@ public class MainMenu extends MenuGroup{
             filterOptions.remove(User.FILTER_SETTING.OWN_PROJECTS_ONLY);
         }
 
-        this.addSelectionMenu(
+        this.addTransientSelectionMenu(
             "Filter options",
+            dummyVar -> true,
             () -> (user instanceof Manager)? Arrays.asList(User.FILTER_SETTING.values()):
             filterOptions, 
             filterSetting -> user.getFilterSetting().equals(filterSetting)?

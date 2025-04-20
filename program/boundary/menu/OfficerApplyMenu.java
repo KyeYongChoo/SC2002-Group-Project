@@ -17,7 +17,9 @@ public class OfficerApplyMenu extends MenuGroup {
 
         // Option 1: Check the officer's profile
         this.addMenuItem("Check your Profile", () -> 
-            System.out.println(user.getGreeting())); // Prints a greeting or profile information for the user
+            {System.out.println(user.getGreeting());
+            OfficerAssignPrinter.printAssignReq((Officer) user);
+        }); // Prints a greeting and the status of the officer's registration for the user
 
         // Option 2: Check the status of the officer's registration
         this.addMenuItem("Check status of registration ", () -> 

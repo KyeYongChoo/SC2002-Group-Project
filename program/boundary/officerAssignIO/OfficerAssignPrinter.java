@@ -1,5 +1,6 @@
 package program.boundary.officerAssignIO;
 
+import program.boundary.console.DateTimeFormat;
 import program.control.officerApply.AssignReq;
 import program.control.officerApply.AssignReqList;
 import program.entity.users.Officer;
@@ -20,8 +21,8 @@ public class OfficerAssignPrinter {
         System.out.println("=== Assignment Requests ===");
         for (int i = 0; i < reqList.size(); i++) {
             AssignReq req = reqList.get(i);
-            System.out.printf("%d. Project: %s | Status: %s\n",
-                i + 1, req.getProject().getName(), req.getApplicationStatus());
+            System.out.printf("%d. Project: %s | Status: %s | Start Date: %s | End Date: %s\n",
+                i + 1, req.getProject().getName(), req.getApplicationStatus(), req.getProject().getOpenDate().format(DateTimeFormat.getDateFormatter()), req.getProject().getCloseDate().format(DateTimeFormat.getDateFormatter()));
         }
     }
 

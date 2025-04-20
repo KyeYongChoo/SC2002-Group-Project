@@ -166,7 +166,13 @@ public class User{
     }
 
     public String getGreeting() {
-        return ("Welcome " + name + "\nYou are currently " + (this.see3Rooms() ? "eligible" : "ineligible") + " to see 3-Room and may see 2-Rooms");
+        return ("Welcome " + name + 
+            "\nYou are currently " + 
+            (this.see3Rooms() ? "eligible" : "ineligible") + 
+            " to see 3-Room and may see 2-Rooms\n" +
+            "User ID: " + userId + 
+            "\nAge: " + age +
+            "\nMarital Status: " + maritalStatus);
     }
 
     // Currently Unused. Could be used for shorthand later on

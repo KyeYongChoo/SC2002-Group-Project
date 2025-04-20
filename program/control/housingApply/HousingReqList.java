@@ -48,7 +48,7 @@ public class HousingReqList extends ArrayList<HousingReq>{
                 return false;
             }
             else {
-                System.out.println("Eiyo come take a look at HousingReqList's add function there's something spooky happening here this if else case is never supposed to happen");
+                System.out.println("Error: come take a look at HousingReqList's add function there's something spooky happening here this if else case is never supposed to happen");
                 return false;
             }
         }

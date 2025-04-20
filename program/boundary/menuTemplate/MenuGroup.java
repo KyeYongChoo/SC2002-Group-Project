@@ -54,14 +54,17 @@ public class MenuGroup extends MenuItem{
     public void refresh() {
         // Base implementation refreshes the description
         description = dynamicDesc.get();
+        lazyInstantiate();
         // Subclasses can override to refresh their content
         
-        // Recursively refresh any sub-menu groups
-        for (MenuItem item : menuItems) {
-            if (item instanceof MenuGroup) {
-                ((MenuGroup) item).refresh();
-            }
-        }
+        // DISABLED FEATURE: Recursively refresh any sub-menu groups. If activate recursive refreshing below, must deactivate above lazyInstantiate
+        // If enabled below feature, must implement lazyInstantiate in MenuNavigator for pushMenu. 
+        // antithetical to lazy instantiation. 
+        // for (MenuItem item : menuItems) {
+        //     if (item instanceof MenuGroup) {
+        //         ((MenuGroup) item).refresh();
+        //     }
+        // }
     }
 
     private MenuGroup addMenuItem(Supplier<MenuItem> menuItemSupplier){
@@ -116,6 +119,10 @@ public class MenuGroup extends MenuItem{
     }
     public <T> MenuGroup addSelectionMenu (String description, Supplier<List<T>> itemListSupplier, Function<T, String> itemLabelFunc, Consumer<T> onSelect){
         return this.addMenuItem(() -> new SelectionMenu<>(description, itemListSupplier, itemLabelFunc, onSelect));
+    }
+
+    public <T> MenuGroup addTransientSelectionMenu(String description, Predicate<User> visibleIf, Supplier<List<T>> itemListSupplier, Function<T, String> itemLabelFunc, Consumer<T> onSelect){
+        return this.addMenuItem(() -> (new SelectionMenu<>(description, visibleIf, itemListSupplier, itemLabelFunc, onSelect)).setTransient(true));
     }
 
     /*

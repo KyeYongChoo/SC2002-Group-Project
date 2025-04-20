@@ -25,7 +25,11 @@ public class TimeCompare {
         LocalDate openDate2 = proj2.getOpenDate();
         LocalDate closeDate1 = proj1.getCloseDate();
         LocalDate closeDate2 = proj2.getCloseDate();
-        return (openDate1.isAfter(closeDate2) || closeDate1.isBefore(openDate2));
+        return timeSeparate(openDate1,closeDate1,openDate2,closeDate2);
+    }
+
+    public static boolean timeSeparate (LocalDate start1, LocalDate end1, LocalDate start2, LocalDate end2){
+        return start1.isAfter(end2) || end1.isBefore(start2); 
     }
 
     public static boolean currentlyActive (Project proj){

@@ -16,11 +16,11 @@ public class OfficerAssignSelector {
      * @param project The project for which assignment requests are to be selected.
      * @return The selected assignment request, or null if no valid selection is made.
      */
-    public static AssignReq selectByProject(Project project) {
+    public static AssignReq selectToApproveReject(Project project) {
         AssignReqList reqList = new AssignReqList();
         for (AssignReq req : Main.assignReqList) {
-            if (req.getProject().equals(project)) {
-                reqList.add(req);
+            if (req.getProject().equals(project) && req.getApplicationStatus().equals(AssignReq.APPLICATION_STATUS.applied)) {
+                reqList.superAdd(req);
             }
         }
 
@@ -111,8 +111,10 @@ public class OfficerAssignSelector {
      * @param req The assignment request to accept.
      */
     private static void acceptRequest(AssignReq req) {
+        Project targetProject = req.getProject();
         req.setApplicationStatus(AssignReq.APPLICATION_STATUS.accepted);
-        req.getProject().setOfficerSlots(req.getProject().getOfficerSlots() - 1);
+        targetProject.setOfficerSlots(targetProject.getOfficerSlots() - 1);
+        targetProject.addOfficer(req.getOfficer());
         System.out.println("Request accepted.");
     }
 

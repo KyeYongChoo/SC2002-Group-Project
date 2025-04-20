@@ -54,7 +54,17 @@ public class Manager extends Officer {
 
     @Override
     public String getGreeting(){
-        return "\nHello " + this.getName() + ".\nYou are currently handling project:\n" + this.getCurProject() + "\nFrom " + this.getCurProject().getOpenDate() + " until " + this.getCurProject().getCloseDate();
+        Project project = getCurProject();
+        return ("\nWelcome " + getName() + 
+            "\nYou are currently " + 
+            (this.see3Rooms() ? "eligible" : "ineligible") + 
+            " to see 3-Room and may see 2-Rooms\n" +
+            "User ID: " + getUserId() + 
+            "\nAge: " + getAge() +
+            "\nMarital Status: " + getMaritalStatus() +
+            ((project!=null)?
+            ("\nYou are currently handling project:\n" + project + "\nFrom " + project.getOpenDate() + " until " +project.getCloseDate()):
+            ("\nYou are currently not handling a project")));
     }
 
     @Override
