@@ -1,23 +1,23 @@
-# SC2002 Group Project
+# 🌟 SC2002 Group Project
 
 A Java-based command-line application for managing HDB projects, applications, and enquiries.
 
 ---
 
-## Table of Contents
-1. [Introduction](#introduction)
-2. [Features](#features)
-3. [Prerequisites](#prerequisites)
-4. [Getting Started](#getting-started)
-5. [Running the Application](#running-the-application)
-6. [Data Files](#data-files)
-7. [Testing](#testing)
-8. [Troubleshooting](#troubleshooting)
-9. [Contributing](#contributing)
+## 📚 Table of Contents
+1. [📖 Introduction](#introduction)
+2. [✨ Features](#features)
+3. [⚙️ Prerequisites](#prerequisites)
+4. [🚀 Getting Started](#getting-started)
+5. [▶️ Running the Application](#running-the-application)
+6. [📂 Data Files](#data-files)
+7. [🧪 Testing](#testing)
+8. [🛠️ Troubleshooting](#troubleshooting)
+9. [🤝 Contributing](#contributing)
 
 ---
 
-## Introduction
+## 📖 Introduction
 
 This project implements a CLI (Command-Line Interface) system to support:
 - **Applicants**: browse and apply for projects, view application status, withdraw applications, and manage enquiries.
@@ -28,7 +28,7 @@ The code is organized under `program/control`, `program/boundary`, and `program/
 
 ---
 
-## Features
+## ✨ Features
 
 - Role-based menus (Applicant, Officer, Manager)
 - Dynamic menus with conditional visibility
@@ -39,13 +39,13 @@ The code is organized under `program/control`, `program/boundary`, and `program/
 
 ---
 
-## Prerequisites
+## ⚙️ Prerequisites
 
 - Java JDK 16 or later
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 1. **Clone the repository**
    ```bash
@@ -65,7 +65,7 @@ The code is organized under `program/control`, `program/boundary`, and `program/
 
 ---
 
-## Running the Application
+## ▶️ Running the Application
 
 Navigate to the source root and run:
 
@@ -83,7 +83,7 @@ mvn compile exec:java -Dexec.mainClass="program.control.Main"  # for Maven
 
 ---
 
-## Data Files
+## 📂 Data Files
 
 All data is stored in CSV files under the `data/` folder:
 - `ApplicantList.csv`
@@ -102,24 +102,26 @@ To seed or edit data:
 
 ---
 
-## Testing
+## 🧪 Testing
 
-Only manual testing is supported for now. Please contact Choo Kye Yong if junit tests were required, or if other testing techniques were desired
+Only manual testing is supported for now. Please contact Choo Kye Yong if junit tests were required, or if other testing techniques were desired.
 
-## Troubleshooting
+---
 
-### ClassCastException on Startup
+## 🛠️ Troubleshooting
+
+### ⚠️ ClassCastException on Startup
 
 If you encounter `ClassCastException` when modifying code, it is often due to **lazy instantiation** of menus being triggered too early. Check:
 - `MenuNavigator.start()` — ensure you only push/pop before executing actions.
 - `MenuGroup.refresh()` — verify suppliers aren’t called prematurely.
 
-### "Sorry, no items" Messages
+### ❌ "Sorry, no items" Messages
 
 You may see this message repeated during menu refresh. This is expected if a submenu’s item list is empty before opening. Suppress it by moving the print logic into the execute phase (not description/ dynamic description) or guarding it with a check on the current menu.
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
-Feel free to open issues or pull requests. 
+Feel free to open issues or pull requests.
