@@ -1,0 +1,625 @@
+@startuml
+
+package "Program" {
+'Boundary Layer
+package "Boundary" {
+
+    package "Console" {
+            class AppScanner {
+                - {static} sc: Scanner
+            }
+
+            RoomTypeSelector --> AppScanner : uses >
+            SetUpProject "1" --> "1" AppScanner : gets scanner from >
+            OfficerAssignSelector ..> AppScanner : uses >
+            MenuNavigator --> AppScanner : uses >
+            LoginHandler "1" --> "1" AppScanner : uses scanner from >
+            UserValidator "1" --> "1" AppScanner : gets scanner from >
+
+            class ConsoleCommands {
+               + {static} clearConsole()
+            }
+            MenuNavigator --> ConsoleCommands : uses >
+
+            class DateTimeFormat {
+                    {static} +dateFormat: DateTimeFormatter
+                    {static} +dateTimeFormat: DateTimeFormatter
+            }
+            SetUpProject "1" --> "1" DateTimeFormat : formats dates with >
+            DataInitializer --> DateTimeFormat
+    }
+
+
+    package "EnquiryIO" {
+            class EnquiryPrinter {
+                {static} +print(enquiry: Enquiry)
+                {static} +printEnquiryList(user: User, enqList: EnquiryList)
+                {static} +canViewEnquiry(user: User, enquiry: Enquiry): boolean
+            }
+            EnquiryPrinter --> Enquiry : prints
+
+            class EnquirySelector {
+                - {static} final sc: Scanner
+                {static} +selectEnquiry(user: User, enqList: EnquiryList, enquiryFilter: Predicate<Enquiry>) : Enquiry
+            }
+
+            EnquirySelector --> Enquiry : selects
+    }
+
+    package "HousingApplyIO" {
+     class HousingReqPrinter {
+                {static} + printPastApplications(client: User) : void
+                {static} + printHousingRequest(request: HousingReq) : void
+            }
+            }
+
+    package "Menu" {
+            class EnquiryMenu {
+                + EnquiryMenu(user: User)
+            }
+            EnquiryMenu --|> MenuGroup
+
+            class MainMenu {
+                + MainMenu(user: User)
+            }
+            MainMenu --|> MenuGroup
+
+            class OfficerApplyMenu {
+                + OfficerApplyMenu(user: User)
+            }
+            OfficerApplyMenu --|> MenuGroup
+
+            class ProjectApplicationMenu {
+                + ProjectApplicationMenu(user: User)
+            }
+            ProjectApplicationMenu --|> MenuGroup
+
+           class ProjectManageMenu {
+               + ProjectManageMenu(user: User)
+           }
+           ProjectManageMenu --|> MenuGroup
+    }
+
+
+    package "menuTemplate" {
+        interface MenuAction {
+            + execute() : void
+            + andThen(after: MenuAction) : MenuAction
+        }
+        MenuItem ..|> MenuAction : uses >
+        MenuItem "1" --> "1" MenuAction : executes >
+        SetUpProject ..|> MenuAction
+
+        class MenuGroup {
+            - menuItems: List<MenuItem>
+            + MenuGroup(description: String, visibleIf: Predicate<User>)
+            + MenuGroup(description: String)
+            + addMenuItem(menuItem: MenuItem) : MenuGroup
+            + addMenuItem(description: String, action: MenuAction) : MenuGroup
+            + addMenuItem(description: String, action: MenuAction, visibleIf: Predicate<User>) : MenuGroup
+            + <T> addSelectionMenu(description: String, visibleIf: Predicate<User>, items: List<T>, itemLabelFunc: Function<T, String>, onSelect: Consumer<T>) : MenuGroup
+            + <T> addSelectionMenu(description: String, items: List<T>, itemLabelFunc: Function<T, String>, onSelect: Consumer<T>) : MenuGroup
+        }
+        MenuGroup --|> MenuItem : extends
+        MenuGroup "1" -- "*" MenuItem : contains >
+        SelectionMenu --|> MenuGroup : extends
+        MenuGroup "1" --> "*" MenuItem
+        MenuNavigator "1" --> "*" MenuGroup : menuStack
+
+        class MenuItem {
+            - description: String
+            - action: MenuAction
+            - visibleIf: Predicate<User>
+            + isVisible(User)
+            + execute()
+            + addAction()
+        }
+
+        class MenuNavigator {
+            - menuStack: Stack<MenuGroup>
+            - user: User
+            - {static} sc: Scanner
+            - {static} instance: MenuNavigator
+            - MenuNavigator()
+            + pushMenu()
+            + start(User)
+        }
+        MenuNavigator "1" --> "1" User : manages session for >
+        Main --> MenuNavigator : pushes and starts
+
+        class SelectionMenu<T> {
+            - itemSupplier: Supplier<List<T>>
+            - itemLabelFunc: Function<T, String>
+            - onSelect: Consumer<T>
+            + SelectionMenu(description: String, itemSupplier: Supplier<List<T>>, itemLabelFunc: Function<T, String>, onSelect: Consumer<T>)
+            + SelectionMenu(dynamicDescription: Supplier<String>, itemSupplier: Supplier<List<T>>, itemLabelFunc: Function<T, String>, onSelect: Consumer<T>)
+            + SelectionMenu(dynamicDescription: Supplier<String>, visibleIf: Predicate<User>, itemSupplier: Supplier<List<T>>, itemLabelFunc: Function<T, String>, onSelect: Consumer<T>)
+            + SelectionMenu(description: String, visibleIf: Predicate<User>, itemSupplier: Supplier<List<T>>, itemLabelFunc: Function<T, String>, onSelect: Consumer<T>)
+            + populateItems()
+            + refresh()
+        }
+
+    }
+
+    package "OfficerAssignIO" {
+        class OfficerAssignPrinter {
+            {static} + printAssignReq(officer: Officer) : void
+            {static} + printAssignReq(req: AssignReq) : void
+            {static} + printAssignReqOmitManager(req: AssignReq) : void
+            {static} + printAssignReqOmitOfficer(req: AssignReq) : void
+        }
+        OfficerAssignPrinter ..> Officer : prints assignment request >
+
+        class OfficerAssignSelector {
+            {static} + selectByProject(project: Project) : AssignReq
+            {static} + selectAcceptOrReject(req: AssignReq) : void
+            {static} + validateOfficerSlots(req: AssignReq) : boolean
+            {static} + acceptRequest(req: AssignReq) : void
+            {static} + rejectRequest(req: AssignReq) : void
+        }
+
+        OfficerAssignSelector ..> Scanner : uses >
+        OfficerAssignSelector ..> AssignReq : selects >
+        OfficerAssignSelector ..> Project : operates on >
+    }
+
+    package "ProjectIO" {
+        class ProjectPrinter {
+            {static} +printVisible(client: User) : void
+            {static} +printVisible(client: User, project: Project) : void
+            {static} +printProjectDetails(project: Project, show3Room: boolean) : void
+        }
+        ProjectPrinter "1" --> "*" Project : prints details for >
+        ProjectPrinter "1" --> "*" User : shows details to >
+        ProjectSelect --> "1" ProjectPrinter : uses >
+        ProjectSelector "1" --> "1" ProjectPrinter : uses >
+
+        class ProjectSelect {
+            + printVisible(client: User): void
+            + printVisible(client: User, project: Project): void
+            + chooseVisibleProject(client: User): Project
+            + chooseVisibleProjectWithoutConflict(client: User): Project
+        }
+
+        ProjectSelect --> "1" ProjectSelector : uses >
+        ProjectSelect --> "*" User : selects for >
+        ProjectSelect --> "*" Project : selects from >
+
+       class ProjectSelector {
+           - sc : Scanner
+           --
+           + chooseVisibleProject(client: User, projectList: List<Project>) : Project
+           + chooseProjectsApplyAsApplicant(client: User, projectList: List<Project>) : Project
+           + chooseProjectsApplyAsOfficer(client: Officer, projectList: List<Project>) : Project
+           - chooseFromList(client: User, projects: List<Project>, prompt: String) : Project
+       }
+
+       ProjectSelector "1" --> "*" Project : selects from >
+       ProjectSelector "1" --> "*" User : selects for >
+       ProjectSelector "1" --> "*" Officer : selects for >
+       ProjectSelector "1" --> "1" TimeCompare : filters >
+
+        class RoomTypeSelector {
+            - sc: Scanner
+            + selectRoomType(user: User, project: Project): ROOM_TYPE
+        }
+
+        RoomTypeSelector --> Project : checks availability in >
+        RoomTypeSelector --> User : determines eligibility for >
+        RoomTypeSelector --> ROOM_TYPE : returns >
+
+        class SetUpProject {
+                ~ manager: Manager
+                - {static} sc: Scanner
+                + SetUpProject(manager: Manager)
+                + execute(): void
+            }
+
+
+        SetUpProject "1" --> "1" Manager : creates project as >
+        SetUpProject "1" --> "1" Scanner : uses input >
+        SetUpProject "1" --> "1" Project : creates >
+
+        class UserPrefSorting {
+                +List<Project> userFilters(User, List<Project>)
+                +Stream<Project> userFilterStream(User, List<Project>)
+                +List<HousingReq> sortHousingReqs(User, List<HousingReq>)
+                +boolean filterByFlatType(Project, User)
+                +int compareProjects(Project, Project, User.FILTER_SETTING)
+            }
+
+        UserPrefSorting "1" --> "*" Project : filters/sorts >
+        UserPrefSorting "1" --> "*" HousingReq : sorts housing reqs >
+        UserPrefSorting "1" --> "1" User : accesses filters >
+        UserPrefSorting "1" --> "1" Manager : checks ownership >
+    }
+
+    package "Security" {
+        class LoginHandler {
+                - static Scanner sc
+                + static User loginUser()
+            }
+
+        LoginHandler "1" --> "1" UserFetcher : fetches user with >
+        LoginHandler "1" --> "1" UserValidator : gets NRIC from >
+        LoginHandler "1" --> "0..1" User : returns after login >
+        Main --> LoginHandler : calls loginUser
+
+        class PasswordResetHandler {
+                +resetPassword(user: User, newPassword: String): boolean
+            }
+
+        PasswordResetHandler "1" --> "1" User : resets password for >
+        PasswordResetHandler "1" --> "1" Password : creates new password >
+
+        class PasswordVerifier {
+            {static} +verify(user: User, passwordInput: String): boolean
+        }
+        PasswordVerifier --> HashingUtils : uses >
+        PasswordVerifier --> Pepper : uses >
+
+        class UserValidator {
+            - {static} sc: Scanner
+            {static} +inputNRIC(): String
+            {static} +validateNRIC(NRIC: String): String
+        }
+
+        UserValidator "1" --> "1" Scanner : uses >
+    }
+}
+
+'Control Layer
+package "Control" {
+
+    package "Enquiry" {
+        class Enquiry {
+            - applicant: User
+            - project: Project
+            - ticketId: int
+            - dateCreated: LocalDateTime
+            + Enquiry(User, String, Project)
+            + Enquiry(int, User, Project, LocalDateTime)
+            + add(User, String): void
+            + editMessage(int, String): boolean
+            + isStaffReplyPresent(): boolean
+        }
+
+        Enquiry "*" --> "1" Project : for >
+        Enquiry "*" --> "1" User : createdBy >
+        User "1" --> "*" Enquiry : owns
+
+        class EnquiryList {
+            + selectEnquiry(User): Enquiry
+            + selectEnquiry(Project): Enquiry
+            + add(Enquiry): boolean
+            + add(User, String, Project): boolean
+            + superAdd(Enquiry): void
+            + delete(Enquiry): void
+            + printPastEnq(User): void
+        }
+        EnquiryList --|> ArrayList
+        EnquiryList "*" --> "1" Enquiry : contains >
+        Main --> EnquiryList : uses
+        Main "1" --> "1" enquiryList: EnquiryList
+        Project --> "0..*" Enquiry : enquiryList
+
+       class Message {
+           - client: User
+           - text: String
+           - timeStamp: LocalDateTime
+       }
+
+       Message "1" --> "1" User : written by >
+       Enquiry *-- "*" Message : contains
+    }
+
+    package "HousingApply" {
+        package ""HousingReq" {
+        class HousingReq {
+                - User user
+                - Project project
+                - Manager approvedBy
+                - Officer bookedBy
+                - REQUEST_STATUS requestStatus
+                - ROOM_TYPE roomType
+                - WITHDRAWAL_STATUS withdrawalStatus
+            }
+
+            enum REQUEST_STATUS {
+                pending
+                successful
+                unsuccessful
+                booked
+            }
+
+            enum WITHDRAWAL_STATUS {
+                notRequested
+                requested
+                approved
+                rejected
+            }
+            HousingReq --> "1" REQUEST_STATUS : has >
+            HousingReq --> "1" WITHDRAWAL_STATUS : has >
+            HousingReq --> "1" ROOM_TYPE : of >
+            HousingReq "1" --> "1" Project : belongs to >
+
+        }
+        class HousingReqList {
+               + add(HousingReq req): boolean
+               + superAdd(HousingReq req): boolean
+               + printPast(User client): void
+               + add(User client, Project project, ROOM_TYPE roomType): boolean
+               + activeReq(User client): HousingReq
+               + reqWithdrawal(User client): void
+        }
+        HousingReqList --|> ArrayList
+        HousingReqList "*" --> "*" HousingReq : contains >
+        HousingReqList "1" --> "1" User : has >
+        HousingReqList "1" --> "1" Project : related to >
+        HousingReqList --> "1" Manager : processes >
+        HousingReqList --> "1" REQUEST_STATUS : has >
+        HousingReqList --> "1" WITHDRAWAL_STATUS : has >
+        HousingReqList --> "1" ROOM_TYPE : requested >
+        HousingReq "*" --> "1" User : applicant >
+        User "1" --> "*" HousingReq : appliedRequests
+        HousingReq "*" --> "1" Project : for >
+        HousingReq "*" --> "0..1" Manager : approvedBy >
+        HousingReq "*" --> "0..1" Officer : bookedBy >
+    }
+
+    package "OfficerApply" {
+        package "AssignReq" {
+        class AssignReq {
+            - officer: Officer
+            - manager: Manager
+            - project: Project
+            - applicationStatus: APPLICATION_STATUS
+            }
+        enum APPLICATION_STATUS {
+                applied
+                rejected
+                accepted
+            }
+        }
+         class AssignReqList {
+             + add(AssignReq req): boolean
+             + add(Officer officer, Project project): boolean
+             + superAdd(AssignReq req): boolean
+             + static delete(AssignReq req): void
+            }
+            AssignReqList --|> ArrayList
+            AssignReqList "*" --> "*" AssignReq : contains >
+            AssignReq "*" --> "1" Officer : requestedBy >
+            AssignReq "*" --> "1" Manager : approvedBy >
+            AssignReq "*" --> "1" Project : for >
+            Main --> AssignReqList : uses
+            Main "1" --> "1" assignReqList: AssignReqList
+    }
+
+    package "Security" {
+        class HashingUtils {
+                + static hash(input: String): String
+                + static genSalt(): String
+            }
+        Password --> HashingUtils : uses >
+
+        class Password {
+                - hash: String
+                - salt: String
+                + Password()
+                + Password(defaultPassword: String)
+                + Password(hash: String, salt: String)
+            }
+         Password --> Pepper : uses >
+        Password --> "1" String : hash
+        Password --> "1" String : salt
+
+        class Pepper {
+            }
+
+        class UserFetcher {
+                + static fetch(NRIC: String, password: String): User
+                + static fetch(NRIC: String): User
+            }
+        UserFetcher --> PasswordVerifier : uses for verification
+    }
+
+    package "Main" {
+        class Main {
+                + applicantList: UserList
+                + managerList: UserList
+                + officerList: UserList
+                + projectList: ProjectList
+                + housingReqList: HousingReqList
+                + enquiryList: EnquiryList
+                + assignReqList: AssignReqList
+                + main(String[]): void
+                + SkipLogin(choice: USER): User
+            }
+
+            enum USER {
+                Applicant
+                Officer
+                Manager
+            }
+            ' Associations
+                 Main --> UserList : uses
+                 Main --> ProjectList : uses
+                 Main --> HousingReqList : uses
+                 Main --> DataInitializer : calls initialise
+                 Main --> RecordSaver : calls save
+                 Main --> LoginHandler : calls loginUser
+
+                 Main --> MainMenu : instantiates
+                 Main --> User : returns from SkipLogin
+
+                 ' Multiplicities
+                 Main "1" --> "1" applicantList: UserList
+                 Main "1" --> "1" officerList: UserList
+                 Main "1" --> "1" managerList: UserList
+                 Main "1" --> "1" projectList: ProjectList
+                 Main "1" --> "1" housingReqList: HousingReqList
+    }
+
+    package "TimeCompare" {
+        class TimeCompare {
+                + officerUnassigned(officer: Officer, targetProject: Project): boolean
+                + projectTimingSeparate(proj1: Project, proj2: Project): boolean
+                + currentlyActive(proj: Project): boolean
+            }
+
+        TimeCompare --> Officer : checks assignments for
+        TimeCompare --> Project : compares dates with
+        TimeCompare --> LocalDate : uses for comparisons
+    }
+}
+
+'Entity Layer
+package "Entity" {
+
+    package "Caching" {
+         class DataInitializer {
+                + initialise(): void
+                - readUserCSV(fileName: String, list: List<?>, type: String): void
+                - createProject(fields: String[], fileName: String): Project
+                - readProjectsCSV(fileName: String): void
+                - readEnquiryCSV(): void
+                - readHousingReqCSV(fileName: String): void
+                - readAssignReqCSV(fileName: String): void
+            }
+
+                DataInitializer --> Password
+                DataInitializer --> Main
+                DataInitializer --> Project
+                DataInitializer --> Applicant
+                DataInitializer --> Officer
+                DataInitializer --> Manager
+                DataInitializer --> AssignReq
+                DataInitializer --> HousingReq
+                DataInitializer --> Enquiry
+                DataInitializer --> Message
+                DataInitializer --> UserFetcher
+
+        class RecordSaver {
+            +save(): void
+            +writeUserCSV(fileName: String, list: List<?>): void
+            +writeProjectsCSV(fileName: String): void
+            +writeEnquiryCSV(): void
+            +writeHousingReqCSV(fileName: String): void
+            +writeAssignReqCSV(fileName: String): void
+        }
+
+        RecordSaver --> Main : uses
+        RecordSaver --> Applicant : writes data
+        RecordSaver --> Officer : writes data
+        RecordSaver --> Manager : writes data
+        RecordSaver --> Project : writes data
+        RecordSaver --> Enquiry : writes data
+        RecordSaver --> HousingReq : writes data
+        RecordSaver --> AssignReq : writes data
+    }
+
+    package "Project" {
+        class Project {
+            -name: String
+            -neighbourhood: String
+            -units2room: int
+            -units2roomPrice: int
+            -units3room: int
+            -units3roomPrice: int
+            -openDate: LocalDate
+            -closeDate: LocalDate
+            -createdBy: Manager
+            -manager: Manager
+            -officerSlots: int
+            -projOfficerList: UserList
+            -visibility: boolean
+            -reqList: HousingReqList
+            -enquiryList: EnquiryList
+            +ROOM_TYPE: enum
+            +Project(name: String, neighbourhood: String, units2room: String, units2roomPrice: String, units3room: String, units3roomPrice: String, openDate: String, closeDate: String, manager: String, officerSlots: String, OfficerLstStrInput: String)
+            +isManager(manager: Manager): boolean
+            +isManager(project: Project, manager: Manager): boolean
+            +isVisibleTo(user: User): boolean
+            +nowOpen(): boolean
+            +conflictInterest(user: User): boolean
+            +canDeleteEnquiry(enquiry: Enquiry): boolean
+        }
+        Project --> "1" Manager : createdBy
+        Project --> "0..*" Officer : projOfficerList
+        Project --> "0..*" HousingReq : reqList
+
+        class ProjectList {
+           }
+           ProjectList --> "0..*" Project : contains
+    }
+
+    package "Users" {
+        class Applicant {
+                +Applicant(NRIC: String, name: String, age: int, marital_status: String)
+                +Applicant(NRIC: String, name: String, age: int, marital_status: String, password: String)
+                +Applicant(NRIC: String, name: String, age: int, marital_status: String, password: Password)
+            }
+        Applicant --|> User
+
+        package "Manager" {
+        class Manager {
+                +Manager(NRIC: String, name: String, age: int, marital_status: String, password: String)
+                +Manager(NRIC: String, name: String, age: int, marital_status: String)
+                +Manager(NRIC: String, name: String, age: int, marital_status: String, password: Password)
+            }
+            enum REPORT_FILTER {
+                MARRIED
+                SINGLE
+                PROJECT
+                FLAT_TYPE_2_ROOM
+                FLAT_TYPE_3_ROOM
+                VIEW_ALL
+            }
+        Manager --|> Officer : inherits
+        Manager --|> User
+        Manager --> "1" Project : manages
+        }
+        User "1" --> "*" Project : manages/applies/assigned
+        Project "1" --> "1" Manager : ownedBy >
+
+        class Officer {
+                +Officer(NRIC: String, name: String, age: int, marital_status: String)
+                +Officer(NRIC: String, name: String, age: int, marital_status: String, password: String)
+                +Officer(NRIC: String, name: String, age: int, marital_status: String, password: Password)
+                +updateFlat(project: Project, flatType: ROOM_TYPE, newCount: int): void
+                +updateApplicantStatus(application: HousingReq, newStatus: REQUEST_STATUS): void
+            }
+            Officer --|> Applicant : inherits
+            Officer --|> User
+            Officer --> "*" AssignReqList : manages
+            Officer --> "*" Project : assignedTo
+            Officer --> "*" HousingReq : updates
+
+        class User {
+                +User(NRIC: String, name: String, age: int, maritalStatus: String)
+                +User(NRIC: String, name: String, age: int, maritalStatus: String, passwordHash: String)
+                +User(NRIC: String, name: String, age: int, maritalStatus: String, password: Password)
+                +see3Rooms(): boolean
+                +see2Rooms(): boolean
+                +hasActiveApplication(): boolean
+                +printPastReq(): void
+                +validateAge(age: int): int
+                +userFilterStream(projects: List<Project>): Stream<Project>
+            }
+            User --> "*" HousingReqList : manages
+            User --> "*" EnquiryList : has
+            User --> "*" Project : views
+            User --> "*" Enquiry : creates
+
+        class UserList {
+                +toString(): String
+            }
+            UserList --> "1" Main : uses
+            ' ===== eg of aggregation =====
+            UserList o-- "*" User : contains
+    }
+}
+}
+
+@enduml
