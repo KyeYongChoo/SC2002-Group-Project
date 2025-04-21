@@ -38,7 +38,7 @@ public class UserValidator {
             validNRIC = true; // <p>Assume the input is valid at the start of each iteration.</p>
             System.out.println("Please enter User NRIC: ");
             try {
-                NRIC = sc.nextLine(); // <p>Read the NRIC input from the user.</p>
+                NRIC = sc.nextLine().toUpperCase(); // <p>Read the NRIC input from the user.</p>
                 validateNRIC(NRIC); // <p>Validate the entered NRIC.</p>
             } catch (Exception e) {
                 validNRIC = false; // <p>Set to false if validation fails.</p>
@@ -71,10 +71,6 @@ public class UserValidator {
         // <p>Check if the length of the NRIC is exactly 9 characters.</p>
         if (NRIC.length() != 9){
             throw new Exception("Length of NRIC should be 9\nReceived NRIC: " + NRIC);
-        }
-        // <p>Check if the NRIC ends in a capital letter.</p>
-        if (!(NRIC.charAt(8) >= 'A' && NRIC.charAt(8) <= 'Z')){
-            throw new Exception("NRIC should end in a capital letter\nReceived NRIC: " + NRIC);
         }
         try {
             // <p>Attempt to parse the substring between the first and last characters as an integer</p>
