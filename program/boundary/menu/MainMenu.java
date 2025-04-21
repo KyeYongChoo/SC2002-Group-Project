@@ -61,10 +61,34 @@ public class MainMenu extends MenuGroup {
 
         // Adding password reset functionality
         this.addMenuItem("Reset Password",
-                () -> {
-                    System.out.println("Please enter your new password: ");
-                    PasswordResetHandler.resetPassword(user, sc.nextLine());
+            () -> {
+                System.out.print("Please enter your new password: ");
+                String newPassword = sc.nextLine();
+
+                boolean success = PasswordResetHandler.resetPassword(user, newPassword);
+
+                if (success) {
+                    System.out.println("\nPress Enter to return to login screen.");
+                    sc.nextLine();
+
+                    try {
+                        program.entity.caching.RecordSaver.save();
+                    } catch (Exception e) {
+                        System.out.println("Failed to save data.");
+                    }
+
+                    System.out.println("Logging out...");
+                    try {
+                        program.control.Main.main(null);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } 
+                    System.exit(0); 
+                } else {
+                    System.out.println("\nPassword reset failed. Press Enter to return.");
+                    sc.nextLine();
                 }
+            }
         );
 
         // Configuring filter options based on user role
