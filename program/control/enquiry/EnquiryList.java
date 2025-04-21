@@ -193,6 +193,7 @@ public class EnquiryList extends ArrayList<Enquiry> {
      */
     public void superAdd(Enquiry e) {
         super.add(e);
+    }
 
     /**
      * <p>

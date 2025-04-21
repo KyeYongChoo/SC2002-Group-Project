@@ -3,6 +3,7 @@ package program.boundary.menuTemplate;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import program.boundary.console.AppScanner;
 import program.boundary.console.ConsoleCommands;

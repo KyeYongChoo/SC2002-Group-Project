@@ -62,10 +62,6 @@ public class AssignReq {
         accepted;
     }
 
-    public void setApplicationStatus(APPLICATION_STATUS applicationStatus) {
-        this.applicationStatus = applicationStatus;
-    }
-
     /**
      * Constructs a new {@code AssignReq} instance linking an officer to a project and its manager.
      *

@@ -146,7 +146,7 @@ public class HousingReqList extends ArrayList<HousingReq> {
             if (loopCount == 1 && !client.hasActiveApplication()){
                 System.out.println("\nUnsuccessful Applications\n");
             }
-                
+            ProjectSelect.printVisible(client, project);
         }
     }
 

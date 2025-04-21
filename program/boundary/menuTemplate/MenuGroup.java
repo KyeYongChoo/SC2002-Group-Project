@@ -62,6 +62,7 @@ public class MenuGroup extends MenuItem{
      * predicate is provided, this group will always be visible.
      */
     public MenuGroup(String description) {
+        // Calls the main constructor with a predicate that always returns true, making it visible to any user.
         this(description, user -> true); 
     }
 
@@ -72,8 +73,7 @@ public class MenuGroup extends MenuItem{
             menuItemSuppliers.forEach(menuItemSupplier -> menuItems.add(menuItemSupplier.get()));
         }
     }
-     // Calls the main constructor with a predicate that always returns true, making it visible to any user.
-    }
+    
 
     /**
      * Updates the display text of this menu group.
