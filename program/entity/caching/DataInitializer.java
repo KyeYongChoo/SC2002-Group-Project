@@ -19,15 +19,43 @@ import program.entity.users.Manager;
 import program.entity.users.Officer;
 import program.entity.users.User;
 
-
+/**
+ * The {@code DataInitializer} class is responsible for loading data from CSV files into various
+ * in-memory lists of users, projects, assignments, and housing requests. It reads CSV files
+ * and parses them into appropriate objects for use within the application.
+ * <p>
+ * The {@code initialise} method orchestrates the entire process of reading the CSV files, while
+ * various helper methods are responsible for reading and parsing specific types of data (users,
+ * projects, enquiries, etc.).
+ * </p>
+ *
+ * @see Main for the application’s main data structures like lists of users, projects, and requests.
+ * @see UserFetcher for methods related to user fetching.
+ */
 public class DataInitializer {
+
+    /**
+     * Initializes the application by reading all the required data from CSV files and populating
+     * various in-memory lists. This includes users (Applicants, Officers, Managers), projects,
+     * assignments, and housing requests.
+     * <p>
+     * The method also ensures that the required data is read in the correct order:
+     * <ul>
+     *   <li>Users (Applicants, Officers, Managers) are loaded first.</li>
+     *   <li>Projects are loaded next, since they may involve users.</li>
+     *   <li>Assignments and Housing requests are loaded last to ensure proper referencing.</li>
+     * </ul>
+     * </p>
+     *
+     * @throws Exception If there are errors during reading or parsing any of the CSV files.
+     */
     public static void initialise() {
         try{
-            // reorder at your own risk 
+            // reorder at your own risk
             readUserCSV("ApplicantList.csv", Main.applicantList, "Applicant");
             readUserCSV("OfficerList.csv", Main.officerList, "Officer");
             readUserCSV("ManagerList.csv", Main.managerList, "Manager");
-            
+
             // must happen after loading Officer and Manager due to ProjectList.csv also holding officer and Manager info
             readProjectsCSV("ProjectList.csv");
             readEnquiryCSV();
@@ -44,10 +72,24 @@ public class DataInitializer {
         System.out.println("Completed loading of CSV files.");
     }
 
+    /**
+     * Reads a CSV file containing user data (Applicants, Officers, or Managers) and populates the
+     * corresponding list with user objects.
+     * <p>
+     * This method handles both the case where the CSV contains a password salt (6 fields) or
+     * when the salt is missing (5 fields). It also validates the format of the CSV file.
+     * </p>
+     *
+     * @param fileName The name of the CSV file to read.
+     * @param list The list to populate with user objects (Applicants, Officers, or Managers).
+     * @param type The type of user to read ("Applicant", "Officer", or "Manager").
+     * @throws IOException If an I/O error occurs during reading the file.
+     * @throws Exception If there is an error parsing the user data.
+     */
     private static void readUserCSV(String fileName, List<?> list, String type) {
         try (BufferedReader br = new BufferedReader(new FileReader("data/" + fileName))) {
             String line;
-            
+
             // Skip the header
             br.readLine();
 
@@ -83,6 +125,18 @@ public class DataInitializer {
         }
     }
 
+    /**
+     * Creates a {@link Project} object from the fields extracted from a CSV file.
+     * <p>
+     * This method validates the format of the fields and handles various combinations of room
+     * types to correctly instantiate a project.
+     * </p>
+     *
+     * @param fields The fields from the CSV file corresponding to a single project.
+     * @param fileName The name of the CSV file for logging errors.
+     * @return A newly created {@link Project} object.
+     * @throws Exception If the project data is in an invalid format or contains unexpected room types.
+     */
     private static Project createProject(String[] fields, String fileName) throws Exception {
         try {
             if (fields.length != 14) {
@@ -112,6 +166,15 @@ public class DataInitializer {
         }
     }
 
+    /**
+     * Reads a CSV file containing project data and populates the project list.
+     * <p>
+     * This method reads the CSV file and creates {@link Project} objects, linking officers to
+     * projects and handling assignments.
+     * </p>
+     *
+     * @param fileName The name of the CSV file to read.
+     */
     private static void readProjectsCSV(String fileName) {
         try (BufferedReader br = new BufferedReader(new FileReader("data/" + fileName))) {
             String line;
@@ -145,7 +208,6 @@ public class DataInitializer {
                     if (!fields[13].isEmpty()) {
                         project.setVisibility(Boolean.parseBoolean(fields[13]));
                     }
-
                     // Check for existing successful assignments
                     String[] officers = fields[12].split(",");
                     for (String officerName : officers) {
@@ -179,6 +241,14 @@ public class DataInitializer {
         }
     }
 
+    /**
+     * Reads the enquiry CSV file and populates the list of enquiries.
+     * <p>
+     * This method creates enquiry objects and adds messages if they exist.
+     * </p>
+     *
+     * @throws IOException If there is an issue reading the enquiry file.
+     */
     private static void readEnquiryCSV() {
         File file = new File("data/EnquiryList.csv");
         DateTimeFormatter formatter = DateTimeFormat.getDateTimeFormatter();
@@ -193,7 +263,6 @@ public class DataInitializer {
             }
             return; // Exit if the file doesn't exist - new file is empty
         }
-        
         try (BufferedReader br = new BufferedReader(new FileReader("data/EnquiryList.csv"))) {
             String line;
             Enquiry currentEnquiry = null; // Initialize currentEnquiry
@@ -230,6 +299,15 @@ public class DataInitializer {
         }
     }
 
+    /**
+     * Reads housing request data from a CSV file and adds the housing requests to the main list.
+     * <p>
+     * This method processes each housing request and handles scenarios like missing "approvedBy"
+     * fields.
+     * </p>
+     *
+     * @param fileName The name of the housing request CSV file to read.
+     */
     private static void readHousingReqCSV(String fileName) {
         try (BufferedReader br = new BufferedReader(new FileReader("data/" + fileName))) {
             String line;
@@ -271,6 +349,16 @@ public class DataInitializer {
         }
     }
 
+    /**
+     * Reads assignment request data from a CSV file and adds the assignment requests to the
+     * main list.
+     * <p>
+     * This method processes each assignment request, checking for valid officer and project
+     * references.
+     * </p>
+     *
+     * @param fileName The name of the assignment request CSV file to read.
+     */
     private static void readAssignReqCSV(String fileName) {
         try (BufferedReader br = new BufferedReader(new FileReader("data/" + fileName))) {
             String line;

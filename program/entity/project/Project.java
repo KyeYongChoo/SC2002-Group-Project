@@ -14,7 +14,29 @@ import program.entity.users.Officer;
 import program.entity.users.User;
 import program.entity.users.UserList;
 
+/**
+ * <p>
+ * The {@code Project} class represents a housing project that is part of the application. Each project is
+ * associated with a manager, has a set of officer slots, and contains information about housing units, including
+ * the number of available rooms and their prices. Additionally, it includes visibility rules and housing request
+ * management, as well as the ability to handle project-specific enquiries and officers assigned to the project.
+ * </p>
+ *
+ * <p>
+ * The class is designed to handle project lifecycle, including opening and closing dates, visibility settings,
+ * and the addition of officers to the project.
+ * </p>
+ *
+ * <p>
+ * The class also provides several utility methods to check if a user is eligible to view the project or if there
+ * are any conflicts of interest with regard to housing applications or officer assignments.
+ * </p>
+ *
+ * @see program.entity.users.Manager
+ * @see program.entity.users.Officer
+ */
 public class Project {
+
     private String name;
     private String neighbourhood;
     private int units2room;
@@ -26,32 +48,51 @@ public class Project {
     private Manager createdBy;
     private Manager manager;
     private int officerSlots;
-    // Note projOfficerList != MainActivity.projectOfficerList
     private UserList projOfficerList = new UserList();
     private boolean visibility = true;
     private HousingReqList reqList = new HousingReqList();
     private EnquiryList enquiryList = new EnquiryList();
 
-    // Currently used by the HousingReq and HousingReqList classes only. May want to refactor the units2room units3 room to be a HashMap<ROOMTYPE, ArrayList<int vacancies, int price>>. 
-    public static enum ROOM_TYPE{
-        room2,
-        room3
+    /**
+     * Enumeration representing the types of rooms available in the project.
+     */
+    public static enum ROOM_TYPE {
+        room2, room3
     }
-    
 
+    /**
+     * Constructs a new {@code Project} with the provided details.
+     *
+     * <p>
+     * The constructor initializes a project with the given parameters, parsing the room counts, room prices, and
+     * dates from string inputs. The project is also associated with a manager and a list of officers.
+     * </p>
+     *
+     * @param name the name of the project
+     * @param neighbourhood the neighbourhood where the project is located
+     * @param units2room the number of 2-room units in the project
+     * @param units2roomPrice the price of 2-room units in the project
+     * @param units3room the number of 3-room units in the project
+     * @param units3roomPrice the price of 3-room units in the project
+     * @param openDate the opening date of the project
+     * @param closeDate the closing date of the project
+     * @param manager the name of the manager responsible for the project
+     * @param officerSlots the number of officer slots available for the project
+     * @param OfficerLstStrInput a comma-separated string of officer names assigned to the project
+     * @throws Exception if any of the input values are invalid or cannot be parsed correctly
+     */
     public Project(
-        String name, 
-        String neighbourhood, 
-        String units2room, 
-        String units2roomPrice, 
-        String units3room, 
-        String units3roomPrice, 
-        String openDate, 
-        String closeDate, 
-        String manager, 
-        String officerSlots,
-        String OfficerLstStrInput) throws Exception{
-
+            String name,
+            String neighbourhood,
+            String units2room,
+            String units2roomPrice,
+            String units3room,
+            String units3roomPrice,
+            String openDate,
+            String closeDate,
+            String manager,
+            String officerSlots,
+            String OfficerLstStrInput) throws Exception {
         this.name = name.trim().toUpperCase();
         this.neighbourhood = neighbourhood.trim().toUpperCase();
         try {
@@ -79,22 +120,51 @@ public class Project {
         }   
     }
 
+    /**
+     * Checks if the given manager is the manager responsible for this project.
+     *
+     * @param manager the manager to check
+     * @return {@code true} if the given manager is the manager of this project, {@code false} otherwise
+     */
     public boolean isManager(Manager manager){
         return manager == this.manager;
     }
 
+    /**
+     * Checks if the specified project is managed by the given manager.
+     *
+     * @param project the project to check
+     * @param manager the manager to check
+     * @return {@code true} if the given project is managed by the specified manager, {@code false} otherwise
+     */
     public static boolean isManager(Project project, Manager manager){
         return project.isManager(manager);
     }
 
+    /**
+     * Sets the visibility of the project.
+     *
+     * @param visibility {@code true} to make the project visible, {@code false} to hide it
+     */
     public void setVisibility(boolean visibility){
         this.visibility = visibility;
     }
 
+    /**
+     * Gets the list of enquiries associated with this project.
+     *
+     * @return the list of enquiries
+     */
     public EnquiryList getEnquiryList(){
         return enquiryList;
     }
 
+    /**
+     * Checks if the project is visible to the specified user.
+     *
+     * @param user the user to check
+     * @return {@code true} if the project is visible to the user, {@code false} otherwise
+     */
     public boolean isVisibleTo(User user) {
         boolean activeApplication = Main.housingReqList.stream().anyMatch(req -> req.getProject().equals(this) && 
             req.getUser().equals(user) &&
@@ -108,11 +178,22 @@ public class Project {
         return applicationOpen || inCharge || activeApplication;
     }
 
+    /**
+     * Checks if the project is currently open for applications.
+     *
+     * @return {@code true} if the project is open for applications, {@code false} otherwise
+     */
     public boolean nowOpen(){
         LocalDate today = LocalDate.now();
         return (today.isEqual(openDate) || today.isAfter(openDate)) && (today.isBefore(closeDate) || today.isEqual(closeDate));
     }
 
+    /**
+     * Checks if there is any conflict of interest for the specified user with respect to the project.
+     *
+     * @param user the user to check
+     * @return {@code true} if there is a conflict of interest, {@code false} otherwise
+     */
     public boolean conflictInterest(User user) {
         // // For debug
         // System.out.println("Project: " + this);
@@ -126,69 +207,96 @@ public class Project {
                 || user.hasActiveApplication();
     }
 
+    /**
+     * Checks if an enquiry can be deleted based on whether it has any replies.
+     *
+     * @param enquiry the enquiry to check
+     * @return {@code true} if the enquiry can be deleted (i.e., it has no replies), {@code false} otherwise
+     */
     public boolean canDeleteEnquiry(Enquiry enquiry) {
         return enquiry.getReplies().isEmpty();
     }
-    
-    public void setReqList(HousingReqList reqList){
+
+    /**
+     * Sets the list of housing requests for this project.
+     *
+     * @param reqList the list of housing requests
+     */
+    public void setReqList(HousingReqList reqList) {
         this.reqList = reqList;
     }
-    public HousingReqList getReqList(){
+
+    /**
+     * Gets the list of housing requests for this project.
+     *
+     * @return the list of housing requests
+     */
+    public HousingReqList getReqList() {
         return reqList;
     }
-    public String getNeighbourhood(){
+
+    // Getter and setter methods for project properties
+
+    public String getNeighbourhood() {
         return neighbourhood;
     }
 
-    public void setUnits2Room(int units2room){
+    public void setUnits2Room(int units2room) {
         this.units2room = units2room;
     }
 
-    public void setUnits3Room(int units3room){
+    public void setUnits3Room(int units3room) {
         this.units3room = units3room;
     }
 
-    public int getUnits2Room(){
+    public int getUnits2Room() {
         return units2room;
     }
 
-    public int getUnits3Room(){
+    public int getUnits3Room() {
         return units3room;
     }
 
-    public int getUnits2RoomPrice(){
+    public int getUnits2RoomPrice() {
         return units2roomPrice;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public int getUnits3RoomPrice(){
+    public int getUnits3RoomPrice() {
         return units3roomPrice;
     }
-    public LocalDate getOpenDate(){
+
+    public LocalDate getOpenDate() {
         return openDate;
     }
-    public LocalDate getCloseDate(){
+
+    public LocalDate getCloseDate() {
         return closeDate;
     }
-    public void setCloseDate(LocalDate closeDate){
+
+    public void setCloseDate(LocalDate closeDate) {
         this.closeDate = closeDate;
     }
-    public void setManager(Manager manager){
+
+    public void setManager(Manager manager) {
         this.manager = manager;
     }
-    public Manager getManager(){
+
+    public Manager getManager() {
         return manager;
     }
-    public void setOfficerSlots(int officerSlots){
+
+    public void setOfficerSlots(int officerSlots) {
         this.officerSlots = officerSlots;
     }
-    public int getOfficerSlots(){
+    public int getOfficerSlots() {
         return officerSlots;
     }
-    public UserList getOfficers(){
+
+    public UserList getOfficers() {
         return projOfficerList;
     }
 
@@ -205,15 +313,15 @@ public class Project {
         return visibility;
     }
 
-    public int getVacancy (ROOM_TYPE roomType){
-        return switch(roomType){
+    public int getVacancy(ROOM_TYPE roomType) {
+        return switch (roomType) {
             case room2 -> units2room;
             case room3 -> units3room;
         };
     }
 
-    public void decrementRoomType (ROOM_TYPE roomType){
-        switch(roomType){
+    public void decrementRoomType(ROOM_TYPE roomType) {
+        switch (roomType) {
             case room2 -> units2room--;
             case room3 -> units3room--;
         };

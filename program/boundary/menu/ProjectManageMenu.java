@@ -28,10 +28,44 @@ import program.entity.users.Officer;
 import program.entity.users.User;
 import program.entity.users.User.MARITAL_STATUS;
 
+/**
+ * {@code ProjectManageMenu} serves as the central menu for managing Housing Development Board (HDB) projects.
+ * It offers a range of functionalities tailored to the user's role, either an Officer or a Manager.
+ *
+ * <p>This menu dynamically adapts its options based on the logged-in {@link User}. Managers gain access
+ * to project administration tasks, officer request approvals, housing application management,
+ * and report generation. Officers, on the other hand, can assist applicants with bookings and generate
+ * booking receipts for projects they are assigned to.</p>
+ *
+ * <p>Key features include:</p>
+ * <ul>
+ * <li>Creating, editing, deleting, and toggling the visibility of BTO (Build-To-Order) project listings (Manager).</li>
+ * <li>Viewing and approving incoming officer assignment requests for their projects (Manager).</li>
+ * <li>Reviewing and deciding on HDB housing applications for their projects (Manager).</li>
+ * <li>Processing withdrawal requests from applicants for their projects (Manager).</li>
+ * <li>Facilitating booking of successful housing applications for their assigned projects (Officer).</li>
+ * <li>Generating booking receipts for applicants of their assigned projects (Officer).</li>
+ * <li>Generating comprehensive reports on applicants associated with their managed projects (Manager).</li>
+ * </ul>
+ *
+ * <p>This class extends {@link MenuGroup}, inheriting its base menu structure and navigation capabilities.</p>
+ *
+ * @see program.boundary.menuTemplate.MenuGroup
+ */
 public class ProjectManageMenu extends MenuGroup {
     private Project selectedProjectForReport = null;
 
+    /**
+     * Constructs a {@code ProjectManageMenu} instance for a specific {@link User}.
+     * The menu items are populated dynamically based on whether the user is an Officer or a Manager.
+     *
+     * @param user The {@link User} who is accessing this menu. The available options will be tailored
+     * based on their role (Officer or Manager).
+     */
     public ProjectManageMenu(User user) {
+        // Call the constructor of the parent class (MenuGroup) with the menu title
+        // and a condition to determine if this menu is relevant for the given user.
+        // In this case, the base menu is always relevant if the user is an Officer.
         super("Manage your Projects", 
             // only officers and above may manage projects
 
@@ -54,147 +88,195 @@ public class ProjectManageMenu extends MenuGroup {
             () -> ProjectPrinter.printManagerViewAll((Manager) user), 
             user_ -> user_ instanceof Manager);
 
+        // Menu item for Managers to view and approve incoming officer assignment requests.
         this.addMenuItem("View/Approve incoming Officer requests", () -> {
+            // Cast the User to Manager to access Manager-specific functionalities.
             Manager manager = (Manager) user;
+            // Use OfficerAssignSelector to find pending officer assignment requests for the manager's current project.
             AssignReq req = OfficerAssignSelector.selectToApproveReject(manager.getCurProject());
+            // If no request is found, exit the menu item action.
             if (req == null) return;
+            // Check if the request has already been processed.
             if (req.getApplicationStatus() != AssignReq.APPLICATION_STATUS.applied){
                 System.out.println("Request has already been accepted/rejected. ");
                 return;
             }
+            // If the request is pending, allow the manager to accept or reject it.
             OfficerAssignSelector.selectAcceptOrReject(req);
-        }, user_ -> user_ instanceof Manager);
-        
+        }, user_ -> user_ instanceof Manager); // This menu item is only visible to Managers.
+
+        // Selection menu for Managers to approve HDB housing applications.
         this.addSelectionMenu(
-            "Approve HDB Applications", 
-            user_ -> user_ instanceof Manager,
-            () -> Main.housingReqList.stream()
-                .filter(req -> req.getProject().getManager().equals(user))
-                // .peek(req -> System.out.println("Reqsame manager: " + req))
-                .filter(req -> req.getStatus() == HousingReq.REQUEST_STATUS.pending)
-                // .peek(req -> System.out.println("Req pending status: " + req))
-                .collect(Collectors.toList()), 
-            HousingReq::toString, 
-            req -> {
-                        boolean hasVacancy = req.getProject().getVacancy(req.getRoomType()) > 0;
-                        String menuName = hasVacancy
+                "Approve HDB Applications",
+                user_ -> user_ instanceof Manager, // Only visible to Managers.
+                () -> Main.housingReqList.stream()
+                        // Filter housing requests for the projects managed by the current manager.
+                        .filter(req -> req.getProject().getManager().equals(user))
+                        // Filter for requests that are currently pending approval.
+                        .filter(req -> req.getStatus() == HousingReq.REQUEST_STATUS.pending)
+                        // Collect the filtered requests into a list.
+                        .collect(Collectors.toList()),
+                HousingReq::toString, // How each HousingReq object should be displayed in the menu.
+                req -> { // Action to be performed when a HousingReq is selected.
+                    // Check if there is vacancy for the requested room type in the project.
+                    boolean hasVacancy = req.getProject().getVacancy(req.getRoomType()) > 0;
+                    // Determine the menu name based on vacancy.
+                    String menuName = hasVacancy
                             ? "Please choose to accept or reject this application"
                             : "Sorry, not enough vacancy to accept application";
-                        
-                        List<String> choices = hasVacancy
+
+                    // Define the choices available to the manager.
+                    List<String> choices = hasVacancy
                             ? List.of("Accept", "Reject")
                             : List.of("Reject");
 
-                        MenuNavigator.getInstance().pushMenu(new SelectionMenu<>(
+                    // Push a new SelectionMenu onto the navigation stack for accepting or rejecting the application.
+                    MenuNavigator.getInstance().pushMenu(new SelectionMenu<>(
                             menuName,
-                            () -> choices,
-                            String::toString,
-                            strChoice -> {
+                            () -> choices, // Provide the list of choices.
+                            String::toString, // How each choice should be displayed.
+                            strChoice -> { // Action based on the manager's choice.
                                 if (strChoice.equals("Accept")){
+                                    // Set the approving manager.
                                     req.setApprovedBy((Manager) user);
+                                    // Update the status of the housing request to successful.
                                     req.setStatus(HousingReq.REQUEST_STATUS.successful);
-                                }else if (strChoice.equals("Reject")){
+                                } else if (strChoice.equals("Reject")){
+                                    // If rejected, set the approving manager.
                                     req.setApprovedBy((Manager) user);
+                                    // Update the status of the housing request to unsuccessful.
                                     req.setStatus(HousingReq.REQUEST_STATUS.unsuccessful);
                                 }
                             }
-                        ).setTransient(true)
-                    );
-            }
+                    ));
+                }
         );
 
-        this.addSelectionMenu("Process Withdrawal Requests"
-            , user_ -> user_ instanceof Manager
-            , () -> Main.housingReqList.stream()
-                .filter(project -> project.getManager().equals(user))
-                .filter(req -> req.getWithdrawalStatus().equals(HousingReq.WITHDRAWAL_STATUS.requested))
-                .collect(Collectors.toList())
-            , HousingReq::toString
-            , req -> MenuNavigator.getInstance().pushMenu(new SelectionMenu<>(
-                            "Please choose to accept or reject this withdrawal",
-                            () -> List.of("Accept", "Reject"),
-                            String::toString,
-                            strChoice -> {
-                                if (strChoice.equals("Accept")){
-                                    req.setApprovedBy(null);
-                                    req.setBookedBy(null);
-                                    if (req.getStatus().equals(HousingReq.REQUEST_STATUS.booked))
-                                        req.getProject().incrementRoomType(req.getRoomType());
-                                    req.setStatus(HousingReq.REQUEST_STATUS.unsuccessful);
-                                    req.setWithdrawalStatus(WITHDRAWAL_STATUS.approved);
-                                }else if (strChoice.equals("Reject")){
-                                    req.setWithdrawalStatus(WITHDRAWAL_STATUS.rejected);
-                                }
+        // Selection menu for Managers to process withdrawal requests from applicants.
+        this.addSelectionMenu(
+                "Process withdrawal Requests",
+                user_ -> user_ instanceof Manager, // Only visible to Managers.
+                () -> Main.housingReqList.stream()
+                        // Filter requests for projects managed by the current manager.
+                        .filter(req -> req.getProject().getManager().equals(user))
+                        // Filter for requests where withdrawal has been requested.
+                        .filter(req -> req.getWithdrawalStatus().equals(HousingReq.WITHDRAWAL_STATUS.requested))
+                        // Collect the filtered requests.
+                        .collect(Collectors.toList()),
+                HousingReq::toString, // Display each HousingReq.
+                req -> MenuNavigator.getInstance().pushMenu(new SelectionMenu<>(
+                        "Please choose to accept or reject this withdrawal",
+                        () -> List.of("Accept", "Reject"), // Choices for the manager.
+                        String::toString,
+                        strChoice -> { // Action based on the choice.
+                            if (strChoice.equals("Accept")){
+                                // If accepted, clear the approved and booked by fields.
+                                req.setApprovedBy(null);
+                                req.setBookedBy(null);
+                                // If the original application was successful, increment the room vacancy.
+                                if (req.getStatus().equals(HousingReq.REQUEST_STATUS.booked))
+                                    req.getProject().incrementRoomType(req.getRoomType());
+                                // Set the request status to unsuccessful due to withdrawal.
+                                req.setStatus(HousingReq.REQUEST_STATUS.unsuccessful);
+                                // Update the withdrawal status to approved.
+                                req.setWithdrawalStatus(WITHDRAWAL_STATUS.approved);
+                            } else if (strChoice.equals("Reject")){
+                                // If rejected, update the withdrawal status.
+                                req.setWithdrawalStatus(WITHDRAWAL_STATUS.rejected);
                             }
-                        ).setTransient(true))
+                        }
+                ))
         );
 
-        this.addTransientSelectionMenu("Help applicant book", 
-            user_ -> user_ instanceof Officer && !(user_ instanceof Manager),
-            () -> Main.housingReqList.stream()
-                .filter(req -> req.getStatus().equals(HousingReq.REQUEST_STATUS.successful))
-                .filter(req -> req.getProject().getOfficers().contains(user))
-                .collect(Collectors.toList()), 
-            HousingReq::toString,
-            req -> {
-                req.getProject().decrementRoomType(req.getRoomType());
-                req.setBookedBy((Officer) user);
-                req.setStatus(HousingReq.REQUEST_STATUS.booked);
-            }
-        );
-
-        this.addSelectionMenu("Generate Receipt of Applicant Booking"
-            , user_ -> user_ instanceof Officer && !(user_ instanceof Manager)
-            , () -> Main.housingReqList.stream()
-                .filter(req -> req.getProject().getOfficers().contains((Officer) user))
-                .filter(req -> req.getStatus().equals(HousingReq.REQUEST_STATUS.booked))
-                .collect(Collectors.toList())
-            , HousingReq::toString
-            , req -> {
-                System.out.println(req.toString());
-                ProjectPrinter.printProjectDetails(req.getProject(), req.getUser().see3Rooms());;
-            }
-        );
-
-        this.addMenuItem(new MenuGroup("Manage BTO Project Listings"
-            , user_ -> user_ instanceof Manager && 
-                Main.projectList.stream().anyMatch(project -> 
-                project.isManager((Manager) user_))
-            )
-            .addMenuItem("Create Project Listing", new SetUpProject(user))
-            .addSelectionMenu("Edit Project Listing",
-                () -> Main.projectList.stream()
-                    .filter(project -> project.isManager((Manager) user))
-                    // DEBUG: 
-                    // .peek(project -> System.out.println(project))
-                    .collect(Collectors.toList()),
-                Project::toString,
-                project -> MenuNavigator.getInstance().pushMenu(createProjectEditMenu(project, (Manager) user))
-            )
-            
-
-            .addSelectionMenu("Delete Project Listing", 
-                () -> Main.projectList.stream()
-                    .filter(project -> project.isManager((Manager) user))
-                    .collect(Collectors.toList()), 
-                Project::toString, 
-                project -> {
-                    Main.projectList.remove(project);
-                    System.out.println("Project Deleted");
+        // Selection menu for Officers (excluding Managers) to help applicants book a flat.
+        this.addSelectionMenu(
+                "Help applicant book",
+                user_ -> user_ instanceof Officer && !(user_ instanceof Manager), // Only for Officers who are not Managers.
+                () -> Main.housingReqList.stream()
+                        // Filter for successful housing requests.
+                        .filter(req -> req.getStatus().equals(HousingReq.REQUEST_STATUS.successful))
+                        // Filter for requests belonging to projects that the current officer is assigned to.
+                        .filter(req -> req.getProject().getOfficers().contains(user))
+                        // Collect the filtered requests.
+                        .collect(Collectors.toList()),
+                HousingReq::toString, // Display each HousingReq.
+                req -> { // Action when an application is selected for booking.
+                    req.getProject().decrementRoomType(req.getRoomType());
+                    // Set the current officer as the one who booked the flat.
+                    req.setBookedBy((Officer) user);
+                    // Update the status of the housing request to booked.
+                    req.setStatus(HousingReq.REQUEST_STATUS.booked);
                 }
-            )
+        );
 
-            .addSelectionMenu("Toggle Visibility of Project Listing", 
-                () -> Main.projectList.stream()
-                    .filter(project -> project.isManager((Manager) user))
-                    .collect(Collectors.toList()), 
-                project -> project.toString() 
-                    + (project.getVisibility() ? " (Visible)" : " (Not visible)"), 
-                project -> {
-                    project.setVisibility(!project.getVisibility());
-                    System.out.println("Visibility Toggled");
+        // Selection menu for Officers (excluding Managers) to generate a receipt for a booked application.
+        this.addSelectionMenu(
+                "Generate Receipt of Applicant Booking",
+                user_ -> user_ instanceof Officer && !(user_ instanceof Manager), // Only for Officers who are not Managers.
+                () -> Main.housingReqList.stream()
+                        // Filter for requests from projects the current officer is assigned to.
+                        .filter(req -> req.getProject().getOfficers().contains((Officer) user))
+                        // Filter for requests that have been successfully booked.
+                        .filter(req -> req.getStatus().equals(HousingReq.REQUEST_STATUS.booked))
+                        // Collect the filtered requests.
+                        .collect(Collectors.toList()),
+                HousingReq::toString, // Display each HousingReq.
+                req -> { // Action to generate and print the receipt.
+                    // Print the details of the housing request.
+                    System.out.println(req.toString());
+                    // Use ProjectPrinter to print the project details and the applicant's 3-room preference.
+                    ProjectPrinter.printProjectDetails(req.getProject(), req.getUser().see3Rooms());
                 }
-        ));
+        );
+
+        // MenuGroup for managing BTO project listings (only for Managers who manage at least one project).
+        this.addMenuItem(new MenuGroup(
+                        "Manage BTO Project Listings",
+                        user_ -> user_ instanceof Manager &&
+                                Main.projectList.stream().anyMatch(project -> project.isManager((Manager) user))
+                )
+                        // Menu item to create a new project listing.
+                        .addMenuItem("Create Project Listing", new SetUpProject(user))
+                        // Selection menu to edit an existing project listing.
+                        .addSelectionMenu(
+                                "Edit Project Listing",
+                                () -> Main.projectList.stream()
+                                        // Filter for projects managed by the current manager.
+                                        .filter(project -> project.isManager((Manager) user))
+                                        // Collect the managed projects.
+                                        .collect(Collectors.toList()),
+                                Project::toString, // Display each Project.
+                                project -> MenuNavigator.getInstance().pushMenu(createProjectEditMenu(project, (Manager) user)) // Push the project edit menu.
+                        )
+                        // Selection menu to delete a project listing.
+                        .addSelectionMenu(
+                                "Delete Project Listing",
+                                () -> Main.projectList.stream()
+                                        // Filter for projects managed by the current manager.
+                                        .filter(project -> project.isManager((Manager) user))
+                                        // Collect the managed projects.
+                                        .collect(Collectors.toList()),
+                                Project::toString, // Display each Project.
+                                project -> { // Action to delete the selected project.
+                                    Main.projectList.remove(project);
+                                    System.out.println("Project Deleted");
+                                }
+                        )
+                        // Selection menu to toggle the visibility of a project listing.
+                        .addSelectionMenu(
+                                "Toggle Visibility of project listing",
+                                () -> Main.projectList.stream()
+                                        // Filter for projects managed by the current manager.
+                                        .filter(project -> project.isManager((Manager) user))
+                                        // Collect the managed projects.
+                                        .collect(Collectors.toList()),
+                                project -> project.toString() + (project.getVisibility() ? " (Visible)" : " (Not visible)"), // Display project with visibility status.
+                                project -> { // Action to toggle the visibility.
+                                    project.setVisibility(!project.getVisibility());
+                                    System.out.println("Visibility Toggled");
+                                }
+                        )
+        );
 
         SelectionMenu<Project> selectProjectMenu = new SelectionMenu<>(
             "Select a Project for the Report",
@@ -273,124 +355,129 @@ public class ProjectManageMenu extends MenuGroup {
             (user_) -> user_ instanceof Manager);
     }
 
-    // the problem is, the content gets refreshed 
+    /**
+     * Creates a {@link MenuGroup} that allows a manager to edit various attributes of a specific {@link Project}.
+     * The menu dynamically displays the current project details and updates them after each edit.
+     *
+     * @param project The {@link Project} object to be edited.
+     * @return A {@link MenuGroup} containing menu items for editing project attributes.
+     */
     private MenuGroup createProjectEditMenu(Project project, Manager manager) {
-        // Create a new MenuGroup with the current project details
-        MenuGroup editMenu = new MenuGroup("Which field do you want to edit? \n" + 
-                                       ProjectPrinter.getProjectDetailsString(project, true));
+        MenuGroup editMenu = new MenuGroup("Which field do you want to edit? \n" +
+                ProjectPrinter.getProjectDetailsString(project, true));
         editMenu.addMenuItem("Edit Project Name", () -> {
-                System.out.println("Enter new project name:");
-                String newName = sc.nextLine().trim();
-                project.setName(newName);
-                System.out.println("Project name updated successfully.");
+            System.out.println("Enter new project name:");
+            String newName = sc.nextLine().trim();
+            project.setName(newName);
+            System.out.println("Project name updated successfully.");
         });
         editMenu.addMenuItem("Edit Neighborhood", () -> {
-                System.out.println("Enter new neighborhood:");
-                String newNeighborhood = sc.nextLine().trim();
-                project.setNeighbourhood(newNeighborhood);
-                System.out.println("Neighborhood updated successfully.");
+            System.out.println("Enter new neighborhood:");
+            String newNeighborhood = sc.nextLine().trim();
+            project.setNeighbourhood(newNeighborhood);
+            System.out.println("Neighborhood updated successfully.");
         });
         editMenu.addMenuItem("Edit 2-Room Units", () -> {
-                System.out.println("Enter new number of 2-room units:");
-                int newUnits2Room = Integer.parseInt(sc.nextLine().trim());
-                project.setUnits2Room(newUnits2Room);
-                System.out.println("2-room units updated successfully.");
+            System.out.println("Enter new number of 2-room units:");
+            int newUnits2Room = Integer.parseInt(sc.nextLine().trim());
+            project.setUnits2Room(newUnits2Room);
+            System.out.println("2-room units updated successfully.");
         });
         editMenu.addMenuItem("Edit 2-Room Price", () -> {
-                System.out.println("Enter new price for 2-room units:");
-                int newPrice2Room = Integer.parseInt(sc.nextLine().trim());
-                project.setUnits2RoomPrice(newPrice2Room);
-                System.out.println("2-room price updated successfully.");
+            System.out.println("Enter new price for 2-room units:");
+            int newPrice2Room = Integer.parseInt(sc.nextLine().trim());
+            project.setUnits2RoomPrice(newPrice2Room);
+            System.out.println("2-room price updated successfully.");
         });
         editMenu.addMenuItem("Edit 3-Room Units", () -> {
-                System.out.println("Enter new number of 3-room units:");
-                int newUnits3Room = Integer.parseInt(sc.nextLine().trim());
-                project.setUnits3Room(newUnits3Room);
-                System.out.println("3-room units updated successfully.");
+            System.out.println("Enter new number of 3-room units:");
+            int newUnits3Room = Integer.parseInt(sc.nextLine().trim());
+            project.setUnits3Room(newUnits3Room);
+            System.out.println("3-room units updated successfully.");
         });
         editMenu.addMenuItem("Edit 3-Room Price", () -> {
-                System.out.println("Enter new price for 3-room units:");
-                int newPrice3Room = Integer.parseInt(sc.nextLine().trim());
-                project.setUnits3RoomPrice(newPrice3Room);
-                System.out.println("3-room price updated successfully.");
+            System.out.println("Enter new price for 3-room units:");
+            int newPrice3Room = Integer.parseInt(sc.nextLine().trim());
+            project.setUnits3RoomPrice(newPrice3Room);
+            System.out.println("3-room price updated successfully.");
         });
         editMenu.addMenuItem("Edit Application Open Date", () -> {
-                System.out.println("Enter new application open date (dd/MM/yyyy):");
-                String newOpenDate = sc.nextLine().trim();
-                LocalDate targetDate;
-                try {
-                    targetDate = LocalDate.parse(newOpenDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                } catch (DateTimeParseException e) {
-                    System.out.println("Date could not be resolved.");
+            System.out.println("Enter new application open date (dd/MM/yyyy):");
+            String newOpenDate = sc.nextLine().trim();
+            LocalDate targetDate;
+            try {
+                targetDate = LocalDate.parse(newOpenDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            } catch (DateTimeParseException e) {
+                System.out.println("Date could not be resolved.");
+                return;
+            }
+
+            // Check if the new Open Date is after the Close Date
+            if (targetDate.isAfter(project.getCloseDate())) {
+                System.out.println("Error: New Open Date (" + targetDate.format(DateTimeFormat.getDateFormatter()) +
+                    ") cannot be after the Close Date (" + project.getCloseDate().format(DateTimeFormat.getDateFormatter()) + ").");
+                return;
+            }
+
+            // Check for overlapping dates with other projects
+            Main.projectList.stream()
+                .filter(project_ -> project_.isManager(manager) &&
+                    project_ != project &&
+                    !(TimeCompare.timeSeparate(targetDate, project.getCloseDate(), project_.getOpenDate(), project_.getCloseDate())))
+                .findAny()
+                .ifPresent(project_ -> {
+                    System.out.println("Date given intersects with " + project_ + 
+                        "\nProject Open Date: " + project_.getOpenDate().format(DateTimeFormat.getDateFormatter()) + 
+                        "\nProject End Date: " + project_.getCloseDate().format(DateTimeFormat.getDateFormatter()));
                     return;
-                }
+                });
 
-                // Check if the new Open Date is after the Close Date
-                if (targetDate.isAfter(project.getCloseDate())) {
-                    System.out.println("Error: New Open Date (" + targetDate.format(DateTimeFormat.getDateFormatter()) +
-                        ") cannot be after the Close Date (" + project.getCloseDate().format(DateTimeFormat.getDateFormatter()) + ").");
-                    return;
-                }
-
-                // Check for overlapping dates with other projects
-                Main.projectList.stream()
-                    .filter(project_ -> project_.isManager(manager) &&
-                        project_ != project &&
-                        !(TimeCompare.timeSeparate(targetDate, project.getCloseDate(), project_.getOpenDate(), project_.getCloseDate())))
-                    .findAny()
-                    .ifPresent(project_ -> {
-                        System.out.println("Date given intersects with " + project_ + 
-                            "\nProject Open Date: " + project_.getOpenDate().format(DateTimeFormat.getDateFormatter()) + 
-                            "\nProject End Date: " + project_.getCloseDate().format(DateTimeFormat.getDateFormatter()));
-                        return;
-                    });
-
-                project.setOpenDate(targetDate);
-                System.out.println("Application open date updated successfully.");
+            project.setOpenDate(targetDate);
+            System.out.println("Application open date updated successfully.");
         });
         editMenu.addMenuItem("Edit Application Close Date", () -> {
-                System.out.println("Enter new application close date (dd/MM/yyyy):");
-                String newCloseDate = sc.nextLine().trim();
-                LocalDate targetDate;
-                try {
-                    targetDate = LocalDate.parse(newCloseDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                } catch (DateTimeParseException e) {
-                    System.out.println("Date could not be resolved.");
-                    return;
-                }
-                Main.projectList.stream()
-                    .filter(project_ -> project_.isManager(manager) &&
-                        project_ != project &&
-                        !(TimeCompare.timeSeparate(project.getOpenDate(), targetDate, project_.getOpenDate(), project_.getCloseDate())))
-                    .findAny()
-                    .ifPresent(project_ -> {
-                        System.out.println("Date given intersects with " + project_ + 
-                            "\nProject Open Date: " + project_.getOpenDate().format(DateTimeFormat.getDateFormatter()) + 
-                            "\nProject End Date: " + project_.getCloseDate().format(DateTimeFormat.getDateFormatter()));
-                            return;
-                    });
-                if (project.getOpenDate().isAfter(targetDate)){
-                    System.out.println("Error: Project Start Date: " + 
-                        project.getOpenDate().format(DateTimeFormat.getDateFormatter()) + 
-                        "\nis after Project End Date: " +
-                        targetDate.format(DateTimeFormat.getDateFormatter()));
-                    return;
-                }
-                project.setCloseDate(targetDate);
-                System.out.println("Application close date updated successfully.");
+            System.out.println("Enter new application close date (dd/MM/yyyy):");
+            String newCloseDate = sc.nextLine().trim();
+            LocalDate targetDate;
+            try {
+                targetDate = LocalDate.parse(newCloseDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            } catch (DateTimeParseException e) {
+                System.out.println("Date could not be resolved.");
+                return;
+            }
+            Main.projectList.stream()
+                .filter(project_ -> project_.isManager(manager) &&
+                    project_ != project &&
+                    !(TimeCompare.timeSeparate(project.getOpenDate(), targetDate, project_.getOpenDate(), project_.getCloseDate())))
+                .findAny()
+                .ifPresent(project_ -> {
+                    System.out.println("Date given intersects with " + project_ + 
+                        "\nProject Open Date: " + project_.getOpenDate().format(DateTimeFormat.getDateFormatter()) + 
+                        "\nProject End Date: " + project_.getCloseDate().format(DateTimeFormat.getDateFormatter()));
+                        return;
+                });
+            if (project.getOpenDate().isAfter(targetDate)){
+                System.out.println("Error: Project Start Date: " + 
+                    project.getOpenDate().format(DateTimeFormat.getDateFormatter()) + 
+                    "\nis after Project End Date: " +
+                    targetDate.format(DateTimeFormat.getDateFormatter()));
+                return;
+            }
+            project.setCloseDate(targetDate);
+            System.out.println("Application close date updated successfully.");
         });
         editMenu.addMenuItem("Edit Officer Slots", () -> {
-                System.out.println("Enter new number of officer slots:");
-                int newOfficerSlots = Integer.parseInt(sc.nextLine().trim());
-                project.setOfficerSlots(newOfficerSlots);
-                System.out.println("Officer slots updated successfully.");
+            System.out.println("Enter new number of officer slots:");
+            int newOfficerSlots = Integer.parseInt(sc.nextLine().trim());
+            project.setOfficerSlots(newOfficerSlots);
+            System.out.println("Officer slots updated successfully.");
         });
-        editMenu.setDynamicDesc(() -> "Which field do you want to edit? \n" + 
-                                       ProjectPrinter.getProjectDetailsString(project, true));
+        editMenu.setDynamicDesc(() -> "Which field do you want to edit? \n" +
+                ProjectPrinter.getProjectDetailsString(project, true));
         editMenu.setTransient(true);
         return editMenu;
     }
-
+    
     private Function<Manager, List<User>> generateRelevantApplicants = 
             (Manager manager) -> {
                 List<User> userList = new ArrayList<User>(Main.applicantList);
@@ -437,3 +524,4 @@ public class ProjectManageMenu extends MenuGroup {
         }
     }
 }
+

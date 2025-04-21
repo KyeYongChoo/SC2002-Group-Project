@@ -6,107 +6,214 @@ import program.entity.users.Manager;
 import program.entity.users.Officer;
 import program.entity.users.User;
 
-/*
- * Named HousingRequest because naming it Application would be too confusing like apply for house application or software application lmao
+/**
+ * <p>
+ * The {@code HousingReq} class represents a housing request made by a {@link User} for a specific {@link Project}.
+ * It contains details about the user, the project, the requested room type, and the status of the housing request.
+ * This class also manages approval and booking information related to the housing request.
+ * </p>
+ *
+ * <p>
+ * The housing request can be in various states, such as pending, successful, unsuccessful, or booked.
+ * It also includes functionality to manage the withdrawal status of the request.
+ * </p>
+ *
+ * @see program.entity.project.Project
+ * @see program.entity.users.User
+ * @see program.entity.users.Manager
+ * @see program.entity.users.Officer
  */
 public class HousingReq {
+
     private User user;
     private Project project;
     private Manager approvedBy = null;
     private Officer bookedBy = null;
     private REQUEST_STATUS requestStatus = REQUEST_STATUS.pending;
-    private ROOM_TYPE roomType; 
+    private ROOM_TYPE roomType;
     private WITHDRAWAL_STATUS withdrawalStatus = WITHDRAWAL_STATUS.notRequested;
 
-    public static enum REQUEST_STATUS{
+    /**
+     * Enum representing the possible statuses of a housing request.
+     */
+    public static enum REQUEST_STATUS {
         pending,
         successful,
         unsuccessful,
         booked
     }
 
-    public static enum WITHDRAWAL_STATUS{
+    /**
+     * Enum representing the possible withdrawal statuses for a housing request.
+     */
+    public static enum WITHDRAWAL_STATUS {
         notRequested,
         requested,
         approved,
         rejected
     }
 
-    public WITHDRAWAL_STATUS getWithdrawalStatus(){
+    /**
+     * Gets the withdrawal status of the housing request.
+     *
+     * @return the withdrawal status
+     */
+    public WITHDRAWAL_STATUS getWithdrawalStatus() {
         return withdrawalStatus;
     }
-    public void setWithdrawalStatus(WITHDRAWAL_STATUS withdrawalStatus){
+
+    /**
+     * Sets the withdrawal status of the housing request.
+     *
+     * @param withdrawalStatus the new withdrawal status
+     */
+    public void setWithdrawalStatus(WITHDRAWAL_STATUS withdrawalStatus) {
         this.withdrawalStatus = withdrawalStatus;
     }
 
-    public Manager getApprovedBy(){
+    /**
+     * Gets the manager who approved the housing request.
+     *
+     * @return the manager who approved the request
+     */
+    public Manager getApprovedBy() {
         return approvedBy;
     }
 
-    public void setApprovedBy(Manager manager){
+    /**
+     * Sets the manager who approved the housing request.
+     *
+     * @param manager the manager who approved the request
+     */
+    public void setApprovedBy(Manager manager) {
         approvedBy = manager;
     }
 
-    public Officer getBookedBy(){
+    /**
+     * Gets the officer who booked the housing request.
+     *
+     * @return the officer who booked the request
+     */
+    public Officer getBookedBy() {
         return bookedBy;
     }
 
-    public void setBookedBy(Officer officer){
+    /**
+     * Sets the officer who booked the housing request.
+     *
+     * @param officer the officer who booked the request
+     */
+    public void setBookedBy(Officer officer) {
         bookedBy = officer;
     }
 
-    public Manager getManager(){
+    /**
+     * Gets the manager associated with the project of this housing request.
+     *
+     * @return the project manager
+     */
+    public Manager getManager() {
         return this.project.getManager();
     }
-    
-    public HousingReq(User client, Project project, ROOM_TYPE roomType){
+
+    /**
+     * Constructs a new {@code HousingReq} with the specified client, project, and room type.
+     *
+     * @param client the user who is requesting the housing
+     * @param project the project the housing request is for
+     * @param roomType the type of room requested
+     */
+    public HousingReq(User client, Project project, ROOM_TYPE roomType) {
         this.user = client;
         this.project = project;
         this.roomType = roomType;
     }
 
-    public REQUEST_STATUS getStatus(){
+    /**
+     * Gets the status of the housing request.
+     *
+     * @return the request status
+     */
+    public REQUEST_STATUS getStatus() {
         return requestStatus;
     }
 
-    public ROOM_TYPE getRoomType(){
+    /**
+     * Gets the room type requested for the housing.
+     *
+     * @return the room type
+     */
+    public ROOM_TYPE getRoomType() {
         return roomType;
     }
 
-    public void setRoomType(ROOM_TYPE roomType){
+    /**
+     * Sets the room type for the housing request.
+     *
+     * @param roomType the new room type
+     */
+    public void setRoomType(ROOM_TYPE roomType) {
         this.roomType = roomType;
     }
 
-    public void setStatus(String status) throws Exception{
-        switch (status.toUpperCase().trim()){
-            case ("PENDING"): 
+    /**
+     * Sets the status of the housing request based on a string value.
+     *
+     * @param status the new status of the request (e.g., "PENDING", "SUCCESSFUL")
+     * @throws Exception if the provided status is not valid
+     */
+    public void setStatus(String status) throws Exception {
+        switch (status.toUpperCase().trim()) {
+            case ("PENDING"):
                 setStatus(REQUEST_STATUS.pending);
                 return;
-            case ("SUCCESSFUL"): 
+            case ("SUCCESSFUL"):
                 setStatus(REQUEST_STATUS.successful);
                 return;
-            case ("UNSUCCESSFUL"): 
+            case ("UNSUCCESSFUL"):
                 setStatus(REQUEST_STATUS.unsuccessful);
                 return;
-            case ("BOOKED"): 
+            case ("BOOKED"):
                 setStatus(REQUEST_STATUS.booked);
                 return;
+            default:
+                throw new Exception("Status not found. Status received: " + status);
         }
-        throw new Exception("Status not found. Status received: " + status);
     }
 
-    public void setStatus(REQUEST_STATUS status){
+    /**
+     * Sets the status of the housing request.
+     *
+     * @param status the new status of the request
+     */
+    public void setStatus(REQUEST_STATUS status) {
         this.requestStatus = status;
     }
 
-    public User getUser(){
+    /**
+     * Gets the user who made the housing request.
+     *
+     * @return the user who made the request
+     */
+    public User getUser() {
         return user;
     }
 
-    public Project getProject(){
+    /**
+     * Gets the project associated with the housing request.
+     *
+     * @return the project
+     */
+    public Project getProject() {
         return project;
     }
 
+    /**
+     * Returns a string representation of the housing request, displaying details
+     * about the user, project, request status, withdrawal status, and approval/booking information.
+     *
+     * @return a string representation of the housing request
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -125,9 +232,9 @@ public class HousingReq {
             sb.append("Approved By      : Not yet approved\n");
         }
         if (bookedBy != null) {
-            sb.append("Booked By      : ").append(bookedBy.getName()).append("\n");
+            sb.append("Booked By        : ").append(bookedBy.getName()).append("\n");
         } else {
-            sb.append("Booked By      : Not yet booked\n");
+            sb.append("Booked By        : Not yet booked\n");
         }
         return sb.toString();
     }
