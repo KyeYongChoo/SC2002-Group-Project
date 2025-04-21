@@ -4,16 +4,35 @@ import java.time.LocalDateTime;
 
 import program.entity.users.User;
 
+/**
+ * <p>
+ * The {@code Message} class represents a message sent by a user in the context of an enquiry.
+ * Each message contains the content of the message, the user who sent it, and the timestamp
+ * indicating when the message was sent.
+ * </p>
+ *
+ * <p>
+ * This class is used to capture the communication between users (applicants) and project managers
+ * or officers regarding project-related enquiries. It provides methods for accessing and modifying
+ * the message content and metadata such as the sender and the timestamp.
+ * </p>
+ *
+ * @see program.entity.users.User
+ */
 public class Message {
+
     private final User client;
     private String text;
     private final LocalDateTime timeStamp;
 
-    /*
-     * Constructor for Message without timestamp
-     * Used when creating a new message
-     * @param client The user who sent the message
-     * @param text The content of the message
+    /**
+     * <p>
+     * Constructs a new {@code Message} with the specified sender and message content.
+     * The timestamp is automatically set to the current time when the message is created.
+     * </p>
+     *
+     * @param client the {@link User} who sent the message
+     * @param text the content of the message
      */
     public Message(User client, String text){
         this.client = client;
@@ -21,12 +40,15 @@ public class Message {
         timeStamp = LocalDateTime.now();
     }
 
-    /*
-     * Constructor for Message with timestamp
-     * Used by DataInitializer to load messages from CSV
-     * @param client The user who sent the message
-     * @param text The content of the message
-     * @param timeStamp The time when the message was sent
+    /**
+     * <p>
+     * Constructs a new {@code Message} with the specified sender, message content, and timestamp.
+     * This constructor is used when loading messages from a data source, such as CSV files.
+     * </p>
+     *
+     * @param client the {@link User} who sent the message
+     * @param text the content of the message
+     * @param timeStamp the timestamp when the message was sent
      */
     public Message(User client, String text, LocalDateTime timeStamp){
         this.client = client;
@@ -34,33 +56,45 @@ public class Message {
         this.timeStamp = timeStamp;
     }
 
-    /*
-     * Get the user who sent the message
-     * @return The user who sent the message
+    /**
+     * <p>
+     * Gets the user who sent the message.
+     * </p>
+     *
+     * @return the {@link User} who sent the message
      */
     public User getUser(){
         return client;
     }
 
-    /*
-     * Get the content of the message
-     * @return The content of the message
+    /**
+     * <p>
+     * Gets the content of the message.
+     * </p>
+     *
+     * @return the content of the message
      */
     public String getText(){
         return text;
     }
 
-    /*
-     * Get the time when the message was sent
-     * @return The time when the message was sent
+    /**
+     * <p>
+     * Gets the timestamp indicating when the message was sent.
+     * </p>
+     *
+     * @return the {@link LocalDateTime} timestamp of when the message was sent
      */
     public LocalDateTime getTimeStamp(){
         return timeStamp;
     }
 
-    /*
-     * Edit the content of the message
-     * @param newText The new content of the message
+    /**
+     * <p>
+     * Edits the content of the message.
+     * </p>
+     *
+     * @param newText the new content of the message
      */
     public void setText(String newText) {
         this.text = newText;

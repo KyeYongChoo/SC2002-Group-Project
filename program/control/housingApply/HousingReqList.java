@@ -10,14 +10,44 @@ import program.entity.users.Manager;
 import program.entity.users.User;
 
 import java.util.ArrayList;
-/* There's gonna be 3 types of request lists: 
-* 1. As every user's attribute: Says which requests they are involved in
-* 2. As every project's attribute: Says which requests they are involved in
-* 3. In the Main function: Contains every request. 
-*
-* Frontmost element is always either active or unsuccessful application, all other applications will be unsuccessful
-*/
-public class HousingReqList extends ArrayList<HousingReq>{
+
+/**
+ * <p>
+ * {@code HousingReqList} represents a list of {@link HousingReq} objects related to housing applications made by users.
+ * This list manages the relationship between users, housing projects, and application statuses.
+ * </p>
+ *
+ * <p>
+ * A {@code HousingReqList} can be found in three contexts:
+ * <ul>
+ *     <li>As part of each {@link User}, tracking their personal housing requests.</li>
+ *     <li>As part of each {@link Project}, tracking all requests for that project.</li>
+ *     <li>In {@link Main}, representing the master list of all housing requests in the system.</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * Important behavior:
+ * <ul>
+ *     <li>The first request in a {@code HousingReqList} is always either the active request or the most recent unsuccessful one.</li>
+ *     <li>All other requests are considered historical (unsuccessful).</li>
+ * </ul>
+ * </p>
+ *
+ * @see HousingReq A single housing request.
+ * @see Main The central control class managing system-wide data.
+ */
+public class HousingReqList extends ArrayList<HousingReq> {
+
+    /**
+     * <p>
+     * Retrieves the {@link HousingReq} for a given {@link User} and {@link Project}.
+     * </p>
+     *
+     * @param client The user who submitted the request.
+     * @param project The project for which the request was made.
+     * @return The matching {@code HousingReq}, or {@code null} if no match is found.
+     */
     public HousingReq get(User client, Project project){
         for (HousingReq request : this){
             if (request.getUser() == client && request.getProject() == project){
@@ -27,10 +57,25 @@ public class HousingReqList extends ArrayList<HousingReq>{
         return null;
     }
 
-    
+    /**
+     * <p>
+     * Adds a {@link HousingReq} to the list. If the request is valid, it is inserted at the front of all relevant lists:
+     * the global housing request list, the user's request list, and the project's request list.
+     * </p>
+     *
+     * <p>
+     * Validation includes ensuring:
+     * <ul>
+     *     <li>The user does not already have an active request.</li>
+     *     <li>No duplicate active request exists for the same user and project.</li>
+     * </ul>
+     * </p>
+     *
+     * @param req The housing request to be added.
+     * @return {@code true} if the request was successfully added; {@code false} otherwise.
+     */
     @Override
     public boolean add(HousingReq req){
-        // if a request has been made before for same applicant and same project
         if (req.getUser().hasActiveApplication()){
             System.out.println("Error: You have an active application");
             HousingReq duplicateReq = HousingReqList.activeReq(req.getUser());
@@ -41,32 +86,43 @@ public class HousingReqList extends ArrayList<HousingReq>{
         }
         User client = req.getUser();
         Project project = req.getProject();
-        HousingReq duplicateReq = Main.housingReqList.get(client,project);
+        HousingReq duplicateReq = Main.housingReqList.get(client, project);
         if (duplicateReq != null){
             if (duplicateReq.getStatus() == REQUEST_STATUS.unsuccessful){
                 System.out.println("Error: Prior request denied for project.");
                 return false;
-            }
-            else {
-                System.out.println("Error: come take a look at HousingReqList's add function there's something spooky happening here this if else case is never supposed to happen");
+            } else {
+                System.out.println("Warning: Unexpected duplicate active request detected.");
                 return false;
             }
         }
 
-        // Used add(index, req) syntax instead of add(req) syntax for 2 reasons
-        // 1. This function overrides add(req) signature, so using that will cause infinite recursion
-        // 2. Front will always be active or unsuccessful. Active requests must be at the front, if it exists
-        project.getReqList().add(0,req);
-        client.getReqList().add(0,req);
-        Main.housingReqList.add(0,req);
+        project.getReqList().add(0, req);
+        client.getReqList().add(0, req);
+        Main.housingReqList.add(0, req);
         return true;
     }
 
-    // Just in case I have to use the old add() function
+    /**
+     * <p>
+     * Directly adds a {@link HousingReq} to this list by calling the original {@code super.add()} method,
+     * bypassing the overridden {@link #add(HousingReq)} logic.
+     * </p>
+     *
+     * @param req The housing request to be added.
+     * @return {@code true} if the request was added.
+     */
     private boolean superAdd(HousingReq req){
         return super.add(req);
     }
 
+    /**
+     * <p>
+     * Prints all past housing applications of a {@link User}, showing active and unsuccessful requests separately.
+     * </p>
+     *
+     * @param client The user whose request history is to be printed.
+     */
     public static void printPast(User client){
         if (client.getReqList().equals(new HousingReqList())){
             System.out.println("You have not applied for any HDB yet.");
@@ -90,25 +146,43 @@ public class HousingReqList extends ArrayList<HousingReq>{
             if (loopCount == 1 && !client.hasActiveApplication()){
                 System.out.println("\nUnsuccessful Applications\n");
             }
-                
             ProjectSelect.printVisible(client, project);
         }
     }
 
-    // In case I blur blur forget that I'm supposed to make a HousingReq object first then pass into HousingReq
+    /*
+     * @param client The user submitting the application.
+     * @param project The project being applied to.
+     * @param roomType The desired room type.
+     * @return {@code true} if the request was successfully created and added.
+     */
     public boolean add(User client, Project project, ROOM_TYPE roomType){
         HousingReq req = new HousingReq(client, project, roomType);
         return this.add(req);
     }
 
-    // each client 1 request at a time i guess
+    /**
+     * <p>
+     * Retrieves the active {@link HousingReq} for a {@link User}.
+     * </p>
+     *
+     * @param client The user whose active request is to be found.
+     * @return The active {@code HousingReq}, or {@code null} if none exists.
+     */
     public static HousingReq activeReq(User client){
-        if (client.getReqList().isEmpty()) return null; // if no prior request, return null
+        if (client.getReqList().isEmpty()) return null;
         HousingReq req = client.getReqList().get(0);
-        if (req.getStatus() == REQUEST_STATUS.unsuccessful) return null; // if most recent request is unsuccessful, return null
+        if (req.getStatus() == REQUEST_STATUS.unsuccessful) return null;
         return req;
     }
 
+    /**
+     * <p>
+     * Requests withdrawal of the active housing application for a {@link User}.
+     * </p>
+     *
+     * @param client The user requesting withdrawal.
+     */
     public void reqWithdrawal(User client){
         if (!client.hasActiveApplication()){
             System.out.println("Sorry, no active applications");
@@ -122,15 +196,31 @@ public class HousingReqList extends ArrayList<HousingReq>{
         req.setWithdrawalStatus(WITHDRAWAL_STATUS.requested);
         System.out.println("Withdrawal successfully requested from Manager " + req.getManager());
     }
+
+    /**
+     * <p>
+     * Retrieves all withdrawal requests assigned to a specific {@link Manager}.
+     * </p>
+     *
+     * @param manager The manager responsible for handling the withdrawal requests.
+     * @return A {@code HousingReqList} containing all pending withdrawal requests.
+     */
     public static HousingReqList getWithdrawalList(Manager manager){
-        return getWithdrawalList(manager,true);
+        return getWithdrawalList(manager, true);
     }
-    
+
+    /**
+     * <p>
+     * Retrieves withdrawal requests for a {@link Manager}, optionally filtering only unprocessed requests.
+     * </p>
+     *
+     * @param manager The manager responsible for the projects.
+     * @param unprocessedOnly {@code true} to retrieve only pending withdrawal requests; {@code false} to retrieve all.
+     * @return A {@code HousingReqList} matching the criteria.
+     */
     public static HousingReqList getWithdrawalList(Manager manager, boolean unprocessedOnly){
         HousingReqList managerReqList = new HousingReqList();
         for (HousingReq req : Main.housingReqList){
-
-            // If not the manager then skip to next 
             if (!req.getProject().isManager(manager)){
                 continue;
             }
@@ -138,8 +228,7 @@ public class HousingReqList extends ArrayList<HousingReq>{
                 if (req.getWithdrawalStatus() == WITHDRAWAL_STATUS.requested){
                     managerReqList.superAdd(req);
                 }
-            }
-            else {
+            } else {
                 managerReqList.superAdd(req);
             }
         }
