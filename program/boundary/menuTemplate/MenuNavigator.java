@@ -159,4 +159,9 @@ public class MenuNavigator {
     public User getUser() {
         return user;
     }
+
+    // currently unused
+    public MenuGroup popMenu(){
+        return menuStack.pop();
+    }
 }

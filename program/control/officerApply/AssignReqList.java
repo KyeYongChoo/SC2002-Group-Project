@@ -96,8 +96,9 @@ public class AssignReqList extends ArrayList<AssignReq> {
     }
 
     /**
-     * Adds an {@code AssignReq} to the list without performing any duplicate or status checks.
+     * Adds an {@code AssignReq} to the list without performing any duplicate checks on the Main AssignReqList.
      * <p>
+     * Treats the list as a standalone list, not connected to Main's AssignReqList
      * This method is intended for internal use where bypassing checks is necessary,
      * such as bulk modifications where {@link java.util.ConcurrentModificationException} must be avoided.
      * </p>

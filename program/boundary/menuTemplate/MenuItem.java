@@ -118,6 +118,15 @@ public class MenuItem {
         this.action = action;
     }
 
+    // currently unused
+    public MenuAction getAction(){
+        return action;
+    }
+    // currently unused
+    public Predicate<User> getVisibleIf(){
+        return visibleIf;
+    }
+
     /**
      * Chains a new action to the existing action of this menu item. When this menu item is selected, the original action
      * will be executed first, and then the {@code execute()} method of the provided {@code action} will be called.

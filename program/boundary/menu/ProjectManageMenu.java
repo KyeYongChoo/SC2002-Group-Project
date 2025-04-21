@@ -148,7 +148,7 @@ public class ProjectManageMenu extends MenuGroup {
                                     req.setStatus(HousingReq.REQUEST_STATUS.unsuccessful);
                                 }
                             }
-                    ));
+                    ).setTransient(true));
                 }
         );
 
@@ -185,7 +185,7 @@ public class ProjectManageMenu extends MenuGroup {
                                 req.setWithdrawalStatus(WITHDRAWAL_STATUS.rejected);
                             }
                         }
-                ))
+                ).setTransient(true))
         );
 
         // Selection menu for Officers (excluding Managers) to help applicants book a flat.
