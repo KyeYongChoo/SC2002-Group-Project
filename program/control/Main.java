@@ -62,7 +62,7 @@ public class Main {
         DataInitializer.initialise();
 
         // Testing mode: skip login
-        boolean skipLogin = true;
+        boolean skipLogin = false;
         User client;
         if (skipLogin) {
             client = SkipLogin(USER.Manager);

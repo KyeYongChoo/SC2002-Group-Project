@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import program.boundary.menuTemplate.MenuGroup;
+import program.boundary.menuTemplate.MenuNavigator;
 import program.boundary.security.PasswordResetHandler;
 import program.entity.users.Manager;
 import program.entity.users.User;
@@ -63,7 +64,17 @@ public class MainMenu extends MenuGroup {
         this.addMenuItem("Reset Password",
                 () -> {
                     System.out.println("Please enter your new password: ");
-                    PasswordResetHandler.resetPassword(user, sc.nextLine());
+                    String proposedPassword = sc.nextLine();
+                    System.out.println("Please enter your password again: ");
+                    if (proposedPassword.equals(sc.nextLine())){
+                        PasswordResetHandler.resetPassword(user, proposedPassword);
+                        System.out.println("Password change successful. Please login again");
+                        // exit system
+                        MenuNavigator.getInstance().popMenu();
+                    } else {
+                        System.out.println("Password change unsuccessful. ");
+                    }
+                    
                 }
         );
 
