@@ -208,27 +208,6 @@ public class DataInitializer {
                     if (!fields[13].isEmpty()) {
                         project.setVisibility(Boolean.parseBoolean(fields[13]));
                     }
-                    // Check for existing successful assignments
-                    String[] officers = fields[12].split(",");
-                    for (String officerName : officers) {
-                        officerName = officerName.trim();
-                        if (!officerName.isEmpty()) {
-                            final String officerNameFinal = officerName;
-                            Officer officer = (Officer) Main.officerList.stream()
-                                .filter(user -> user.getName().equals(officerNameFinal))
-                                .findAny()
-                                .orElse(null);
-                            boolean hasSuccessfulAssignment = Main.assignReqList.stream()
-                                .anyMatch(req -> req.getOfficer().equals(officer) && req.getProject().equals(project) && req.getApplicationStatus() == AssignReq.APPLICATION_STATUS.accepted);
-
-                            // Create a successful assignment if none exists
-                            if (!hasSuccessfulAssignment) {
-                                AssignReq req = new AssignReq(officer, project);
-                                req.setApplicationStatus(AssignReq.APPLICATION_STATUS.accepted);
-                                Main.assignReqList.superAdd(req);
-                            }
-                        }
-                    }
                 } catch (Exception e) {
                     System.out.println("Skipping invalid project entry: " + Arrays.toString(fields) + "\n" + e.getMessage());
                     e.printStackTrace();
@@ -379,9 +358,33 @@ public class DataInitializer {
 
                 AssignReq req = new AssignReq(officer, project);
                 req.setApplicationStatus(applicationStatus);
-
+                
                 Main.assignReqList.superAdd(req);
             }
+            Main.projectList.forEach(project_ -> {
+                // Stream through the officers assigned to the project
+                project_.getOfficers().stream()
+                    // Filter out officers who already have an accepted assignment request for this project
+                    .filter(officer_ -> {
+                        boolean hasAcceptedRequest = Main.assignReqList.stream()
+                            .anyMatch(req -> 
+                                req.getOfficer().equals(officer_) &&
+                                req.getProject().equals(project_) &&
+                                req.getApplicationStatus() == AssignReq.APPLICATION_STATUS.accepted
+                            );
+                        // System.out.println("Officer: " + officer_ + " has accepted request: " + hasAcceptedRequest);
+                        return !hasAcceptedRequest;
+                    })
+                    // Peek to log officers who pass the filter
+                    // .peek(officer_ -> System.out.println("Adding new assignment request for officer: " + officer_))
+                    // For each officer who passes the filter, create a new accepted assignment request
+                    .forEach(officer_ -> {
+                        AssignReq req = new AssignReq((Officer) officer_, project_);
+                        req.setApplicationStatus(AssignReq.APPLICATION_STATUS.accepted);
+                        Main.assignReqList.superAdd(req);
+                        // System.out.println("New assignment request added: " + req);
+                    });
+            });
         } catch (IOException e) {
             System.out.println("Error reading " + fileName + ": " + e.getMessage());
         } catch (Exception e) {

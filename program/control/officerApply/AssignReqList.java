@@ -101,6 +101,7 @@ public class AssignReqList extends ArrayList<AssignReq> {
      * Treats the list as a standalone list, not connected to Main's AssignReqList
      * This method is intended for internal use where bypassing checks is necessary,
      * such as bulk modifications where {@link java.util.ConcurrentModificationException} must be avoided.
+     * Also used to avoid system messages on successful/unsuccessful additions
      * </p>
      *
      * @param e The {@link AssignReq} to add.

@@ -65,6 +65,9 @@ public class ProjectApplicationMenu extends MenuGroup {
                     Project project = ProjectSelector.chooseProjectsApplyAsApplicant(user, Main.projectList);
                     if (project == null) return; // Exit if no project is selected
                     ROOM_TYPE targetRoomType = RoomTypeSelector.selectRoomType(user, project);
+                    if (targetRoomType == null){
+                        return;
+                    }
                     Main.housingReqList.add(user, project, targetRoomType); // Add the application to the request list
                     System.out.println("Application submitted successfully.");
                 },

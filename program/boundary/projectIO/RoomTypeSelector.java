@@ -67,15 +67,18 @@ public class RoomTypeSelector {
                     System.out.println("Please select room type (Enter 1 or 2):");
                     System.out.println("1. 2-Room");
                     System.out.println("2. 3-Room");
+                    System.out.println("3. Go Back");
                     userInput = sc.nextLine();
                     // Keep prompting until the user enters a valid option
-                } while (!"1".equals(userInput) && !"2".equals(userInput));
+                } while (!"1".equals(userInput) && !"2".equals(userInput) && !"3".equals(userInput));
 
                 // Set the target room type based on user input
                 if ("1".equals(userInput)) {
                     targetRoomType = ROOM_TYPE.room2;
                 } else if ("2".equals(userInput)) {
                     targetRoomType = ROOM_TYPE.room3;
+                } else if ("3".equals(userInput)){
+                    return null;
                 }
             }
         }
