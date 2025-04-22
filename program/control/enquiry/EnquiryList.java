@@ -11,11 +11,36 @@ import program.control.Main;
 import program.entity.project.Project;
 import program.entity.users.User;
 
-/*
- * Similar to HousingReqList, there will be a separate enquiryList for each of the User, Project, and Main classes
+/**
+ * <p>
+ * The {@code EnquiryList} class manages a collection of {@link Enquiry} objects and provides
+ * functionality to select, add, and delete enquiries. It is used for managing enquiries created by
+ * users regarding specific projects, as well as handling the interactions between users and project managers
+ * or officers responding to those enquiries.
+ * </p>
+ *
+ * <p>
+ * This class is used by both applicants (users) and staff (managers or officers) to manage
+ * the enquiries related to projects. It allows the user to select enquiries, view past enquiries,
+ * and handle enquiry-related actions.
+ * </p>
+ *
+ * @see program.control.enquiry.Enquiry
+ * @see program.entity.users.User
+ * @see program.entity.project.Project
  */
 public class EnquiryList extends ArrayList<Enquiry> {
 
+    /**
+     * <p>
+     * Retrieves an {@link Enquiry} based on the user and project. If multiple enquiries
+     * exist for the same user and project, the method handles disambiguation.
+     * </p>
+     *
+     * @param client the {@link User} who created the enquiry
+     * @param project the {@link Project} the enquiry is related to
+     * @return the {@link Enquiry} associated with the client and project, or null if none exists
+     */
     public static Enquiry get(User client, Project project) {
         Enquiry targetEnquiry = null;
         for (Enquiry enquiry : Main.enquiryList) {
@@ -31,11 +56,14 @@ public class EnquiryList extends ArrayList<Enquiry> {
         return targetEnquiry;
     }
 
-    /*
-     * This function is used to select an enquiry from a user.
-     * Used by Applicant to select projects to enquire on.
-     * @param client The client who created the enquiry.
-     * @return The selected enquiry.
+    /**
+     * <p>
+     * Allows an applicant to select an enquiry based on a project. This method prints out the
+     * available projects for the user to choose from and then selects the relevant enquiry.
+     * </p>
+     *
+     * @param client the {@link User} who created the enquiry
+     * @return the selected {@link Enquiry}
      */
     public static Enquiry selectEnquiry(User client) {
         Scanner sc = AppScanner.getInstance();
@@ -50,11 +78,15 @@ public class EnquiryList extends ArrayList<Enquiry> {
         return get(client, targetProject);
     }
 
-    /*
-     * This function is used to select an enquiry from a project.
-     * Used by Manager and Officer to select enquiries to respond to.
-     * @param project The project to select an enquiry from.
-     * @return The selected enquiry.
+    /**
+     * <p>
+     * Allows a manager or officer to select an enquiry based on a project. The method lists all
+     * enquiries related to the given project, including the date of creation and the first message,
+     * for the user to choose the relevant enquiry.
+     * </p>
+     *
+     * @param project the {@link Project} to select an enquiry from
+     * @return the selected {@link Enquiry}
      */
     public static Enquiry selectEnquiry(Project project) {
         Scanner sc = AppScanner.getInstance();
@@ -78,6 +110,16 @@ public class EnquiryList extends ArrayList<Enquiry> {
         return enqList.get(choice);
     }
 
+    /**
+     * <p>
+     * Handles disambiguation if there are multiple enquiries for the same user and project.
+     * This method presents the user with a list of matching enquiries to select from.
+     * </p>
+     *
+     * @param client the {@link User} who created the enquiry
+     * @param project the {@link Project} the enquiry is related to
+     * @return the selected {@link Enquiry}
+     */
     public static Enquiry getDisambiguation(User client, Project project) {
         EnquiryList enqList = new EnquiryList();
         for (Enquiry enquiry : Main.enquiryList) {
@@ -89,6 +131,15 @@ public class EnquiryList extends ArrayList<Enquiry> {
         ((Enquiry) enquiry).getUser() == client && ((Enquiry) enquiry).getProject() == project);
     }
 
+    /**
+     * <p>
+     * Adds a new enquiry to the list and updates the corresponding project and user enquiry lists.
+     * The new enquiry is added to the beginning of each list.
+     * </p>
+     *
+     * @param enquiry the {@link Enquiry} to add
+     * @return true if the enquiry was successfully added
+     */
     @Override
     public boolean add(Enquiry enquiry) {
         enquiry.getProject().getEnquiryList().add(0, enquiry);
@@ -97,6 +148,14 @@ public class EnquiryList extends ArrayList<Enquiry> {
         return true;
     }
 
+    /**
+     * <p>
+     * Prints all past enquiries made by the given user. Each enquiry is displayed with its creation
+     * date, associated project, and all related messages.
+     * </p>
+     *
+     * @param client the {@link User} whose past enquiries are to be printed
+     */
     public static void printPastEnq(User client) {
         if (client.getEnquiryList().equals(new EnquiryList())) {
             System.out.println("You have no enquiries yet.");
@@ -112,16 +171,38 @@ public class EnquiryList extends ArrayList<Enquiry> {
         }
     }
 
+    /**
+     * <p>
+     * Adds a new enquiry created by the specified client for the specified project, with the
+     * provided enquiry text.
+     * </p>
+     *
+     * @param client the {@link User} creating the enquiry
+     * @param enquiryText the text of the enquiry message
+     * @param project the {@link Project} the enquiry is related to
+     * @return true if the enquiry was successfully added
+     */
     public boolean add(User client, String enquiryText, Project project) {
         Enquiry enq = new Enquiry(client, enquiryText, project);
         return this.add(enq);
     }
 
-    // Used if need to modify in place ie avoid java.util.ConcurrentModificationException
+    /* </p>
+     *
+     * @param e the {@link Enquiry} to add
+     */
     public void superAdd(Enquiry e) {
         super.add(e);
     }
 
+    /**
+     * <p>
+     * Deletes the specified enquiry from the project and user enquiry lists, as well as from
+     * the main enquiry list.
+     * </p>
+     *
+     * @param enq the {@link Enquiry} to delete
+     */
     public static void delete(Enquiry enq) {
         if (enq == null) {
             System.out.println("Error: no enquiries found.");

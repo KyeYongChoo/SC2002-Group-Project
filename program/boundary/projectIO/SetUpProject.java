@@ -14,13 +14,62 @@ import program.entity.project.Project;
 import program.entity.users.Manager;
 import program.entity.users.User;
 
+/**
+ * <p>
+ * The {@code SetUpProject} class implements the {@link MenuAction} interface and provides
+ * functionality for a {@link Manager} to create and set up a new {@link Project}. It guides
+ * the manager through the process of entering details about the project through console input.
+ * </p>
+ *
+ * <p>
+ * This class includes input validation to ensure that all required fields are provided correctly,
+ * and it checks for scheduling conflicts with the manager’s existing projects before allowing the
+ * new project to be created and added to the system's list of projects.
+ * </p>
+ */
 public class SetUpProject implements MenuAction{
+
+    /**
+     * <p>
+     * The {@link User} object who is setting up the new project.
+     * </p>
+     */
     User user;
+
+    /**
+     * <p>
+     * {@code sc} is a static and final instance of the {@link Scanner} class, obtained from
+     * {@link AppScanner}. It is used to read input from the console when prompting the manager
+     * for project details.
+     * </p>
+     */
     private static Scanner sc = AppScanner.getInstance();
-    // the reason why this takes a user argument rather than a Manager argument is due to Lazy Instantiation problems when applicant is called, this quick fix is far easier than the more principled way to solve it
+    
+    /**
+     * <p>
+     * Constructs a {@code SetUpProject} object associated with the specified {@link Manager}.
+     * this takes a user argument rather than a Manager argument is due to Lazy Instantiation problems when applicant is called, this quick fix is far easier than the more principled way to solve it
+     * </p>
+     *
+     * @param user the {@link User} who will be setting up the project
+     */
     public SetUpProject(User user){
         this.user = user;
     }
+
+    /**
+     * <p>
+     * Executes the process of setting up a new project. The manager is prompted to enter various
+     * details about the project such as the project name, neighborhood, number and price of room
+     * units, application dates, officer slots, and assigned officers. Input validation is performed
+     * for each field, and scheduling conflicts with existing manager assignments are checked.
+     * </p>
+     *
+     * <p>
+     * If the inputs are valid, a new {@link Project} object is created and added to the list of projects.
+     * If any errors occur during the process, appropriate error messages are displayed.
+     * </p>
+     */
     @Override
     public void execute() {
         try {
@@ -92,21 +141,22 @@ public class SetUpProject implements MenuAction{
             System.out.println("Enter comma-separated list of officer names (leave blank if none):");
             String officerList = sc.nextLine().trim();
 
-            // Create the project
+            // Create a new Project object with the collected information.
             Project newProject = new Project(
-                name,
-                neighborhood,
-                units2room,
-                units2roomPrice,
-                units3room,
-                units3roomPrice,
-                openDate,
-                closeDate,
-                manager.getName(), 
-                officerSlots,
-                officerList
+                    name,
+                    neighborhood,
+                    units2room,
+                    units2roomPrice,
+                    units3room,
+                    units3roomPrice,
+                    openDate,
+                    closeDate,
+                    manager.getName(),
+                    officerSlots,
+                    officerList
             );
 
+            // Add the newly created project to the main project list.
             Main.projectList.add(newProject);
             System.out.println("Project created successfully!");
 
