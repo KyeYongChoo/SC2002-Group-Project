@@ -108,7 +108,11 @@ public class MenuNavigator {
                     .filter(item -> item.isVisible(user)) // Filter out items that are not visible to the current user.
                     .collect(Collectors.toList()); // Collect the visible menu items into a new list.
 
-            if (items.isEmpty()) System.out.println("Sorry, no items");
+            // if (items.isEmpty()) System.out.println("Sorry, no items");
+            if (items.isEmpty()) {
+                menuStack.pop();
+                continue;
+            }
             // Display the visible menu items with numbered options.
             for (int i = 0; i < items.size(); i++){
                 System.out.printf("%d. %s\n", i + 1, items.get(i).getDescription());
