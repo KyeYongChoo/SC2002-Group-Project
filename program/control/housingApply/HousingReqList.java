@@ -136,15 +136,19 @@ public class HousingReqList extends ArrayList<HousingReq> {
             Project project = req.getProject();
             if (loopCount == 0 && !client.hasActiveApplication()){
                 System.out.println("\nUnsuccessful Applications\n");
+                System.out.println("Application Status: " + req.getStatus());
             }
             if (loopCount == 0 && client.hasActiveApplication()){
                 if (req.getWithdrawalStatus() == WITHDRAWAL_STATUS.requested){
                     System.out.println("\n(Processing Withdrawal Request)");
+                    System.out.println("Application Status: " + req.getStatus());
                 }
                 System.out.println("Active Application\n");
+                System.out.println("Application Status: " + req.getStatus());
             }
             if (loopCount == 1 && !client.hasActiveApplication()){
                 System.out.println("\nUnsuccessful Applications\n");
+                System.out.println("Application Status: " + req.getStatus());
             }
             ProjectSelect.printVisible(client, project);
         }

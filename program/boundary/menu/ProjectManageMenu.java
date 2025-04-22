@@ -81,6 +81,7 @@ public class ProjectManageMenu extends MenuGroup {
              * For standard MenuGroups, the items are often invisible as well. so need to pass keep looking down through the menus until a visible item is found, else terminate.
              * But looking down through arbitrary depth of menus need instantiation, which causes classCast issues if instantiate menus that were never meant to be visible
              * TA can u teach us how to do this pls pls pls. It still works well enough to pass all tests. 
+             * Nvm i implemented something in MenuNavigator to kick people back to the previous level (popMenu) if all options are gone
              */ 
             user_ -> user_ instanceof Officer);
 
